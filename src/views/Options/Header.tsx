@@ -4,7 +4,7 @@ import LivingPost, { postProps } from "./LivingPost";
 import constants from "../../constants";
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
-const styles: any = {//捏麻麻的"absolute"不算Position里是吧#流汗黄豆
+const styles= {
     header: {
         height: "50px",
         width: "100%",
