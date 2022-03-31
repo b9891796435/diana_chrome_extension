@@ -39,7 +39,7 @@ export default function LivingPost(props: postProps) {
         return (
             <div style={styles.livingPostDiv}>
                 <span style={styles.livingNotice}>A-SOUL时代，沸腾期待！</span>
-                <img src={require("../../assets/images/AsoulPost.webp")} alt="" style={styles.livingPost} />
+                <img src={require("../assets/images/AsoulPost.webp")} alt="" style={styles.livingPost} />
             </div>
         )
     // }
