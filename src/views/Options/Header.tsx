@@ -1,6 +1,6 @@
 import React from "react"
 import Avatar from "../../components/Avatar";
-import LivingPost, { postProps } from "../../components/LivingPost";
+import LivingPost, { postProps } from "./LivingPost";
 import constants from "../../constants";
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
