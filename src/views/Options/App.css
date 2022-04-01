@@ -30,3 +30,6 @@ code {
 .App-link {
   color: #61dafb;
 }
+input:focus-visible{
+  outline-color: #e799b0;
+}

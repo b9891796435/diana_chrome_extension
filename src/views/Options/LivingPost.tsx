@@ -4,9 +4,9 @@ export type postProps ={
     link: string | null,
     post: string | null
 }
-const styles: any = {
+const styles = {
     livingPostDiv: {
-        position: "relative",
+        position: "relative" as "relative",
         marginLeft: "auto",
         alignSelf: "start",
         display: "flex",
@@ -28,7 +28,7 @@ const styles: any = {
     livingPost: {
         height: "50px",
         width: "100%",
-        position: "absolute",
+        position: "absolute" as "absolute",
         top: "0",
         right: "0",
         zIndex: "1"
