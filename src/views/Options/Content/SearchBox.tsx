@@ -62,14 +62,12 @@ class SearchBox extends React.Component<{}, searchProps>{
         this.setState({ keyword: e.currentTarget.value });
     }
     enterListener: (e: KeyboardEvent<HTMLInputElement>) => void = (e) => {
-        console.log(e)
         if (e.key == "Enter") {
             window.location.href = searchEngine[this.state.engine].url + this.state.keyword
         }
         if (e.key == "Tab") {
             e.preventDefault();
             this.setState({ engine: this.state.engine == 3 ? 0 : this.state.engine + 1 })
-            console.log(this.state)
         }
     }
     render(): React.ReactNode {
