@@ -64,7 +64,7 @@ class SearchBox extends React.Component<{}, searchProps>{
     enterListener: (e: KeyboardEvent<HTMLInputElement>) => void = (e) => {
         console.log(e)
         if (e.key == "Enter") {
-            window.location.href = searchEngine[this.state.engine] + this.state.keyword
+            window.location.href = searchEngine[this.state.engine].url + this.state.keyword
         }
         if (e.key == "Tab") {
             e.preventDefault();
