@@ -1,0 +1,29 @@
+@keyframes bouncing {
+    from{
+        outline-width: 8px;
+    }
+    to{
+        outline-width: 0;
+    }
+}
+.YinTun{
+    position:fixed;
+    bottom:64px;
+    right:48px;
+    height:64px;
+    width:64px;
+    border-radius:50%;
+    background-color:#e799b0;
+    outline:solid #ffffff99;
+    color: #fff;
+    overflow:hidden;
+    animation:3s ease-in-out 1s infinite alternate bouncing;
+    transition: ease-in-out;
+    transition-duration: 0.5s;
+    cursor: pointer;
+}
+.YinTun:hover{
+    outline-width: 5px;
+    animation-play-state: paused;
+    transform: scale(1.3);
+}

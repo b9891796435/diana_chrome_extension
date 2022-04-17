@@ -26,7 +26,11 @@ class Header extends React.Component<{}, headerState>{
     render: () => React.ReactNode = () => {
         return (
             <div style={styles.header}>
-                <img src={require("../../assets/images/Asoul.png")} alt="ASOUL" style={styles.image} />
+                <a href="https://space.bilibili.com/703007996">
+                    <img src={require("../../assets/images/Asoul.png")} alt="ASOUL" style={styles.image} />
+                </a>{
+                    //我们是Asoul！
+                }
                 <Avatar link={userSpaceUrl + memberList.diana.uid} avatar={memberList.diana.avatar}></Avatar>
                 <Avatar link={userSpaceUrl + memberList.ava.uid} avatar={memberList.ava.avatar}></Avatar>
                 <Avatar link={userSpaceUrl + memberList.carol.uid} avatar={memberList.carol.avatar}></Avatar>
