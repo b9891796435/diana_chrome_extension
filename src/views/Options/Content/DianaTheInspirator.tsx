@@ -1,4 +1,5 @@
 import React,{useState} from "react";
+import quotes from "../../../constants/dianaInsprite"
 const styles = {
     pot: {
         position: "fixed" as "fixed",
@@ -20,17 +21,24 @@ const styles = {
         zIndex:"-1"
     },
 }
-function DianaTheInspirator() {
-    const [pose,setPose]=useState(0);
-    const poseArray=[require("../../../assets/images/background/diana_1.png"),require("../../../assets/images/background/diana_2.png")]
-    setTimeout(()=>{//什么？你问我为什么不用settimeinterval？因为用那个然比会开摇。state钩子在变动时会重新计算该函数
-        setPose(pose?0:1);
-    },3000)
-    return (
-        <div style={styles.container}>
-            <img src={require("../../../assets/images/background/flower_pot.png")} alt="" style={styles.pot} />
-            <img src={poseArray[pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} />
-        </div>
-    )
+const poseArray=[require("../../../assets/images/background/diana_1.png"),require("../../../assets/images/background/diana_2.png")]
+class DianaTheInspirator extends React.Component<{},{pose:number}>{
+    constructor(props:any){
+        super(props);
+        this.state={
+            pose:0,
+        }
+        setInterval(()=>{
+            this.setState({pose:this.state.pose?0:1});
+        },2500);
+    }
+    render(): React.ReactNode {
+        return (
+            <div style={styles.container}>
+                <img src={require("../../../assets/images/background/flower_pot.png")} alt="" style={styles.pot} />
+                <img src={poseArray[this.state.pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} />
+            </div>
+        )
+    }
 }
 export default DianaTheInspirator;

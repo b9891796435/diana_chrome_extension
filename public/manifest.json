@@ -17,6 +17,9 @@
     ]
   }],
   "options_page":"options.html",  
+  "permissions":[
+    "storage"
+  ],
   "icons": {
       "16": "logo192.png",
       "48": "logo192.png",
