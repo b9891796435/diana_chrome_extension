@@ -1,6 +1,6 @@
 import React from 'react'
-import Header from './Header';
-import Content from './Content';
+import Header from './Header';//头顶一行
+import Content from './Content';//下面所有
 import "./App.css"
 function App() {
   return (
