@@ -13,7 +13,7 @@
   "content_scripts": [{
     "js": [ "static/js/content.js" ],
     "matches": [
-      "http://*/*", "http://*/*"
+      "https://*/*", "http://*/*"
     ]
   }],
   "options_page":"options.html",  

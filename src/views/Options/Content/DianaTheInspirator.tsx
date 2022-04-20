@@ -107,7 +107,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                             dialogVisible: false,
                             currentTimer: 0,//重置计时器
                         });
-                    }, 20000),
+                    }, 12000),
                     dialogVisible: true,
                     currentDialog: dialog,
                 });
