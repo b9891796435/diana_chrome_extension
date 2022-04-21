@@ -37,6 +37,8 @@ const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法
         position: "absolute" as "absolute",
         left: "0",
         bottom: "0",
+        width:"100px",
+        height:"100px"
     },
     quote: {
         backgroundColor: "#e799b0",
@@ -156,7 +158,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
         return (
             <div style={styles.container}>
                 <div style={Object.assign({}, styles.dialog, { opacity: this.state.dialogVisible ? "1" : "0" })}>
-                    <img src={require("../../../assets/images/background/diana_giving_heart.webp")} alt="" style={styles.givingHeartMeme} />
+                    <img src={require("../../../assets/images/background/diana_meme.png")} alt="" style={styles.givingHeartMeme} />
                     <p style={styles.quote}>{this.state.currentDialog}</p>
                 </div>
                 <img src={require("../../../assets/images/background/flower_pot.png")} alt="" style={styles.pot} />

@@ -1,4 +1,10 @@
-export default [
+type tag="aggressive"|"suggestive"
+type confusingQuote={
+    quote:string,
+    from:string,
+    tag:tag[]
+}
+let quotes:confusingQuote[]=[
     {
         "quote":"乃宝乃宝，妈妈的宝；然比然比，________。",
         "from":"2021.10.28琳嘉双播极限拉扯记录",
@@ -33,5 +39,11 @@ export default [
         "quote":"什么？儿童节目都比我涩？你们、你们看看这种儿童节目就好了，不要看那种涩涩的节目好吗",
         "from":"2020.12.30小作文回",
         "tag":[]
+    },
+    {
+        "quote":"npk48",
+        "from":"插件作者",
+        tag:["aggressive",]
     }
 ]
+export default quotes;
