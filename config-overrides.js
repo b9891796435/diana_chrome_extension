@@ -13,9 +13,10 @@ module.exports = {
 function override(config, env) {
   // Replace single entry point in the config with multiple ones
   // Note: you may remove any property below except "popup" to exclude respective entry point from compilation
+  //嘶...这玩意得用铁棍打一顿
   config.entry = {
     popup: paths.appIndexJs,
-    options: paths.appSrc + '/options',
+    newTab: paths.appSrc + '/newTab',
     background: paths.appSrc + '/background',
     content: paths.appSrc + '/content'
   };
@@ -59,9 +60,9 @@ function override(config, env) {
   // Extra HtmlWebpackPlugin instance for options page
   const optionsHtmlPlugin = new HtmlWebpackPlugin({
     inject: true,
-    chunks: ['options'],
-    template: paths.appPublic + '/options.html',
-    filename: 'options.html',
+    chunks: ['newTab'],
+    template: paths.appPublic + '/newTab.html',
+    filename: 'newTab.html',
     minify: isEnvProduction && minifyOpts,
   });
   // Add the above HtmlWebpackPlugin instance into config.plugins
