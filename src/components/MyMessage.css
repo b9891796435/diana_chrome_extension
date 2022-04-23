@@ -1,0 +1,11 @@
+.myMessageForDiana{
+    margin: 12px;
+    border-width: 1px;
+    border-radius: 4px;
+    border-style: solid;
+    padding: 4px 12px;
+    background: #ff4d4f;
+    color:white;
+    outline: 0;
+    box-shadow: none;
+}

@@ -1,0 +1,45 @@
+.toolBoxContentDiv {
+    display: flex;
+    padding: 16px;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.newToolMaskLayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #52033966;
+    backdrop-filter: blur(2px);
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+.newToolDialogBox{
+    background-color: #fff0f6;
+    border-radius: 16px;
+    box-shadow: 0 3px 6px -4px #e799b01f, 0 6px 16px #e799b014, 0 9px 28px 8px #e799b00d;
+    box-sizing: border-box;
+    margin: 32px auto;
+    padding: 16px;
+    width: 512px;
+    height: 256px;
+}
+
+.newToolButtonContainer{
+    display: flex;
+    justify-content: end;
+}
+.newToolButtonContainer button{
+    margin: 12px;
+    border-color: #780650;
+    border-width: 1px;
+    border-radius: 2px;
+    border-style: solid;
+    padding: 4px 12px;
+    background: #fff0f6;
+    outline: 0;
+    box-shadow: none;
+    cursor: pointer;
+    color: #780650;
+}

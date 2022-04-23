@@ -1,0 +1,79 @@
+@keyframes bouncing {
+    from {
+        outline-width: 8px;
+    }
+
+    to {
+        outline-width: 0;
+    }
+}
+
+.YinTun {
+    position: fixed;
+    bottom: 64px;
+    right: 48px;
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+    background-color: #e799b0;
+    outline: solid #ffffff99;
+    color: #fff;
+    overflow: hidden;
+    animation: 3s ease-in-out 1s infinite alternate bouncing;
+    transition: ease-in-out;
+    transition-duration: 0.5s;
+    cursor: pointer;
+}
+
+.YinTun:hover {
+    outline-width: 5px;
+    animation-play-state: paused;
+    transform: scale(1.3);
+}
+
+.YinTunImg {
+    height: 64px;
+    width: 64px;
+}
+
+.toolBoxContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    z-index: 10000;
+    backdrop-filter: blur(2px);
+}
+
+.toolBoxMaskLayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #fff0f6;
+    opacity: 40%;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+}
+
+.toolBoxItself {
+    margin: 32px auto;
+    width: 80vw;
+    min-height: 80vh;
+    background-color: #fff0f6;
+    border-radius: 16px;
+    box-shadow: 0 3px 6px -4px #e799b01f, 0 6px 16px #e799b014, 0 9px 28px 8px #e799b00d;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.toolBoxHeaderDiv {
+    text-align: left;
+    font-size: 2em;
+    margin: 16px;
+    border-bottom: solid 1px #52033955;
+    display: flex;
+}

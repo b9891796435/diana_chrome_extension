@@ -1,0 +1,14 @@
+.myInputForDianaContainer{
+    margin: 12px;
+    text-align: left;
+    font-size: 1.25em;
+}
+.myInputForDiana{
+    border-color: #52033966;
+    border-radius: 4px;
+    border-width: 1px;
+    display: block;
+    margin-top: 12px;
+    height: 24px;
+    width: 100%;
+}

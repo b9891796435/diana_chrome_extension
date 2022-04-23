@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import quotes from "../../../constants/dianaInsprite"
+import React from "react";
+import quotes from "../../../constants/storagePrototype/dianaInsprite"
 import tool from "../../../tool"
 const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法写不出动画
+    //写到银屯的时候已经恶堕成没有.css文件就写不下去的笨蛋了（确信，但还是很怀念scoped防止类名污染。container，我的container
     pot: {
         position: "fixed" as "fixed",
         bottom: "0",
@@ -59,7 +60,7 @@ type stateType = {
     pose: number,
     dialogVisible: boolean,
     currentDialog: string,
-    currentTimer: any,//AnyScript,卡密得斯！
+    currentTimer: any,//AnyScript,永远滴神！
     autoTimer: any
 }
 class DianaTheInspirator extends React.Component<{}, stateType>{
@@ -139,7 +140,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             //问安结束，进入提醒运动喝水
             const requestRes = await chrome.storage.local.get("notice");
             if (Date.now() - requestRes.notice >= 5400000) {//90分钟
-                setDialog(quotes.notice[Math.round(Math.random())])//简简单单一个乃0乃1随机器
+                setDialog(quotes.notice[Math.floor(Math.random()*quotes.notice.length)])//简简单单一个乃0乃1随机器
                 await chrome.storage.local.set({ notice: Date.now() });
                 setRetrigger()
                 return;

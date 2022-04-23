@@ -1,0 +1,13 @@
+.myButtonForDiana{
+    margin: 12px;
+    border-color: #780650;
+    border-width: 1px;
+    border-radius: 2px;
+    border-style: solid;
+    padding: 4px 12px;
+    background: #fff0f6;
+    outline: 0;
+    box-shadow: none;
+    cursor: pointer;
+    color: #780650;
+}

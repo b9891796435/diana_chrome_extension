@@ -1,0 +1,26 @@
+.toolItemChild {
+    position: relative;
+    width: 96px;
+    height: 128px;
+    box-shadow: 0 3px 6px -4px #e799b01f, 0 6px 16px #e799b014, 0 9px 28px 8px #e799b00d;
+    border-radius: 8px;
+    margin: 8px;
+    padding: 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.toolItemIcon {
+    width: 42px;
+    height: 42px;
+    margin: 4px auto;
+}
+
+.toolItemDeleteIcon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: -12px;
+    right: -8px;
+    cursor: pointer;
+}
