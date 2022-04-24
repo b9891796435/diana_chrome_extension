@@ -153,7 +153,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 setRetrigger()
                 return;
             } else {//若当前已有计时器
-                this.setState({ dialogVisible: false });//一次AC，没有Debug！好耶！
+                this.setState({ dialogVisible: false,currentTimer:0 });//一次AC，没有Debug！好耶！
             }
         setRetrigger()
     }
