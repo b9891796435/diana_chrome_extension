@@ -10,6 +10,7 @@
   "background": {
     "service_worker": "static/js/background.js"
   },
+  "options_page":"options.html", 
   "content_scripts": [{
     "js": [ "static/js/content.js" ],
     "css":["static/css/content.css"],

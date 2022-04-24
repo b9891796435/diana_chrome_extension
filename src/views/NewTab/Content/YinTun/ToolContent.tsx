@@ -5,6 +5,7 @@ import MyInput from '../../../../components/MyInput'
 import MyButton from '../../../../components/MyButton'
 import MyMessage from '../../../../components/MyMessage'
 import { fixStorage } from '../../../../tool/fixStorage'
+import { chromeGet,chromeSet } from '../../../../tool/storageHandle'
 import "./ToolContent.css"
 type toolBoxProps = {
     edit: boolean,
@@ -30,10 +31,10 @@ export default class ToolBox extends React.Component<toolBoxProps, toolBoxState>
         }
     }
     componentDidMount() {
-        chrome.storage.local.get("toolList").then(res => {
-            if (res.toolList&&Array.isArray(res.toolList)) {
+        chromeGet("toolList").then(res => {
+            if (res&&Array.isArray(res)) {
                 this.setState({
-                    toolList: res.toolList
+                    toolList: res
                 })
             }else{
                 fixStorage()
@@ -48,7 +49,7 @@ export default class ToolBox extends React.Component<toolBoxProps, toolBoxState>
         })
     }
     remove=(i: toolItemData)=>{
-        chrome.storage.local.set({
+        chromeSet({
             toolList: this.state.toolList.filter(item => item.summary !== i.summary && item.url !== i.url)
         })
     }
@@ -64,7 +65,7 @@ export default class ToolBox extends React.Component<toolBoxProps, toolBoxState>
         if(RegExp("https://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]").test(this.state.newURL)){
             let temp=[...this.state.toolList]
             temp.push({url:this.state.newURL,summary:this.state.newSummary});
-            chrome.storage.local.set({
+            chromeSet({
                 toolList: temp,
             })
             this.setState({dialogVisible:false,messageVisible:false})

@@ -1,9 +1,10 @@
-.myInputForDianaContainer{
+.myInputForDianaContainer {
     margin: 12px;
     text-align: left;
     font-size: 1.25em;
 }
-.myInputForDiana{
+
+.myInputForDiana {
     border-color: #52033966;
     border-radius: 4px;
     border-width: 1px;
@@ -11,4 +12,8 @@
     margin-top: 12px;
     height: 24px;
     width: 100%;
+}
+
+.myInputForDianaContainer input:focus-visible {
+    outline-color: #e799b0;
 }

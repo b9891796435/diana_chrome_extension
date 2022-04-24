@@ -23,7 +23,7 @@ class YinTun extends React.Component<{}, yinTunState> {//小伙伴你好，#摆�
                     <div className="toolBoxMaskLayer" ></div>
                     <div className="toolBoxItself">
                         <div className="toolBoxHeaderDiv">
-                            <div>工具箱</div>
+                            <div>工具箱|</div>
                             <div onClick={()=>this.setState({edit:this.state.edit?false:true})}><span style={{fontSize:"0.6em",verticalAlign:"bottom",color:"#40a9ff",cursor:"pointer"}}>{this.state.edit?"完成":"编辑"}</span></div>
                             <div onClick={()=>this.setState({toolVisible:false})} style={{marginLeft:"auto",position:"relative",bottom:"16px",cursor:"pointer"}}>x</div>
                         </div>

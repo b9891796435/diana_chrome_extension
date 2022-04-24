@@ -18,7 +18,8 @@ function override(config, env) {
     popup: paths.appIndexJs,
     newTab: paths.appSrc + '/newTab',
     background: paths.appSrc + '/background',
-    content: paths.appSrc + '/content'
+    content: paths.appSrc + '/content',
+    options:paths.appSrc+'/options'
   };
   // Change output filename template to get rid of hash there
   config.output.filename = 'static/js/[name].js';
@@ -58,7 +59,7 @@ function override(config, env) {
   );
 
   // Extra HtmlWebpackPlugin instance for options page
-  const optionsHtmlPlugin = new HtmlWebpackPlugin({
+  const newTabHtmlPlugin = new HtmlWebpackPlugin({
     inject: true,
     chunks: ['newTab'],
     template: paths.appPublic + '/newTab.html',
@@ -66,7 +67,17 @@ function override(config, env) {
     minify: isEnvProduction && minifyOpts,
   });
   // Add the above HtmlWebpackPlugin instance into config.plugins
-  // Note: you may remove/comment the next line if you don't need an options page
+  // Note: you may remove/comment the next line if you don't need an options page/提醒：如果你不需要选项页的话也可以将以下代码删去或注释掉。
+  config.plugins.push(newTabHtmlPlugin);
+
+  const optionsHtmlPlugin = new HtmlWebpackPlugin({
+    inject: true,
+    chunks: ['options'],
+    template: paths.appPublic + '/options.html',
+    filename: 'options.html',
+    minify: isEnvProduction && minifyOpts,
+  });
+  //以此类推，当然也可以复制以上配置来添加新页面啦❤v❤
   config.plugins.push(optionsHtmlPlugin);
 
   // Custom ManifestPlugin instance to cast asset-manifest.json back to old plain format

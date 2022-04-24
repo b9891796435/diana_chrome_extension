@@ -1,9 +1,10 @@
 import "./content.css"
-chrome.storage.local.get("tabCount").then(res => {
-    if (typeof (res.tabCount) != "number") {
-        chrome.storage.local.set({ tabCount: 0 })
+import { chromeGet, chromeSet } from "./tool/storageHandle"
+chromeGet("tabCount").then(res => {
+    if (typeof (res) != "number") {
+        chromeSet({ tabCount: 0 })
     } else {
-        chrome.storage.local.set({ tabCount: res.tabCount + 1 });
+        chromeSet({ tabCount: res + 1 });
     }
 })
 let showDianaNotice = async () => {
@@ -22,15 +23,13 @@ let showDianaNotice = async () => {
 
     let quote = document.createElement("p");
     quote.className = "dianaQuote";
-    let quotes = await chrome.storage.local.get("quotes");
-    quotes = quotes.quotes
+    let quotes = await chromeGet("quotes");
     let quoteToBe = quotes?.notice[Math.floor(Math.random() * quotes?.notice?.length)];
     quote.innerHTML = quoteToBe !== undefined ? quoteToBe : "突击检查！有好好在喝水吗？没有的话就去喝一口吧"
 
     let goBack = document.createElement("div");
     goBack.className = "dianaGoBack"
     goBack.innerHTML = "x"
-
     elem.appendChild(meme);
     elem.appendChild(BGDiv);
     BGDiv.appendChild(quote);
@@ -46,15 +45,16 @@ let showDianaNotice = async () => {
     goBack.addEventListener("click", removeNoticeNode);
     document.body.append(elem);
 }
-setInterval(() => {
-    if (document.hasFocus()) {
-        chrome.storage.local.get("notice")
-            .then(res => {
-                if (Date.now() - res.notice >= 5400000) {
-                    chrome.storage.local.set({ notice: Date.now() });
-                    showDianaNotice();
-                }
-            })
+
+setInterval(async () => {
+    let shouldShowNotice=await chromeGet("shouldShowNotice")
+    if (document.hasFocus()&&shouldShowNotice) {
+        let notice = await chromeGet("notice")
+        let noticeTime = await chromeGet("noticeTime")
+        if (Date.now() - notice >= noticeTime) {
+            chromeSet({ notice: Date.now() });
+            showDianaNotice();
+        }
     }
 }, 10000)
 export { }

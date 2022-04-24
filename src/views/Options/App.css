@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.App {
+  background-color: #fff0f6;
+  padding: 32px;
+  margin:0;
+}
+
+.settingContainerForDiana{
+  margin:0 auto;
+  padding:32px;
+  padding-right: 128px;
+  box-sizing: border-box;
+  width: 600px;
+  background-color: #ffd6e7;
+  border-radius: 4px;
+}
+
+input:focus-visible{
+  outline-color: #e799b0;
+}
