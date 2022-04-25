@@ -5,28 +5,48 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  background-color: #ffd6e7;
+  width: 144px;
 }
 
 .App {
   text-align: center;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
-
-.App-link {
-  color: #61dafb;
+.App div{
+  height: 50px;
+  box-sizing: border-box;
+  padding: 8px;
+  font-size: 16px;
+  display: flex;
 }
+.toolIcon{
+  width: 20px;
+  height: 20px;
+}
+.toolSelection{
+  margin: 4px;
+  position: relative;
+  bottom: 6px;
+}
+.App div:hover{
+  background-color: #00000011;
+}
+.App div *:first-child{
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+.App div:first-child{
+  position:relative;
+  height: 30px;
+} 
+.App div:first-child img{
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+} 

@@ -2,6 +2,7 @@ import React from "react"
 import Avatar from "../../components/Avatar";
 import LivingPost from "./LivingPost";
 import constants from "../../constants";
+import "./Header.css"
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
 const styles= {
@@ -22,7 +23,7 @@ const styles= {
 class Header extends React.Component{
     render: () => React.ReactNode = () => {
         return (
-            <div style={styles.header}>
+            <div style={styles.header} className="headerForDianaExtension">
                 <a href="https://space.bilibili.com/703007996">
                     <img src={require("../../assets/images/Asoul.png")} alt="ASOUL" style={styles.image} />
                 </a>{

@@ -45,11 +45,11 @@ export default class LivingPost extends React.Component<{}, postState> {
         if (await chromeGet("fetchLive")) {
             this.setState({ nowLiving: await chromeGet("liveState") });
         }
-        chrome.storage.onChanged.addListener(key => {
-            if (key.liveState) {
-                this.setState({ nowLiving: key.liveState.newValue });
+        chrome.storage.onChanged.addListener(async key => {
+            if (key.liveState&&await chromeGet("fetchLive")) {
+              this.setState({ nowLiving: key.liveState.newValue });
             }
-        })
+          })
     }
     render(): React.ReactNode {
         if (this.state.nowLiving === "none") {
@@ -61,12 +61,12 @@ export default class LivingPost extends React.Component<{}, postState> {
             )
         } else {
             return (
-                <a href={memberList[this.state.nowLiving].livingRoom}>
-                    <div style={styles.livingPostDiv}>
+                <div style={styles.livingPostDiv}>
+                    <a href={memberList[this.state.nowLiving].livingRoom}>
                         <span style={styles.livingNotice}>{memberList[this.state.nowLiving].chineseName + "正在直播，点击以进入直播间"}</span>
+                    </a>
                         <img src={memberList[this.state.nowLiving].post} alt="" style={styles.livingPost} />
-                    </div>
-                </a>
+                </div>
             )
         }
     }
