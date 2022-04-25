@@ -31,11 +31,23 @@ class App extends React.Component<{}, { nowLiving: liveStateType }> {
     chrome.runtime.openOptionsPage();
     window.close()
   }
-  openLiveRoom(){
-    if(this.state.nowLiving!=="none"){
+  openLiveRoom = () => {
+    if (this.state.nowLiving !== "none") {
       window.open(memberList[this.state.nowLiving].livingRoom)
     }
     window.close()
+  }
+  LiveNotice = () => {
+    if (this.state.nowLiving !== "none") {
+      return (
+        <div onClick={this.openLiveRoom}>
+          <img src={memberList[this.state.nowLiving].avatar} alt="" />
+          正在直播中~
+        </div>
+      )
+    } else {
+      return null;
+    }
   }
   render(): React.ReactNode {
     return (
@@ -51,18 +63,7 @@ class App extends React.Component<{}, { nowLiving: liveStateType }> {
           {SettingIcon}
           <span>设置</span>
         </div>
-        {
-          (() => {
-            if (this.state.nowLiving !== "none") {
-              return (
-                <div onClick={this.openLiveRoom}>
-                  <img src={memberList[this.state.nowLiving].avatar} alt="" />
-                  正在直播中~
-                </div>
-              )
-            }
-          })()
-        }
+        <this.LiveNotice />
       </div>
     );
   }

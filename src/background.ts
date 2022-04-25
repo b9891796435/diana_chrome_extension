@@ -16,5 +16,5 @@ setInterval(async () => {//乐了，这fetch根本就不触发cors
         }
     }
     chromeSet({liveState:temp});
-}, 5000)
+}, 60000)
 export { }
