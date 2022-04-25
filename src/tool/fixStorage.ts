@@ -21,11 +21,27 @@ export const fixStorage = () => {
             if (res.shouldShowNotice === undefined) {
                 chrome.storage.local.set({ shouldShowNotice: true })
             }
-        })])
+        })]),
+        chrome.storage.local.get("fetchLive").then(res => {
+            if (res.fetchLive === undefined) {
+                chrome.storage.local.set({ fetchLive: true })
+            }
+        }),
+        chrome.storage.local.get("liveState").then(res => {
+            if (res.liveState === undefined) {
+                chrome.storage.local.set({
+                    liveState: "none"
+                })
+            }
+        })
 }
 export const resetStorage = () => {
     chrome.storage.local.set({ quotes: dianaInsprite });
     chrome.storage.local.set({ toolList });
     chrome.storage.local.set({ noticeTime: 5400000 });
-    chrome.storage.local.set({ shouldShowNotice: true })
+    chrome.storage.local.set({ shouldShowNotice: true });
+    chrome.storage.local.set({ fetchLive: true });
+    chrome.storage.local.set({
+        liveState: "none"
+    });
 }

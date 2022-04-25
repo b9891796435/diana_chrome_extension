@@ -1,9 +1,6 @@
 import React from "react";
-export type postProps ={
-    member: string | null,
-    link: string | null,
-    post: string | null
-}
+import memberList from "../../constants/memberList";
+import { chromeGet, liveStateType } from "../../tool/storageHandle";
 const styles = {
     livingPostDiv: {
         position: "relative" as "relative",
@@ -34,21 +31,45 @@ const styles = {
         zIndex: "1"
     }
 }
-export default function LivingPost(props: postProps) {
-    // if (props.member == null || props.link == null || props.post == null) {//麻了，掘金插件可以跨域是因为人家有接口专门接插件，可b站没有啊
-        return (
-            <div style={styles.livingPostDiv}>
-                <span style={styles.livingNotice}>A-SOUL时代，沸腾期待！</span>
-                <img src={require("../../assets/images/AsoulPost.webp")} alt="" style={styles.livingPost} />
-            </div>
-        )
-    // }
-    // return (
-    //     <div style={styles.livingPostDiv}>
-    //         <a href={props.link}>
-    //             <span style={styles.livingNotice}>{props.member}正在直播~点击进入直播间</span>
-    //             <img src={props.post} alt="" style={styles.livingPost} />
-    //         </a>
-    //     </div>
-    // )
+type postState = {
+    nowLiving: liveStateType,
 }
+export default class LivingPost extends React.Component<{}, postState> {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            nowLiving: "none"
+        }
+    }
+    async componentDidMount() {
+        if (await chromeGet("fetchLive")) {
+            this.setState({ nowLiving: await chromeGet("liveState") });
+        }
+        chrome.storage.onChanged.addListener(key => {
+            if (key.liveState) {
+                this.setState({ nowLiving: key.liveState.newValue });
+            }
+        })
+    }
+    render(): React.ReactNode {
+        if (this.state.nowLiving === "none") {
+            return (
+                <div style={styles.livingPostDiv}>
+                    <span style={styles.livingNotice}>A-SOUL时代，沸腾期待！</span>
+                    <img src={require("../../assets/images/AsoulPost.webp")} alt="" style={styles.livingPost} />
+                </div>
+            )
+        } else {
+            return (
+                <a href={memberList[this.state.nowLiving].livingRoom}>
+                    <div style={styles.livingPostDiv}>
+                        <span style={styles.livingNotice}>{memberList[this.state.nowLiving].chineseName + "正在直播，点击以进入直播间"}</span>
+                        <img src={memberList[this.state.nowLiving].post} alt="" style={styles.livingPost} />
+                    </div>
+                </a>
+            )
+        }
+    }
+}
+
+

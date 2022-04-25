@@ -1,6 +1,6 @@
 import React from "react"
 import Avatar from "../../components/Avatar";
-import LivingPost, { postProps } from "./LivingPost";
+import LivingPost from "./LivingPost";
 import constants from "../../constants";
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
@@ -19,10 +19,7 @@ const styles= {
         marginLeft: "10px"
     },
 }
-interface headerState {
-    livingMember: postProps,
-}
-class Header extends React.Component<{}, headerState>{
+class Header extends React.Component{
     render: () => React.ReactNode = () => {
         return (
             <div style={styles.header}>
@@ -36,7 +33,7 @@ class Header extends React.Component<{}, headerState>{
                 <Avatar link={userSpaceUrl + memberList.carol.uid} avatar={memberList.carol.avatar}></Avatar>
                 <Avatar link={userSpaceUrl + memberList.eileen.uid} avatar={memberList.eileen.avatar}></Avatar>
                 <Avatar link={userSpaceUrl + memberList.bella.uid} avatar={memberList.bella.avatar}></Avatar>
-                <LivingPost member={null} link={null} post={null}></LivingPost>
+                <LivingPost></LivingPost>
             </div>
         )
     }

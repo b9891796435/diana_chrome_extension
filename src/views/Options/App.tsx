@@ -17,6 +17,7 @@ type settingsState = {
   },
   noticeTime: string,
   shouldShowNotice: boolean,
+  fetchLive:boolean,
   infoMessage:string,
   isError:boolean
 }
@@ -51,6 +52,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       },
       noticeTime: "",
       shouldShowNotice: true,
+      fetchLive:true,
       infoMessage:"",
       isError:true
     }
@@ -70,6 +72,13 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       if (res !== undefined) {
         this.setState({
           shouldShowNotice: res,
+        })
+      }
+    })
+    chromeGet("fetchLive").then(res=>{
+      if(res!==undefined){
+        this.setState({
+          fetchLive:res
         })
       }
     })
@@ -122,6 +131,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       quotes:this.state.quotes,
       noticeTime:Number(this.state.noticeTime),
       shouldShowNotice:this.state.shouldShowNotice,
+      fetchLive:this.state.fetchLive
     })
   }
   render(): React.ReactNode {
@@ -144,10 +154,14 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
             deleteItem={this.handleDialogForArray("notice", "delete")}
             onChange={this.handleDialogForArray("notice", "change") as (e: React.ChangeEvent<HTMLInputElement>, i: number) => void}
           />
-          <MyInput label="久坐提醒间隔时间" value={this.state.noticeTime} onChange={e=>this.setState({noticeTime:e.target.value})}></MyInput>
+          <MyInput label="久坐提醒间隔时间（单位：毫秒）" value={this.state.noticeTime} onChange={e=>this.setState({noticeTime:e.target.value})}></MyInput>
           <div>
             <span className='myInputForDianaContainer'>是否开启跨页久坐提醒:</span>
             <input type="checkbox" style={checkboxStyle} defaultChecked={this.state.shouldShowNotice} onChange={e=>this.setState({shouldShowNotice:e.target.checked})}/>
+          </div>
+          <div>
+            <span className='myInputForDianaContainer'>是否开启直播间状态检测:</span>
+            <input type="checkbox" style={checkboxStyle} defaultChecked={this.state.fetchLive} onChange={e=>this.setState({fetchLive:e.target.checked})}/>
           </div>
           <div>
             <MyMessage text={this.state.infoMessage} style={{display:this.state.infoMessage?"block":"none",backgroundColor:this.state.isError?"#ff4d4f":"#52c41a"}}></MyMessage>
