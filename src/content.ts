@@ -47,13 +47,17 @@ let showDianaNotice = async () => {
 }
 
 setInterval(async () => {
-    let shouldShowNotice=await chromeGet("shouldShowNotice")
-    if (document.hasFocus()&&shouldShowNotice) {
+    let shouldShowNotice = await chromeGet("shouldShowNotice")
+    if (document.hasFocus() && shouldShowNotice) {
         let notice = await chromeGet("notice")
         let noticeTime = await chromeGet("noticeTime")
         if (Date.now() - notice >= noticeTime) {
             chromeSet({ notice: Date.now() });
-            showDianaNotice();
+            let a = new Image();
+            a.src = "https://raw.githubusercontent.com/b9891796435/duskmoon-bot-doc/main/src/assets/dianaJumping.png";
+            setTimeout(() => {
+                showDianaNotice();
+            }, 10000)
         }
     }
 }, 10000)
