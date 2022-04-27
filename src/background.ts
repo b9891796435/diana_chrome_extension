@@ -22,5 +22,5 @@ setInterval(async () => {//乐了，这fetch根本就不触发cors
         console.log(e);
         chromeSet({liveState:"error"});
     }
-}, 5000)
+}, 60000)
 export { }
