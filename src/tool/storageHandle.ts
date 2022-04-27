@@ -4,7 +4,7 @@ import type {members} from "../constants/memberList"
 export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date" 
                         | "morning" | "noon" | "evening" | "night" | "notice" 
                         | "tabCount" | "toolList" | "liveState" | "fetchLive"
-export type liveStateType = members|"none"
+export type liveStateType = members|"none"|"error"
 type getRes = {
     (key: "noticeTime" | "notice" | "tabCount"): Promise<number>,
     (key: "shouldShowNotice" | "morning" | "noon" | "evening" | "night"|"fetchLive"): Promise<boolean>,

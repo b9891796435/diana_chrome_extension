@@ -46,13 +46,13 @@ export default class LivingPost extends React.Component<{}, postState> {
             this.setState({ nowLiving: await chromeGet("liveState") });
         }
         chrome.storage.onChanged.addListener(async key => {
-            if (key.liveState&&await chromeGet("fetchLive")) {
-              this.setState({ nowLiving: key.liveState.newValue });
+            if (key.liveState && await chromeGet("fetchLive")) {
+                this.setState({ nowLiving: key.liveState.newValue });
             }
-          })
+        })
     }
     render(): React.ReactNode {
-        if (this.state.nowLiving === "none") {
+        if (this.state.nowLiving === "none"||this.state.nowLiving === "error") {
             return (
                 <div style={styles.livingPostDiv}>
                     <span style={styles.livingNotice}>A-SOUL时代，沸腾期待！</span>
@@ -65,7 +65,7 @@ export default class LivingPost extends React.Component<{}, postState> {
                     <a href={memberList[this.state.nowLiving].livingRoom}>
                         <span style={styles.livingNotice}>{memberList[this.state.nowLiving].chineseName + "正在直播，点击以进入直播间"}</span>
                     </a>
-                        <img src={memberList[this.state.nowLiving].post} alt="" style={styles.livingPost} />
+                    <img src={memberList[this.state.nowLiving].post} alt="" style={styles.livingPost} />
                 </div>
             )
         }

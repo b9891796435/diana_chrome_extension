@@ -18,7 +18,7 @@ class App extends React.Component<{}, { nowLiving: liveStateType }> {
       this.setState({ nowLiving: await chromeGet("liveState") });
     }
     chrome.storage.onChanged.addListener(async key => {
-      if (key.liveState&&await chromeGet("fetchLive")) {
+      if (key.liveState && await chromeGet("fetchLive")) {
         this.setState({ nowLiving: key.liveState.newValue });
       }
     })
@@ -32,20 +32,28 @@ class App extends React.Component<{}, { nowLiving: liveStateType }> {
     window.close()
   }
   openLiveRoom = () => {
-    if (this.state.nowLiving !== "none") {
+    if (this.state.nowLiving !== "none" && this.state.nowLiving !== "error") {
       window.open(memberList[this.state.nowLiving].livingRoom)
     }
     window.close()
   }
   LiveNotice = () => {
-    if (this.state.nowLiving !== "none") {
+    if (this.state.nowLiving !== "none" && this.state.nowLiving !== "error") {
       return (
         <div onClick={this.openLiveRoom}>
           <img src={memberList[this.state.nowLiving].avatar} alt="" />
           正在直播中~
         </div>
       )
-    } else {
+    } else if(this.state.nowLiving==="error"){
+      return(
+        <div>
+          <img src={require("../../assets/images/error.png")}/>
+          直播间状态<br/>获取失败
+        </div>
+      )
+    }
+    else{
       return null;
     }
   }
