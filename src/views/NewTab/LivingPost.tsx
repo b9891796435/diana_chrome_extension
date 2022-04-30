@@ -1,10 +1,10 @@
 import React from "react";
 import memberList from "../../constants/memberList";
-import { chromeGet, liveStateType } from "../../tool/storageHandle";
+import { chromeGet, liveType } from "../../tool/storageHandle";
 const styles = {
     livingPostDiv: {
         position: "relative" as "relative",
-        marginLeft: "auto",
+        marginLeft: "12px",
         alignSelf: "start",
         display: "flex",
         padding: "0 30px"
@@ -32,7 +32,7 @@ const styles = {
     }
 }
 type postState = {
-    nowLiving: liveStateType,
+    nowLiving: liveType,
 }
 export default class LivingPost extends React.Component<{}, postState> {
     constructor(props: any) {
@@ -51,8 +51,8 @@ export default class LivingPost extends React.Component<{}, postState> {
             }
         })
     }
-    render(): React.ReactNode {
-        if (this.state.nowLiving === "none"||this.state.nowLiving === "error") {
+    postContent = () => {
+        if (this.state.nowLiving === "none" || this.state.nowLiving === "error") {
             return (
                 <div style={styles.livingPostDiv}>
                     <span style={styles.livingNotice}>A-SOUL时代，沸腾期待！</span>
@@ -69,6 +69,9 @@ export default class LivingPost extends React.Component<{}, postState> {
                 </div>
             )
         }
+    }
+    render(): React.ReactNode {
+        return <this.postContent />
     }
 }
 

@@ -1,8 +1,8 @@
 import React from "react";
 import './ToolItem.css'
-export type toolItemData={
-    url:string,
-    summary:string
+export type toolItemData = {
+    url: string,
+    summary: string
 }
 type itemProp = {
     url: string,
@@ -11,7 +11,7 @@ type itemProp = {
     remove: Function
 } | {
     newTool: boolean,
-    newToolFun:React.MouseEventHandler,
+    newToolFun: React.MouseEventHandler,
 }
 type itemState = {
     favicon: string | null;
@@ -41,12 +41,14 @@ class ToolItem extends React.Component<itemProp, itemState>{
                 })
                 .then(res => res.blob())
                 .then(res => this.setState({ favicon: URL.createObjectURL(res) }))
-                .catch(e=>console.log(e));//没能看到回调地狱还有点可惜（x
+                .catch(async e => {
+                    if (await chrome.storage.local.get("debugMode")) console.log(e)
+                })//没能看到回调地狱还有点可惜（x
         }
     }
     contentBlock = () => {
         if ("newTool" in this.props && this.props.newTool) {
-            let listener=this.props.newToolFun;
+            let listener = this.props.newToolFun;
             return (
                 <div onClick={listener}>
                     <svg viewBox="64 64 896 896" focusable="false" data-icon="plus-circle" className="toolItemIcon" fill="currentColor" aria-hidden="true">
@@ -62,7 +64,7 @@ class ToolItem extends React.Component<itemProp, itemState>{
                 <div onClick={() => { if ("url" in this.props && !this.props.edit) window.open(this.props.url) }}>
                     <img src={this.state.favicon == null ? require("../../../../assets/images/defaultIcon.png") : this.state.favicon} alt="" className="toolItemIcon" />
                     <div>{"summary" in this.props ? this.props.summary : "小伙伴对不起 这里数据丢失了"}</div>
-                    <svg style={"edit" in this.props && this.props.edit ? {} : { display: "none" }} onClick={() => { if ("edit" in this.props) this.props.remove({url:this.props.url,summary:this.props.summary}) }} viewBox="64 64 896 896" focusable="false" data-icon="close-circle" className="toolItemDeleteIcon" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm165.4 618.2l-66-.3L512 563.4l-99.3 118.4-66.1.3c-4.4 0-8-3.5-8-8 0-1.9.7-3.7 1.9-5.2l130.1-155L340.5 359a8.32 8.32 0 01-1.9-5.2c0-4.4 3.6-8 8-8l66.1.3L512 464.6l99.3-118.4 66-.3c4.4 0 8 3.5 8 8 0 1.9-.7 3.7-1.9 5.2L553.5 514l130 155c1.2 1.5 1.9 3.3 1.9 5.2 0 4.4-3.6 8-8 8z"></path></svg>
+                    <svg style={"edit" in this.props && this.props.edit ? {} : { display: "none" }} onClick={() => { if ("edit" in this.props) this.props.remove({ url: this.props.url, summary: this.props.summary }) }} viewBox="64 64 896 896" focusable="false" data-icon="close-circle" className="toolItemDeleteIcon" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm165.4 618.2l-66-.3L512 563.4l-99.3 118.4-66.1.3c-4.4 0-8-3.5-8-8 0-1.9.7-3.7 1.9-5.2l130.1-155L340.5 359a8.32 8.32 0 01-1.9-5.2c0-4.4 3.6-8 8-8l66.1.3L512 464.6l99.3-118.4 66-.3c4.4 0 8 3.5 8 8 0 1.9-.7 3.7-1.9 5.2L553.5 514l130 155c1.2 1.5 1.9 3.3 1.9 5.2 0 4.4-3.6 8-8 8z"></path></svg>
                 </div>
             )
         }

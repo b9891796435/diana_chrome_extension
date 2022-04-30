@@ -3,6 +3,7 @@ import Avatar from "../../components/Avatar";
 import LivingPost from "./LivingPost";
 import constants from "../../constants";
 import "./Header.css"
+import ShowSchedule from "./ShowSchedule";
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
 const styles= {
@@ -34,6 +35,7 @@ class Header extends React.Component{
                 <Avatar link={userSpaceUrl + memberList.carol.uid} avatar={memberList.carol.avatar}></Avatar>
                 <Avatar link={userSpaceUrl + memberList.eileen.uid} avatar={memberList.eileen.avatar}></Avatar>
                 <Avatar link={userSpaceUrl + memberList.bella.uid} avatar={memberList.bella.avatar}></Avatar>
+                <ShowSchedule></ShowSchedule>
                 <LivingPost></LivingPost>
             </div>
         )

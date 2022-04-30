@@ -33,8 +33,22 @@ export const fixStorage = () => {
                     liveState: "none"
                 })
             }
+        }),
+        chrome.storage.local.get("scheduleState").then(res => {
+            if (res.scheduleState === undefined) {
+                chrome.storage.local.set({
+                    scheduleState: Date.now()
+                })
+            }
+        }),
+        chrome.storage.local.get("liveTime").then(res => {
+            if (res.liveTime === undefined) {
+                chrome.storage.local.set({
+                    liveTime: 0,
+                })
+            }
         })
-    ])      
+    ])
 }
 export const resetStorage = () => {
     chrome.storage.local.set({ quotes: dianaInsprite });
@@ -45,4 +59,10 @@ export const resetStorage = () => {
     chrome.storage.local.set({
         liveState: "none"
     });
+    chrome.storage.local.set({
+        scheduleState: Date.now()
+    });
+    chrome.storage.local.set({
+        liveTime: 0,
+    })
 }

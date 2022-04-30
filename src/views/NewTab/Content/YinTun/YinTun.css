@@ -62,12 +62,13 @@
 .toolBoxItself {
     margin: 32px auto;
     width: 80vw;
-    min-height: 80vh;
+    height: 80vh;
     background-color: #fff0f6;
     border-radius: 16px;
     box-shadow: 0 3px 6px -4px #e799b01f, 0 6px 16px #e799b014, 0 9px 28px 8px #e799b00d;
     padding: 16px;
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .toolBoxHeaderDiv {
