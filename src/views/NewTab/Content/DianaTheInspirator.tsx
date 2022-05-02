@@ -1,7 +1,7 @@
 import React from "react";
 import quotes from "../../../constants/storagePrototype/dianaInsprite"
 import tool from "../../../tool"
-import { chromeGet,chromeSet } from "../../../tool/storageHandle";
+import { chromeGet, chromeSet } from "../../../tool/storageHandle";
 const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法写不出动画
     //写到银屯的时候已经恶堕成没有.css文件就写不下去的笨蛋了（确信，但还是很怀念scoped防止类名污染。container，我的container
     pot: {
@@ -74,9 +74,16 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             currentTimer: 0,
             autoTimer: 0,
         }
-        setInterval(() => {
-            this.setState({ pose: this.state.pose ? 0 : 1 });
-        }, 2500);
+        let start: DOMHighResTimeStamp | undefined;
+        let RAFfunc = (timestamp: DOMHighResTimeStamp) => {
+            if (start === undefined) {
+                start = timestamp;
+            }
+            const elapsed = timestamp - start;
+            this.setState({ pose: Math.floor(elapsed / 3000) % 2 === 0 ? 0 : 1 })
+            requestAnimationFrame(RAFfunc);
+        }
+        requestAnimationFrame(RAFfunc);
         this.pokingDiana()
     }
     pokingDiana = async () => {//理论上这个巨大的函数应该单拆出一个文件的，不过这个是单人项目，所以，摆！
@@ -141,7 +148,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 }
                 //问安结束，进入提醒运动喝水
                 const requestRes = await chromeGet("notice");
-                const noticeTime=await chromeGet("noticeTime")
+                const noticeTime = await chromeGet("noticeTime")
                 if (Date.now() - requestRes >= noticeTime) {
                     setDialog(quotes.notice[Math.floor(Math.random() * quotes.notice.length)])//简简单单一个乃0乃1随机器
                     await chromeSet({ notice: Date.now() });
@@ -153,7 +160,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 setRetrigger()
                 return;
             } else {//若当前已有计时器
-                this.setState({ dialogVisible: false,currentTimer:0 });//一次AC，没有Debug！好耶！
+                this.setState({ dialogVisible: false, currentTimer: 0 });//一次AC，没有Debug！好耶！
             }
         setRetrigger()
     }
