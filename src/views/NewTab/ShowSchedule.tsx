@@ -25,7 +25,11 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
             scheduleNow: await chromeGet("scheduleState"),
         });
         console.log(this.state)
-        this.forceUpdate()
+        chrome.storage.onChanged.addListener(async key => {
+            if (key.scheduleState) {
+                this.setState({ scheduleNow: key.scheduleState.newValue });
+            }
+        })
     }
     showSchedule = () => {
         this.setState({ scheduleVisible: true })
@@ -73,7 +77,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
         let ImageRender=this.ImageRender
         if (typeof (this.state.scheduleNow) === "number") {
             return (<div style={{ fontSize: "16px" }}>
-                日程表动态抓取失败，可能由于网络波动、短时间内获取次数过多、b站更改API格式或羊驼发日程表的动态里没有加入日程表这三个字。<br />
+                日程表动态抓取失败，可能由于是第一次打开插件、网络波动、短时间内获取次数过多、b站更改API格式或羊驼发日程表的动态里没有加入日程表这三个字。<br />
                 上次获取时间：{new Date(this.state.scheduleNow).toString()}，<span onClick={this.getLiveStateWrapper} className="linkClass">点击重试</span>
             </div>)
         } else {

@@ -24,7 +24,10 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
 
     } catch (e) {
         console.log(e);
-        chromeSet({ liveState: "error" });
+        chromeSet({
+            liveState: "error",
+            liveTime:Date.now()
+        });
     }
 }
 export const getScheduleState = async () => {
@@ -54,24 +57,24 @@ export const getScheduleState = async () => {
         chromeSet({ scheduleState: Date.now() })
     }
 }
-let dateCheck = async (propName: any, timeout: number,func:Function) => {
+let dateCheck = async (propName: any, timeout: number, func: Function) => {
     let time = await chromeGet(propName) as any;
-    if(typeof(time)==="number"){
-        if(Date.now()-time>timeout){
+    if (typeof (time) === "number") {
+        if (Date.now() - time > timeout) {
             func();
         }
-    }else if(time.getDate!==undefined){
-        if(Date.now() - time.getDate > timeout){
+    } else if (typeof (time.getDate) !== "undefined") {
+        if (Date.now() - time.getDate > timeout) {
             func();
         }
     }
 }
 
-let getScheduleWrapped = ()=>{
-    dateCheck("scheduleState",1800000,getScheduleState);
+let getScheduleWrapped = () => {
+    dateCheck("scheduleState", 1800000, getScheduleState);
 }
-let getLiveWrapped=()=>{
-    dateCheck("liveTime",120000,getLiveState)
+let getLiveWrapped = () => {
+    dateCheck("liveTime", 120000, getLiveState)
 }
 getLiveWrapped()
 getScheduleWrapped()

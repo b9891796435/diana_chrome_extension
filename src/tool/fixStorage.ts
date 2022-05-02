@@ -44,7 +44,7 @@ export const fixStorage = () => {
         chrome.storage.local.get("liveTime").then(res => {
             if (res.liveTime === undefined) {
                 chrome.storage.local.set({
-                    liveTime: 0,
+                    liveTime: 0
                 })
             }
         })
