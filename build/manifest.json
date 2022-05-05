@@ -1,0 +1,32 @@
+{
+  "name": "嘉然主题Chrome插件",
+  "description": "嘉然，我真的好喜欢你啊，为了你，我要学React+TS+Chrome Extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+      "default_popup": "popup.html",
+      "default_title": "Open the popup"
+  },
+  "background": {
+    "service_worker": "static/js/background.js"
+  },
+  "options_page":"options.html", 
+  "content_scripts": [{
+    "js": [ "static/js/content.js" ],
+    "css":["static/css/content.css"],
+    "matches": [
+      "https://*/*", "http://*/*"
+    ]
+  }],
+  "chrome_url_overrides" : {
+    "newtab": "newTab.html"
+  },
+  "permissions":[
+    "storage"
+  ],
+  "icons": {
+      "16": "logo192.png",
+      "48": "logo192.png",
+      "128": "logo192.png"
+  }
+}
