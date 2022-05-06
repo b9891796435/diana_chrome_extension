@@ -5,7 +5,7 @@ import type { members } from "../constants/memberList"
 export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date"
     | "morning" | "noon" | "evening" | "night" | "notice"
     | "tabCount" | "toolList" | "liveState" | "fetchLive"
-    | "scheduleState" | "liveTime"
+    | "scheduleState" | "liveTime" | "searchEngine" | "defaultEngine"
 export type liveType = members | "none" | "error"
 type schedule = {
     images: {
@@ -15,8 +15,9 @@ type schedule = {
     getDate: number
 }
 export type scheduleType = schedule | number
+export type searchEngineType = { url: string, icon?: string }[]
 type getRes = {
-    (key: "noticeTime" | "notice" | "tabCount" | "liveTime"): Promise<number>,
+    (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine"): Promise<number>,
     (key: "shouldShowNotice" | "morning" | "noon" | "evening" | "night" | "fetchLive"): Promise<boolean>,
     (key: "date"): Promise<string>,
     (key: "quotes"): Promise<{
@@ -30,12 +31,14 @@ type getRes = {
     (key: "toolList"): Promise<toolItemData>
     (key: "liveState"): Promise<liveType>
     (key: "scheduleState"): Promise<scheduleType>
+    (key: "searchEngine"): Promise<searchEngineType>
 }
 type storageValues = {
     noticeTime?: number,
     notice?: number,
     tabCount?: number,
     liveTime?: number,
+    defaultEngine?: number,
     shouldShowNotice?: boolean,
     morning?: boolean,
     noon?: boolean,
@@ -54,6 +57,7 @@ type storageValues = {
     liveState?: liveType,
     fetchLive?: boolean,
     scheduleState?: scheduleType,
+    searchEngine?: searchEngineType,
 }
 export const chromeGet: getRes = async (key: storageKeys) => {
     let res = await chrome.storage.local.get(key);

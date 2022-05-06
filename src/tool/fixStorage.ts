@@ -47,7 +47,38 @@ export const fixStorage = () => {
                     liveTime: 0
                 })
             }
-        })
+        }),
+        chrome.storage.local.get("searchEngine").then(res => {
+            if (res.searchEngine === undefined) {
+                chrome.storage.local.set({
+                    searchEngine: [
+                        {
+                            url: "https://www.baidu.com/s?wd=%keyword%",
+                            icon: require("../../../assets/images/baidu.png")
+                        },
+                        {
+                            url: "https://www.google.com/search?q=%keyword%",
+                            icon: require("../../../assets/images/google.png")
+                        },
+                        {
+                            url: "https://search.bilibili.com/all?keyword=%keyword%",
+                            icon: require("../../../assets/images/bilibili.jpg")
+                        },
+                        {
+                            url: "https://www.bing.com/search?q=%keyword%",
+                            icon: require("../../../assets/images/bing.png")
+                        },
+                    ]
+                })
+            }
+        }),
+        chrome.storage.local.get("defaultEngine").then(res => {
+            if (res.defaultEngine === undefined) {
+                chrome.storage.local.set({
+                    defaultEngine: 0
+                })
+            }
+        }),
     ])
 }
 export const resetStorage = () => {
@@ -64,5 +95,28 @@ export const resetStorage = () => {
     });
     chrome.storage.local.set({
         liveTime: 0,
+    });
+    chrome.storage.local.set({
+        searchEngine: [
+            {
+                url: "https://www.baidu.com/s?wd=%keyword%",
+                icon: require("../../../assets/images/baidu.png")
+            },
+            {
+                url: "https://www.google.com/search?q=%keyword%",
+                icon: require("../../../assets/images/google.png")
+            },
+            {
+                url: "https://search.bilibili.com/all?keyword=%keyword%",
+                icon: require("../../../assets/images/bilibili.jpg")
+            },
+            {
+                url: "https://www.bing.com/search?q=%keyword%",
+                icon: require("../../../assets/images/bing.png")
+            },
+        ]
+    });
+    chrome.storage.local.set({
+        defaultEngine: 0
     })
 }
