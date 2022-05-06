@@ -62,7 +62,8 @@ type stateType = {
     dialogVisible: boolean,
     currentDialog: string,
     currentTimer: any,//AnyScript,永远滴神！
-    autoTimer: any
+    autoTimer: any,
+    quotes:typeof quotes,
 }
 class DianaTheInspirator extends React.Component<{}, stateType>{
     constructor(props: any) {
@@ -73,6 +74,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             currentDialog: "关注嘉然然，顿顿解馋馋",
             currentTimer: 0,
             autoTimer: 0,
+            quotes
         }
         let start: DOMHighResTimeStamp | undefined;
         let RAFfunc = (timestamp: DOMHighResTimeStamp) => {
@@ -85,6 +87,9 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
         }
         requestAnimationFrame(RAFfunc);
         this.pokingDiana()
+    }
+    componentDidMount=async()=>{
+        chromeSet({quotes:await chromeGet("quotes")})
     }
     pokingDiana = async () => {//理论上这个巨大的函数应该单拆出一个文件的，不过这个是单人项目，所以，摆！
         const setRetrigger = () => {
@@ -138,7 +143,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 if (timeToRequest != "none") {//若时间段符合问安时间段
                     const requestRes = await chromeGet(timeToRequest);
                     if (!requestRes) {
-                        setDialog(quotes[timeToRequest]);
+                        setDialog(this.state.quotes[timeToRequest]);
                         let temp: { [key: string]: boolean } = {};
                         temp[timeToRequest] = true
                         chromeSet(temp);
@@ -150,13 +155,13 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 const requestRes = await chromeGet("notice");
                 const noticeTime = await chromeGet("noticeTime")
                 if (Date.now() - requestRes >= noticeTime) {
-                    setDialog(quotes.notice[Math.floor(Math.random() * quotes.notice.length)])//简简单单一个乃0乃1随机器
+                    setDialog(this.state.quotes.notice[Math.floor(Math.random() * this.state.quotes.notice.length)])//简简单单一个乃0乃1随机器
                     await chromeSet({ notice: Date.now() });
                     setRetrigger()
                     return;
                 }
                 //提醒运动喝水结束，日常对话
-                setDialog(quotes.daily[Math.floor(Math.random() * quotes.daily.length)]);
+                setDialog(this.state.quotes.daily[Math.floor(Math.random() * this.state.quotes.daily.length)]);
                 setRetrigger()
                 return;
             } else {//若当前已有计时器

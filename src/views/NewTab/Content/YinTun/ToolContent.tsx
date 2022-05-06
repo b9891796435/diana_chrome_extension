@@ -76,7 +76,7 @@ export default class ToolBox extends React.Component<toolBoxProps, toolBoxState>
     contentNodes() {
         let nodeArray = [];
         for (let i of this.state.toolList) {//想加个key的可是不知道会不会有人写一堆一样的url和summary
-            nodeArray.push(<ToolItem url={i.url} summary={i.summary} remove={this.remove} edit={"edit" in this.props && this.props.edit}></ToolItem>)
+            nodeArray.push(<ToolItem url={i.url} key={i.url} summary={i.summary} remove={this.remove} edit={"edit" in this.props && this.props.edit}></ToolItem>)
         }
         nodeArray.push(<ToolItem newTool newToolFun={this.newToolFun} />)
         return nodeArray;
