@@ -1,5 +1,8 @@
 name: release_build
 
+env: 
+  CI: false
+
 on:
   push:
     branches:
@@ -34,7 +37,15 @@ jobs:
       - name: Upload built artifact
         uses: actions/upload-artifact@v3
         with:
-          path: chrome-extension-release.zip
+          name: chrome-extension-release.zip
+          path: build/
           if-no-files-found: error
 
-      - name: Release built artifact
+      - name: Create a github prerelease
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.REPO_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: chrome-extension-release.zip
