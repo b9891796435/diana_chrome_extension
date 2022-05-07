@@ -7,13 +7,13 @@ on:
   push:
     branches:
       - release
-  pull_request:
-    branches:
-      - release
+  pull_request_review:
+    types: [submitted]
   workflow_dispatch:
 
 jobs:
   release:
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
