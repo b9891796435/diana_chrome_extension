@@ -178,6 +178,13 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     }
     return nodeArray;
   }
+  newEngine=()=>{
+    let engines=[...this.state.searchEngine]
+    engines.push({url:"",engineName:""})
+    this.setState({
+      searchEngine:engines
+    })
+  }
   render(): React.ReactNode {
     return (
       <div className="App">
@@ -206,6 +213,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <div>
             <span className='myInputForDianaContainer'>自定义搜索引擎:</span>
             {this.EngineRender()}
+            <MyButton text="添加搜索引擎" onClick={this.newEngine}></MyButton>
           </div>
           <h1>其他设置</h1>
           <MyInput label="久坐提醒间隔时间（单位：毫秒）" value={this.state.noticeTime} onChange={e => this.setState({ noticeTime: e.target.value })}></MyInput>
