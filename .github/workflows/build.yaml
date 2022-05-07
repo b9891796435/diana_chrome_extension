@@ -1,5 +1,8 @@
 name: release_build
 
+env: 
+  CI: false
+
 on:
   push:
     branches:
