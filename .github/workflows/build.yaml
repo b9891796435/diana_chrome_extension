@@ -36,5 +36,3 @@ jobs:
         with:
           path: chrome-extension-release.zip
           if-no-files-found: error
-
-      - name: Release built artifact
