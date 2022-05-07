@@ -15,7 +15,7 @@ type schedule = {
     getDate: number
 }
 export type scheduleType = schedule | number
-export type searchEngineType = { url: string, icon?: string }[]
+export type searchEngineType = { url: string, icon?: string, engineName: string }[]
 type getRes = {
     (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine"): Promise<number>,
     (key: "shouldShowNotice" | "morning" | "noon" | "evening" | "night" | "fetchLive"): Promise<boolean>,

@@ -1,7 +1,10 @@
 import React, { FormEvent, KeyboardEvent } from "react";
+import { chromeGet, searchEngineType } from "../../../tool/storageHandle";
+
 type searchProps = {
     keyword: string,
-    engine: number,
+    currentEngine: number,
+    searchEngines: searchEngineType
 }
 const styles = {
     container: {
@@ -15,67 +18,94 @@ const styles = {
     },
     searchBar: {
         height: "48px",
-        width:"100%",
+        width: "100%",
         padding: "0 12px 0 48px",
         border: "none",
-        borderRadius:"4px"
+        borderRadius: "4px"
     },
     iconContainer: {
-        position:"relative" as "relative",
-        width:"40%",
+        position: "relative" as "relative",
+        width: "40%",
     },
     icon: {
         height: "32px",
         width: "32px",
         position: "absolute" as "absolute",
-        top:"8px",
-        left:"8px",
+        top: "8px",
+        left: "8px",
+    },
+    divIcon: {
+        display: "flex",
+        borderRadius: "4px",
+        backgroundColor: "#1890ff",
+        color: "#ffffef",
+        fontSize: "1.1em",
+        fontWeight: "600",
     }
 }
-const searchEngine: { url: string, icon: string }[] = [
-    {
-        url: "https://www.baidu.com/s?wd=",
-        icon: require("../../../assets/images/baidu.png")
-    },
-    {
-        url: "https://www.google.com/search?q=",
-        icon: require("../../../assets/images/google.png")
-    },
-    {
-        url: "https://search.bilibili.com/all?keyword=",
-        icon: require("../../../assets/images/bilibili.jpg")
-    },
-    {
-        url: "https://www.bing.com/search?q=",
-        icon: require("../../../assets/images/bing.png")
-    },
-]
 class SearchBox extends React.Component<{}, searchProps>{
     constructor(props: any) {
         super(props);
         this.state = {
             keyword: "",
-            engine: 0,
+            currentEngine: 0,
+            searchEngines: [
+                {
+                    url: "https://www.baidu.com/s?wd=%keyword%",
+                    icon: require("../../../assets/images/baidu.png"),
+                    engineName: "百度"
+                },
+                {
+                    url: "https://www.google.com/search?q=%keyword%",
+                    icon: require("../../../assets/images/google.png"),
+                    engineName: "谷歌"
+                },
+                {
+                    url: "https://search.bilibili.com/all?keyword=%keyword%",
+                    icon: require("../../../assets/images/bilibili.jpg"),
+                    engineName: "b站"
+                },
+                {
+                    url: "https://www.bing.com/search?q=%keyword%",
+                    icon: require("../../../assets/images/bing.png"),
+                    engineName: "必应"
+                },
+            ]
         }
+    }
+    async componentDidMount(){
+        this.setState({
+            currentEngine:await chromeGet("defaultEngine"),
+            searchEngines:await chromeGet("searchEngine"),
+        })
     }
     inputListener: (e: FormEvent<HTMLInputElement>) => void = (e) => {
         this.setState({ keyword: e.currentTarget.value });
     }
     enterListener: (e: KeyboardEvent<HTMLInputElement>) => void = (e) => {
         if (e.key == "Enter") {
-            window.location.href = searchEngine[this.state.engine].url + this.state.keyword
+            window.location.href = this.state.searchEngines[this.state.currentEngine].url.replace("%keyword%", this.state.keyword)
         }
         if (e.key == "Tab") {
             e.preventDefault();
-            this.setState({ engine: this.state.engine == 3 ? 0 : this.state.engine + 1 })
+            this.setState({ currentEngine: this.state.currentEngine == this.state.searchEngines.length - 1 ? 0 : this.state.currentEngine + 1 })
         }
     }
     render(): React.ReactNode {
         return (
             <div style={styles.container}>
                 <div style={styles.iconContainer}>
-                    <img src={searchEngine[this.state.engine].icon} alt="" style={styles.icon} />
-                    <input type="text" onChange={this.inputListener} value={this.state.keyword} onKeyDown={this.enterListener} style={styles.searchBar} placeholder="输入关键词搜索，使用Tab切换搜索引擎，"/>
+                    {
+                        this.state.searchEngines[this.state.currentEngine].icon
+                            ? <img src={this.state.searchEngines[this.state.currentEngine].icon} alt="" style={styles.icon} />
+                            : <div style={Object.assign({}, styles.icon, styles.divIcon)}>
+                                <div style={{margin:"auto"}}>
+                                    {this.state.searchEngines[this.state.currentEngine].engineName[0]}
+                                </div>
+                            </div>
+                    }
+
+                    <input type="text" onChange={this.inputListener} value={this.state.keyword} onKeyDown={this.enterListener} style={styles.searchBar} placeholder="输入关键词搜索，使用Tab切换搜索引擎，" />
                 </div>
             </div>
         )

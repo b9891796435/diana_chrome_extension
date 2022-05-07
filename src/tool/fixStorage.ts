@@ -54,19 +54,23 @@ export const fixStorage = () => {
                     searchEngine: [
                         {
                             url: "https://www.baidu.com/s?wd=%keyword%",
-                            icon: require("../../../assets/images/baidu.png")
+                            icon: require("../assets/images/baidu.png"),
+                            engineName: "百度"
                         },
                         {
                             url: "https://www.google.com/search?q=%keyword%",
-                            icon: require("../../../assets/images/google.png")
+                            icon: require("../assets/images/google.png"),
+                            engineName: "谷歌"
                         },
                         {
                             url: "https://search.bilibili.com/all?keyword=%keyword%",
-                            icon: require("../../../assets/images/bilibili.jpg")
+                            icon: require("../assets/images/bilibili.jpg"),
+                            engineName: "b站"
                         },
                         {
                             url: "https://www.bing.com/search?q=%keyword%",
-                            icon: require("../../../assets/images/bing.png")
+                            icon: require("../assets/images/bing.png"),
+                            engineName: "必应"
                         },
                     ]
                 })
@@ -100,19 +104,23 @@ export const resetStorage = () => {
         searchEngine: [
             {
                 url: "https://www.baidu.com/s?wd=%keyword%",
-                icon: require("../../../assets/images/baidu.png")
+                icon: require("../assets/images/baidu.png"),
+                engineName: "百度"
             },
             {
                 url: "https://www.google.com/search?q=%keyword%",
-                icon: require("../../../assets/images/google.png")
+                icon: require("../assets/images/google.png"),
+                engineName: "谷歌"
             },
             {
                 url: "https://search.bilibili.com/all?keyword=%keyword%",
-                icon: require("../../../assets/images/bilibili.jpg")
+                icon: require("../assets/images/bilibili.jpg"),
+                engineName: "b站"
             },
             {
                 url: "https://www.bing.com/search?q=%keyword%",
-                icon: require("../../../assets/images/bing.png")
+                icon: require("../assets/images/bing.png"),
+                engineName: "必应"
             },
         ]
     });
