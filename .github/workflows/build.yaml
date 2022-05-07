@@ -1,0 +1,51 @@
+name: release_build
+
+env: 
+  CI: false
+
+on:
+  push:
+    branches:
+      - release
+  pull_request_review:
+    types: [submitted]
+  workflow_dispatch:
+
+jobs:
+  release:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Install yarn dependencies
+        run: yarn install
+
+      - name: Build the extension
+        run: yarn run build
+
+      - name: Pack built artifact
+        run: zip -r -q -o chrome-extension-release.zip  build/
+
+      - name: Upload built artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: chrome-extension-release.zip
+          path: build/
+          if-no-files-found: error
+
+      - name: Create a github prerelease
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.REPO_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: chrome-extension-release.zip
