@@ -39,7 +39,7 @@ const styles = {
         borderRadius: "4px",
         backgroundColor: "#1890ff",
         color: "#ffffef",
-        fontSize: "1.1em",
+        fontSize: "1.3em",
         fontWeight: "600",
     }
 }

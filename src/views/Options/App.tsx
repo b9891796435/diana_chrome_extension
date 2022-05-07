@@ -35,10 +35,20 @@ const checkboxStyle: React.CSSProperties = {
   margin: "0",
   verticalAlign: "bottom",
 }
+const iconStyle:React.CSSProperties={
+  position: "absolute",
+  width: "20px",
+  bottom: "4px",
+  right: "-20px",
+  height: "20px",
+  cursor:"pointer"
+}
 const settingErrors = {
   dailyEmpty: "日常条目中至少请保留一条数据",
   noticeEmpty: "久坐提醒条目中至少请保留一条数据",
   noticeTimeNAN: "请在久坐提醒间隔时间中输入正确的数字",
+  engineNotSafe:"搜索引擎url只接受以https://开头的网址",
+  engineNameEmpty:"搜索引擎名称不能为空"
 }
 class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕我要回Vue
   constructor(props: any) {
@@ -63,45 +73,17 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           url: "数据损坏",
           engineName: "数据损坏"
         },
-        {
-          url: "数据损坏",
-          engineName: "数据损坏"
-        },
-        {
-          url: "数据损坏",
-          engineName: "数据损坏"
-        },
-        {
-          url: "数据损坏",
-          engineName: "数据损坏"
-        },
       ]
     }
   }
-  componentDidMount() {
-    chromeGet("quotes").then(res => {
-      if (res.daily) {
-        this.setState({ quotes: res })
-      }
-    })
-    chromeGet("noticeTime").then(res => {
-      if (res) {
-        this.setState({ noticeTime: res.toString() });
-      }
-    })
-    chromeGet("shouldShowNotice").then(res => {
-      if (res !== undefined) {
-        this.setState({
-          shouldShowNotice: res,
-        })
-      }
-    })
-    chromeGet("fetchLive").then(res => {
-      if (res !== undefined) {
-        this.setState({
-          fetchLive: res
-        })
-      }
+  async componentDidMount() {
+    this.setState({
+      quotes: await chromeGet("quotes"),
+      noticeTime: (await chromeGet("noticeTime")).toString(),
+      shouldShowNotice: await chromeGet("shouldShowNotice"),
+      fetchLive: await chromeGet("fetchLive"),
+      defaultEngine: await chromeGet("defaultEngine"),
+      searchEngine: await chromeGet("searchEngine")
     })
   }
   handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {
@@ -147,18 +129,27 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       this.setState({ infoMessage: settingErrors.noticeTimeNAN, isError: true });
       return;
     }
+    for(let i of this.state.searchEngine){
+      if(!RegExp("https://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]").test(i.url)){
+        this.setState({infoMessage:settingErrors.engineNotSafe,isError:true});
+      }
+      if(i.engineName===""){
+        this.setState({infoMessage:settingErrors.engineNameEmpty,isError:true})
+      }
+    }
     this.setState({ infoMessage: "保存成功", isError: false });
     chromeSet({
       quotes: this.state.quotes,
       noticeTime: Number(this.state.noticeTime),
       shouldShowNotice: this.state.shouldShowNotice,
-      fetchLive: this.state.fetchLive
+      fetchLive: this.state.fetchLive,
+      defaultEngine:this.state.defaultEngine,
+      searchEngine:this.state.searchEngine,
     })
   }
   EngineRender = () => {
     let nodeArray: JSX.Element[] = [];
-    let currentEngine = { ...this.state.searchEngine }
-    let i;
+    let currentEngine = [...this.state.searchEngine]
     let changeListener = (i: any, prop: keyof typeof currentEngine[number]) => {
       let temp = currentEngine[i];
       return (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,24 +159,44 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
         })
       }
     }
-    for (i in currentEngine) {
+    let deleteItem=(i:number)=>{
+      return()=>{
+        currentEngine.splice(i,1);
+        this.setState({searchEngine:currentEngine})
+      }
+    }
+    for (let i in currentEngine) {
       nodeArray.push(
-        <div key={currentEngine[i].engineName}>
-          <MyInput label={i + ".搜索引擎名称"} value={currentEngine[i].engineName} onChange={changeListener(i, "engineName")}></MyInput>
+        <div style={{position:"relative"}}>
+          <MyInput label={(Number(i) + 1) + ".搜索引擎名称"} value={currentEngine[i].engineName} onChange={changeListener(i, "engineName")}></MyInput>
           <MyInput label="url（以“%keyword%”作为插入关键字的标志）" value={currentEngine[i].url} onChange={changeListener(i, "url")}></MyInput>
+          <svg viewBox="64 64 896 896"  style={{...iconStyle,display:Number(i)<4?"none":"block"}} onClick={deleteItem(Number(i))} focusable="false" data-icon="close-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M685.4 354.8c0-4.4-3.6-8-8-8l-66 .3L512 465.6l-99.3-118.4-66.1-.3c-4.4 0-8 3.5-8 8 0 1.9.7 3.7 1.9 5.2l130.1 155L340.5 670a8.32 8.32 0 00-1.9 5.2c0 4.4 3.6 8 8 8l66.1-.3L512 564.4l99.3 118.4 66 .3c4.4 0 8-3.5 8-8 0-1.9-.7-3.7-1.9-5.2L553.5 515l130.1-155c1.2-1.4 1.8-3.3 1.8-5.2z"></path><path d="M512 65C264.6 65 64 265.6 64 513s200.6 448 448 448 448-200.6 448-448S759.4 65 512 65zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path></svg>
         </div>
       )
     }
     return nodeArray;
   }
-  newEngine=()=>{
-    let engines=[...this.state.searchEngine]
-    engines.push({url:"",engineName:""})
+  newEngine = () => {
+    let engines = [...this.state.searchEngine]
+    engines.push({ url: "", engineName: "" })
     this.setState({
-      searchEngine:engines
+      searchEngine: engines
     })
   }
+  selectDefaultEngine = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    this.setState({
+      defaultEngine: Number(e.target.value)
+    })
+  }
+  optionsRender = () => {
+    let optionsArray = [];
+    for (let i in this.state.searchEngine) {
+      optionsArray.push(<option value={i}>{this.state.searchEngine[i].engineName}</option>)
+    }
+    return optionsArray;
+  }
   render(): React.ReactNode {
+
     return (
       <div className="App">
         <div className="settingContainerForDiana">
@@ -208,12 +219,20 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           />
           <h1>搜索引擎设置</h1>
           <div>
-            
+
           </div>
           <div>
             <span className='myInputForDianaContainer'>自定义搜索引擎:</span>
             {this.EngineRender()}
             <MyButton text="添加搜索引擎" onClick={this.newEngine}></MyButton>
+          </div>
+          <div>
+            <div style={{ margin: "12px", fontSize: "1.25em" }}>
+              默认搜索引擎：
+              <select onChange={this.selectDefaultEngine}>
+                {this.optionsRender()}
+              </select>
+            </div>
           </div>
           <h1>其他设置</h1>
           <MyInput label="久坐提醒间隔时间（单位：毫秒）" value={this.state.noticeTime} onChange={e => this.setState({ noticeTime: e.target.value })}></MyInput>
