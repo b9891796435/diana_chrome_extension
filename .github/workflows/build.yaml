@@ -13,7 +13,6 @@ on:
 
 jobs:
   release:
-    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
