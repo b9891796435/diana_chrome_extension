@@ -48,9 +48,11 @@ export default class ToolBox extends React.Component<toolBoxProps, toolBoxState>
             }
         })
     }
-    remove=(i: toolItemData)=>{
+    remove=(i: number)=>{
+        let temp=[...this.state.toolList];
+        temp.splice(i,1)
         chromeSet({
-            toolList: this.state.toolList.filter(item => item.summary !== i.summary && item.url !== i.url)
+            toolList: temp
         })
     }
     newToolFun=()=>{
@@ -75,11 +77,20 @@ export default class ToolBox extends React.Component<toolBoxProps, toolBoxState>
     }
     contentNodes() {
         let nodeArray = [];
-        for (let i of this.state.toolList) {//想加个key的可是不知道会不会有人写一堆一样的url和summary
-            nodeArray.push(<ToolItem url={i.url} key={i.url} summary={i.summary} remove={this.remove} edit={"edit" in this.props && this.props.edit}></ToolItem>)
+        for (let i =0;i<this.state.toolList.length;i++) {//想加个key的可是不知道会不会有人写一堆一样的url和summary
+            nodeArray.push(<ToolItem  key={this.state.toolList[i].url} itemData={this.state.toolList[i]} subscript={i} remove={this.remove} swap={this.swapItems} edit={"edit" in this.props && this.props.edit}></ToolItem>)
         }
         nodeArray.push(<ToolItem newTool newToolFun={this.newToolFun} />)
         return nodeArray;
+    }
+    swapItems=(i:number,j:number)=>{
+        let toolList=[...this.state.toolList];
+        let temp=toolList[i];
+        toolList[i]=toolList[j];
+        toolList[j]=temp;
+        chromeSet({
+            toolList
+        })
     }
     render(): React.ReactNode {//每到用表单的时候就会怀念vue的自动双向绑定
         return (

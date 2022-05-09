@@ -28,7 +28,7 @@ type getRes = {
         night: string;
         notice: string[];
     }>
-    (key: "toolList"): Promise<toolItemData>
+    (key: "toolList"): Promise<toolItemData[]>
     (key: "liveState"): Promise<liveType>
     (key: "scheduleState"): Promise<scheduleType>
     (key: "searchEngine"): Promise<searchEngineType>
