@@ -1,47 +1,14 @@
 import React, { FormEvent, KeyboardEvent } from "react";
 import { chromeGet, searchEngineType } from "../../../tool/storageHandle";
+import NavigationItem from "../../../components/NavigationItem";
+import "./SearchBox.css"
+import { toolItemData } from "./YinTun/ToolItem";
 
 type searchProps = {
     keyword: string,
     currentEngine: number,
-    searchEngines: searchEngineType
-}
-const styles = {
-    container: {
-        height: "64px",
-        backgroundColor: "#e799b035",
-        padding: "50px",
-        display: "flex",
-        flexDirection: "column" as "column",//???我不好说，咱也不知道为啥column不会被判定为column类型。Position系的似乎都出这个问题了。
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    searchBar: {
-        height: "48px",
-        width: "100%",
-        padding: "0 12px 0 48px",
-        border: "none",
-        borderRadius: "4px"
-    },
-    iconContainer: {
-        position: "relative" as "relative",
-        width: "40%",
-    },
-    icon: {
-        height: "32px",
-        width: "32px",
-        position: "absolute" as "absolute",
-        top: "8px",
-        left: "8px",
-    },
-    divIcon: {
-        display: "flex",
-        borderRadius: "4px",
-        backgroundColor: "#1890ff",
-        color: "#ffffef",
-        fontSize: "1.3em",
-        fontWeight: "600",
-    }
+    searchEngines: searchEngineType,
+    toolList:toolItemData[]
 }
 class SearchBox extends React.Component<{}, searchProps>{
     constructor(props: any) {
@@ -70,13 +37,22 @@ class SearchBox extends React.Component<{}, searchProps>{
                     icon: require("../../../assets/images/bing.png"),
                     engineName: "必应"
                 },
-            ]
+            ],
+            toolList:[]
         }
     }
-    async componentDidMount(){
+    async componentDidMount() {
         this.setState({
-            currentEngine:await chromeGet("defaultEngine"),
-            searchEngines:await chromeGet("searchEngine"),
+            toolList:await chromeGet("toolList"),
+            currentEngine: await chromeGet("defaultEngine"),
+            searchEngines: await chromeGet("searchEngine"),
+        })
+        chrome.storage.onChanged.addListener(key => {
+            if (key.toolList) {
+                this.setState({
+                    toolList: key.toolList.newValue
+                })
+            }
         })
     }
     inputListener: (e: FormEvent<HTMLInputElement>) => void = (e) => {
@@ -92,20 +68,29 @@ class SearchBox extends React.Component<{}, searchProps>{
         }
     }
     render(): React.ReactNode {
+        let nodeArray=[]
+        for(let i =0;i<Math.min(6,this.state.toolList.length);i++){
+            nodeArray.push(<NavigationItem key={this.state.toolList[i].url} url={this.state.toolList[i].url} summary={this.state.toolList[i].summary}/>)
+        }
+        let hNow = Number(Date().split(" ")[4].split(":")[0])
+        let skySub=hNow<=6||hNow>=19
         return (
-            <div style={styles.container}>
-                <div style={styles.iconContainer}>
+            <div className="searchBoxContainer">
+                <div className="searchBoxIconContainer">
                     {
                         this.state.searchEngines[this.state.currentEngine].icon
-                            ? <img src={this.state.searchEngines[this.state.currentEngine].icon} alt="" style={styles.icon} />
-                            : <div style={Object.assign({}, styles.icon, styles.divIcon)}>
-                                <div style={{margin:"auto"}}>
+                            ? <img src={this.state.searchEngines[this.state.currentEngine].icon} alt="" className="searchBoxIcon" />
+                            : <div className="searchBoxIcon searchBoxDivIcon">
+                                <div style={{ margin: "auto" }}>
                                     {this.state.searchEngines[this.state.currentEngine].engineName[0]}
                                 </div>
                             </div>
                     }
-
-                    <input type="text" onChange={this.inputListener} value={this.state.keyword} onKeyDown={this.enterListener} style={styles.searchBar} placeholder="输入关键词搜索，使用Tab切换搜索引擎，" />
+                    <input type="text" onChange={this.inputListener} value={this.state.keyword} onKeyDown={this.enterListener} className="searchBoxSearchBar" placeholder="输入关键词搜索，使用Tab切换搜索引擎，" />
+                </div>
+                <div className="searchBoxNavigationBar">
+                    <div style={{margin:"auto",color:skySub?"#fff":"#000"}}>快捷导航：</div>
+                    {nodeArray}
                 </div>
             </div>
         )

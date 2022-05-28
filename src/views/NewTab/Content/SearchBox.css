@@ -1,0 +1,44 @@
+.searchBoxContainer {
+    height: 64px;
+    background-color: #e799b035;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.searchBoxSearchBar {
+    height: 48px;
+    width: 100%;
+    padding: 0 12px 0 48px;
+    border: none;
+    border-radius: 4px
+}
+
+.searchBoxIconContainer {
+    position: relative;
+    width: 40%;
+}
+
+.searchBoxIcon {
+    height: 32px;
+    width: 32px;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+.searchBoxDivIcon {
+    display: flex;
+    border-radius: 4px;
+    background-color: #1890ff;
+    color: #ffffef;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.searchBoxNavigationBar {
+    display: flex;
+    margin: 12px
+}
