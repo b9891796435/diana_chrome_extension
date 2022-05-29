@@ -15,7 +15,7 @@
     height: 64px;
     width: 64px;
     border-radius: 50%;
-    background-color: #e799b0;
+    background-color: rgb(var(--fan));
     outline: solid #ffffff99;
     color: #fff;
     overflow: hidden;

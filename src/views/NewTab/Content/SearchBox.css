@@ -1,6 +1,6 @@
 .searchBoxContainer {
     height: 64px;
-    background-color: #e799b035;
+    background-color: rgba(var(--fan),0.207);
     padding: 50px;
     display: flex;
     flex-direction: column;

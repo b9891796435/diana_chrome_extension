@@ -1,34 +1,39 @@
-.searchBoxNavigationItem{
+.searchBoxNavigationItem {
     border-radius: 12px;
     display: flex;
     height: 24px;
-    background: #9e106899;
+    background: rgba(var(--ui-8), 0.597);
     color: #fff;
     padding: 0 12px 0 0;
     margin: 4px;
 }
+
 .searchBoxNavigationInnerIcon {
     border-radius: 10px;
     margin: 2px;
     width: 20px;
     padding: 0;
-    background: #fff0f6;
+    background: rgb(var(--ui-1));
     color: #000;
     font-weight: 600;
     display: flex;
     overflow: hidden;
 }
-.searchBoxNavigationFavicon{
+
+.searchBoxNavigationFavicon {
     width: 20px;
     height: 20px;
     border-radius: 10px;
 }
-.searchBoxNavigationInnerIcon div{
-    margin:auto;
+
+.searchBoxNavigationInnerIcon div {
+    margin: auto;
 }
+
 .searchBoxNavigationInnerItem {
     margin: auto;
 }
-.searchBoxNavigationAnchor{
+
+.searchBoxNavigationAnchor {
     text-decoration: none;
 }

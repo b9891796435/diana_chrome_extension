@@ -83,6 +83,13 @@ export const fixStorage = () => {
                 })
             }
         }),
+        chrome.storage.local.get("theme").then(res => {
+            if (res.theme === undefined) {
+                chrome.storage.local.set({
+                    theme: "diana"
+                })
+            }
+        }),
     ])
 }
 export const resetStorage = () => {
@@ -126,5 +133,8 @@ export const resetStorage = () => {
     });
     chrome.storage.local.set({
         defaultEngine: 0
-    })
+    });
+    chrome.storage.local.set({
+        theme: "diana"
+    });
 }

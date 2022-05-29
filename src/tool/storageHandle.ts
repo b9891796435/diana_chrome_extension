@@ -6,6 +6,7 @@ export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date"
     | "morning" | "noon" | "evening" | "night" | "notice"
     | "tabCount" | "toolList" | "liveState" | "fetchLive"
     | "scheduleState" | "liveTime" | "searchEngine" | "defaultEngine"
+    | "theme"
 export type liveType = members | "none" | "error"
 type schedule = {
     images: {
@@ -32,6 +33,7 @@ type getRes = {
     (key: "liveState"): Promise<liveType>
     (key: "scheduleState"): Promise<scheduleType>
     (key: "searchEngine"): Promise<searchEngineType>
+    (key:"theme") : Promise<members>
 }
 type storageValues = {
     noticeTime?: number,
@@ -58,6 +60,7 @@ type storageValues = {
     fetchLive?: boolean,
     scheduleState?: scheduleType,
     searchEngine?: searchEngineType,
+    theme?: members,
 }
 export const chromeGet: getRes = async (key: storageKeys) => {
     let res = await chrome.storage.local.get(key);

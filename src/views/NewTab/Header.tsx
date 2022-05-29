@@ -10,7 +10,7 @@ const styles= {
     header: {
         height: "50px",
         width: "100%",
-        backgroundColor: "#e799b0",
+        backgroundColor: "rgb(var(--fan))",
         display: "flex",
         alignItems: "center",
     },
