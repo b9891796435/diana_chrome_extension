@@ -75,16 +75,22 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
         }
     }
     scheduleContent = () => {
-        let ImageRender = this.ImageRender
+        let ImageRender = this.ImageRender;
+        const parseTime=(time:Date)=>{
+            return( time.getMonth()+1)+"月"+time.getDate()+"日"+time.toString().split(" ")[4]
+        }
         if (typeof (this.state.scheduleNow) === "number") {
+            let getDate=new Date(this.state.scheduleNow);
             return (<div style={{ fontSize: "16px" }}>
                 日程表动态抓取失败，可能由于是第一次打开插件、网络波动、短时间内获取次数过多、b站更改API格式或羊驼发日程表的动态里没有加入日程表这三个字。<br />
-                上次获取时间：{new Date(this.state.scheduleNow).toString()}，<span onClick={this.getLiveStateWrapper} className="linkClass">点击重试</span>
+                上次获取时间：{parseTime(getDate)}，<span onClick={this.getLiveStateWrapper} className="linkClass">点击重试</span>
             </div>)
         } else {
+            let dynamicDate = new Date(this.state.scheduleNow.dynamicDate);
+            let getDate=new Date(this.state.scheduleNow.getDate);
             return (<div style={{ fontSize: "16px" }}>
-                日程表发布时间：{new Date(this.state.scheduleNow.dynamicDate).toString()}<br />
-                日程表抓取时间：{new Date(this.state.scheduleNow.getDate).toString()}，<span className="linkClass" onClick={this.getLiveStateWrapper}>点击重试</span><br />
+                日程表发布时间：{parseTime(dynamicDate)}<br />
+                日程表抓取时间：{parseTime(getDate)}，<span className="linkClass" onClick={this.getLiveStateWrapper}>点击重试</span><br />
                 <ImageRender />
             </div>)
         }
@@ -95,7 +101,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
             <MyButton text="直播日程表" onClick={this.showSchedule}></MyButton>
             <PopupBox header={<div>直播日程表</div>} visible={this.state.scheduleVisible}>
                 <div>
-                    <div className={this.state.isGettingSchedule ? "gettingLive isGetting" : "gettingLive"} onClick={()=>{if(!this.state.isGettingSchedule)this.showSchedule()}}/>
+                    <div className={this.state.isGettingSchedule ? "gettingLive isGetting" : "gettingLive"} onClick={() => { if (!this.state.isGettingSchedule) this.showSchedule() }} />
                     <ScheduleContent />
                 </div>
             </PopupBox>

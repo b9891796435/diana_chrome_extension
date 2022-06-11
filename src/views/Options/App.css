@@ -13,7 +13,7 @@ code {
 }
 
 .App {
-  background-color: #fff0f6;
+  background-color: rgb(var(--ui-1));
   padding: 32px;
   margin:0;
 }
@@ -24,10 +24,14 @@ code {
   padding-right: 128px;
   box-sizing: border-box;
   width: 600px;
-  background-color: #ffd6e7;
+  background-color: rgb(var(--ui-2));
   border-radius: 4px;
 }
 
 input:focus-visible{
-  outline-color: #e799b0;
+  outline-color: rgb(var(--fan));
+}
+
+div{
+  margin: 4px;
 }

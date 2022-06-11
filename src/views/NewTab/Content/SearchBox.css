@@ -1,6 +1,6 @@
 .searchBoxContainer {
-    height: 64px;
-    background-color: #e799b035;
+    height: 72px;
+    background-color: rgba(var(--fan),0.207);
     padding: 50px;
     display: flex;
     flex-direction: column;
@@ -40,5 +40,9 @@
 
 .searchBoxNavigationBar {
     display: flex;
-    margin: 12px
+    margin: 4px;
+    justify-content: center;
 }
+.searchBoxNavigationBarContainer{
+    margin: 12px;
+} 

@@ -37,5 +37,5 @@ code {
 }
 
 input:focus-visible {
-  outline-color: #e799b0;
+  outline-color: var(--fan);
 }
