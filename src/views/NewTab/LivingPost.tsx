@@ -4,7 +4,6 @@ import { chromeGet, liveType } from "../../tool/storageHandle";
 const styles = {
     livingPostDiv: {
         position: "relative" as "relative",
-        marginLeft: "12px",
         alignSelf: "start",
         display: "flex",
         padding: "0 30px"

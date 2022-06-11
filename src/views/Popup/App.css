@@ -5,12 +5,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #ffd6e7;
   width: 144px;
   user-select: none;
 }
 
 .App {
+  background-color: rgb(var(--ui-2));
   text-align: center;
   display: flex;
   flex-direction: column;

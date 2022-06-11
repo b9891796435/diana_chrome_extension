@@ -4,3 +4,10 @@
     text-decoration: none;
     z-index: 2;
 }
+.headerForDianaExtension .transitionBlock{
+    height: 50px;
+    width: 20px;
+    margin-right: -20px;
+    background:linear-gradient(to right,rgb(var(--fan)),transparent);
+    z-index: 3;
+}

@@ -1,4 +1,5 @@
 import "./content.css"
+import "./themeColor.css"
 import { chromeGet, chromeSet } from "./tool/storageHandle"
 chromeGet("tabCount").then(res => {
     if (typeof (res) != "number") {
@@ -7,24 +8,32 @@ chromeGet("tabCount").then(res => {
         chromeSet({ tabCount: res + 1 });
     }
 })
+
 let showDianaNotice = async () => {
     let noticeNode, removeNoticeNode;
+    let theme = await chromeGet("theme");
     let elem = document.createElement("div");
-    elem.className = "dianaNoticeContainer";
+    elem.className = "dianaNoticeContainer App " + theme;
 
     let BGDiv = document.createElement("div");
     BGDiv.className = "dianaQuoteBackground";
 
     let meme = document.createElement("div");
-    meme.className = "dianaMemeImage dianaMemeImageAppearing";
-    meme.addEventListener("animationend", () => {
-        meme.className = "dianaMemeImage dianaMemeImageBlinking"
-    })
-
+    switch (theme) {
+        case "ava":
+            meme.className = "ava memeImage";
+            break;
+        default:
+            meme.className = "diana memeImage dianaMemeImageAppearing";
+            meme.addEventListener("animationend", () => {
+                meme.className = "diana memeImage dianaMemeImageBlinking"
+            })
+            break;
+    }
     let quote = document.createElement("p");
     quote.className = "dianaQuote";
     let quotes = await chromeGet("quotes");
-    let quoteToBe = quotes?.notice[Math.floor(Math.random() * quotes?.notice?.length)];
+    let quoteToBe = quotes[theme]?.notice[Math.floor(Math.random() * quotes[theme]?.notice?.length)];
     quote.innerHTML = quoteToBe !== undefined ? quoteToBe : "突击检查！有好好在喝水吗？没有的话就去喝一口吧"
 
     let goBack = document.createElement("div");
@@ -53,8 +62,10 @@ setInterval(async () => {
         let noticeTime = await chromeGet("noticeTime")
         if (Date.now() - notice >= noticeTime) {
             chromeSet({ notice: Date.now() });
+            let d = new Image();
+            d.src = "https://raw.githubusercontent.com/b9891796435/duskmoon-bot-doc/main/src/assets/dianaJumping.png";
             let a = new Image();
-            a.src = "https://raw.githubusercontent.com/b9891796435/duskmoon-bot-doc/main/src/assets/dianaJumping.png";
+            a.src = "https://raw.githubusercontent.com/b9891796435/duskmoon-bot-doc/main/src/assets/avaJump.png"
             setTimeout(() => {
                 showDianaNotice();
             }, 10000)

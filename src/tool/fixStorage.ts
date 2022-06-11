@@ -1,10 +1,16 @@
-import dianaInsprite from "../constants/storagePrototype/dianaInsprite"
+import quotes from "../constants/storagePrototype/quotes";
 import toolList from "../constants/storagePrototype/toolList"
 export const fixStorage = () => {
     return Promise.all([
         chrome.storage.local.get("quotes").then(res => {
             if (res.quotes === undefined) {
-                chrome.storage.local.set({ quotes: dianaInsprite })
+                chrome.storage.local.set({ quotes })
+            }
+            if ("notice" in res.quotes) {
+                alert("检测到旧版本插件数据，已迁移至新版本插件。刷新页面即可正常使用")
+                const temp = { ...quotes }
+                temp.diana = res.quotes;
+                chrome.storage.local.set({ quotes: temp })
             }
         }),
         chrome.storage.local.get("toolList").then(res => {
@@ -25,6 +31,16 @@ export const fixStorage = () => {
         chrome.storage.local.get("fetchLive").then(res => {
             if (res.fetchLive === undefined) {
                 chrome.storage.local.set({ fetchLive: true })
+            }
+        }),
+        chrome.storage.local.get("showNavigation").then(res => {
+            if (res.showNavigation === undefined) {
+                chrome.storage.local.set({ showNavigation: true })
+            }
+        }),
+        chrome.storage.local.get("showTopsite").then(res => {
+            if (res.showTopsite === undefined) {
+                chrome.storage.local.set({ showTopsite: false })
             }
         }),
         chrome.storage.local.get("liveState").then(res => {
@@ -90,10 +106,17 @@ export const fixStorage = () => {
                 })
             }
         }),
+        chrome.storage.local.get("hideCarol").then(res => {
+            if (res.hideCarol === undefined) {
+                chrome.storage.local.set({
+                    hideCarol: false
+                })
+            }
+        })
     ])
 }
 export const resetStorage = () => {
-    chrome.storage.local.set({ quotes: dianaInsprite });
+    chrome.storage.local.set({ quotes });
     chrome.storage.local.set({ toolList });
     chrome.storage.local.set({ noticeTime: 5400000 });
     chrome.storage.local.set({ shouldShowNotice: true });
@@ -137,4 +160,9 @@ export const resetStorage = () => {
     chrome.storage.local.set({
         theme: "diana"
     });
+    chrome.storage.local.set({
+        hideCarol: false,
+        showNavigation:true,
+        showTopsite:false,
+    })
 }

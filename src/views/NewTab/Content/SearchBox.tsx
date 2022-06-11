@@ -8,7 +8,10 @@ type searchProps = {
     keyword: string,
     currentEngine: number,
     searchEngines: searchEngineType,
-    toolList:toolItemData[]
+    toolList: toolItemData[],
+    showNavigation:boolean,
+    showTopsite:boolean,
+    topsites:{title:string,url:string}[]
 }
 class SearchBox extends React.Component<{}, searchProps>{
     constructor(props: any) {
@@ -38,14 +41,21 @@ class SearchBox extends React.Component<{}, searchProps>{
                     engineName: "必应"
                 },
             ],
-            toolList:[]
+            toolList: [],
+            showNavigation:true,
+            showTopsite:false,
+            topsites:[],
         }
     }
     async componentDidMount() {
+        let topSitesGet=chrome.topSites.get as unknown as ()=>Promise<any>
         this.setState({
-            toolList:await chromeGet("toolList"),
+            toolList: await chromeGet("toolList"),
             currentEngine: await chromeGet("defaultEngine"),
             searchEngines: await chromeGet("searchEngine"),
+            showNavigation:await chromeGet("showNavigation"),
+            showTopsite:await chromeGet("showTopsite"),
+            topsites:await topSitesGet()
         })
         chrome.storage.onChanged.addListener(key => {
             if (key.toolList) {
@@ -68,12 +78,25 @@ class SearchBox extends React.Component<{}, searchProps>{
         }
     }
     render(): React.ReactNode {
-        let nodeArray=[]
-        for(let i =0;i<Math.min(6,this.state.toolList.length);i++){
-            nodeArray.push(<NavigationItem key={this.state.toolList[i].url} url={this.state.toolList[i].url} summary={this.state.toolList[i].summary}/>)
+        let nodeArray = []
+        for (let i = 0; i < Math.min(6, this.state.toolList.length); i++) {
+            nodeArray.push(<NavigationItem key={this.state.toolList[i].url} url={this.state.toolList[i].url} summary={this.state.toolList[i].summary} />)
+        }
+        let topArray=[];
+        let getSummary=(title:string)=>{
+            if(title.length<8){
+                return title;
+            }else{
+                return title.slice(0,8)+"…"
+            }
+        }
+        for(let i in this.state.topsites){
+            if(Number(i)<5){
+                topArray.push(<NavigationItem key={this.state.topsites[i].url} url={this.state.topsites[i].url} summary={getSummary(this.state.topsites[i].title)} />)
+            }
         }
         let hNow = Number(Date().split(" ")[4].split(":")[0])
-        let skySub=hNow<=6||hNow>=19
+        let skySub = hNow <= 6 || hNow >= 19
         return (
             <div className="searchBoxContainer">
                 <div className="searchBoxIconContainer">
@@ -88,9 +111,15 @@ class SearchBox extends React.Component<{}, searchProps>{
                     }
                     <input type="text" onChange={this.inputListener} value={this.state.keyword} onKeyDown={this.enterListener} className="searchBoxSearchBar" placeholder="输入关键词搜索，使用Tab切换搜索引擎，" />
                 </div>
-                <div className="searchBoxNavigationBar">
-                    <div style={{margin:"auto",color:skySub?"#fff":"#000"}}>快捷导航：</div>
-                    {nodeArray}
+                <div className="searchBoxNavigationBarContainer">
+                    <div className="searchBoxNavigationBar" style={{display:this.state.showNavigation?"flex":"none"}}>
+                        <div style={{ margin: "auto 0", color: skySub ? "#fff" : "#000" }}>快捷导航：</div>
+                        {nodeArray}
+                    </div>
+                    <div className="searchBoxNavigationBar" style={{display:this.state.showTopsite?"flex":"none"}}>
+                        <div style={{ margin: "auto 0", color: skySub ? "#fff" : "#000" }}>常用网址：</div>
+                        {topArray}
+                    </div>
                 </div>
             </div>
         )

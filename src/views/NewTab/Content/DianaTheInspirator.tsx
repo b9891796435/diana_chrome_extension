@@ -1,5 +1,6 @@
 import React from "react";
-import quotes from "../../../constants/storagePrototype/dianaInsprite"
+import quotes from "../../../constants/storagePrototype/quotes";
+import memberList,{ members } from "../../../constants/memberList";
 import tool from "../../../tool"
 import { chromeGet, chromeSet } from "../../../tool/storageHandle";
 const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法写不出动画
@@ -43,7 +44,7 @@ const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法
         height: "100px"
     },
     quote: {
-        backgroundColor: "#e799b0",
+        backgroundColor: "rgb(var(--fan))",
         padding: "16px",
         paddingLeft: "84px",
         marginLeft: "16px",
@@ -56,7 +57,6 @@ const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法
         wordWrap: "break-word" as "break-word",
     }
 }
-const poseArray = [require("../../../assets/images/background/diana_1.png"), require("../../../assets/images/background/diana_2.png")]
 type stateType = {
     pose: number,
     dialogVisible: boolean,
@@ -64,6 +64,7 @@ type stateType = {
     currentTimer: any,//AnyScript,永远滴神！
     autoTimer: any,
     quotes:typeof quotes,
+    theme:members,
 }
 class DianaTheInspirator extends React.Component<{}, stateType>{
     constructor(props: any) {
@@ -74,7 +75,8 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             currentDialog: "关注嘉然然，顿顿解馋馋",
             currentTimer: 0,
             autoTimer: 0,
-            quotes
+            quotes,
+            theme:"diana"
         }
         let start: DOMHighResTimeStamp | undefined;
         let RAFfunc = (timestamp: DOMHighResTimeStamp) => {
@@ -89,7 +91,10 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
         this.pokingDiana()
     }
     componentDidMount=async()=>{
-        this.setState({quotes:await chromeGet("quotes")})
+        this.setState({
+            quotes:await chromeGet("quotes"),
+            theme:await chromeGet("theme")
+        })
         console.log(this.state)
     }
     pokingDiana = async () => {//理论上这个巨大的函数应该单拆出一个文件的，不过这个是单人项目，所以，摆！
@@ -101,6 +106,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 }, 70000)
             })
         }
+        const theme=this.state.theme;
         //简单来讲，先判定问安，然后判定起身喝水，最后是日常语录
         if (document.hasFocus())
             if (this.state.currentTimer == 0) {//当前对话框未弹出
@@ -144,7 +150,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 if (timeToRequest != "none") {//若时间段符合问安时间段
                     const requestRes = await chromeGet(timeToRequest);
                     if (!requestRes) {
-                        setDialog(this.state.quotes[timeToRequest]);
+                        setDialog(this.state.quotes[theme][timeToRequest]);
                         let temp: { [key: string]: boolean } = {};
                         temp[timeToRequest] = true
                         chromeSet(temp);
@@ -156,13 +162,13 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 const requestRes = await chromeGet("notice");
                 const noticeTime = await chromeGet("noticeTime")
                 if (Date.now() - requestRes >= noticeTime) {
-                    setDialog(this.state.quotes.notice[Math.floor(Math.random() * this.state.quotes.notice.length)])//简简单单一个乃0乃1随机器
+                    setDialog(this.state.quotes[theme].notice[Math.floor(Math.random() * this.state.quotes[theme].notice.length)])//简简单单一个乃0乃1随机器
                     await chromeSet({ notice: Date.now() });
                     setRetrigger()
                     return;
                 }
                 //提醒运动喝水结束，日常对话
-                setDialog(this.state.quotes.daily[Math.floor(Math.random() * this.state.quotes.daily.length)]);
+                setDialog(this.state.quotes[theme].daily[Math.floor(Math.random() * this.state.quotes[theme].daily.length)]);
                 setRetrigger()
                 return;
             } else {//若当前已有计时器
@@ -174,11 +180,11 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
         return (
             <div style={styles.container}>
                 <div style={Object.assign({}, styles.dialog, { opacity: this.state.dialogVisible ? "1" : "0" })}>
-                    <img src={require("../../../assets/images/background/diana_meme.png")} alt="" style={styles.givingHeartMeme} />
+                    <img src={memberList[this.state.theme].themeImg.meme} alt="" style={styles.givingHeartMeme} />
                     <p style={styles.quote}>{this.state.currentDialog}</p>
                 </div>
                 <img src={require("../../../assets/images/background/flower_pot.png")} alt="" style={styles.pot} />
-                <img src={poseArray[this.state.pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} onClick={this.pokingDiana} />
+                <img src={memberList[this.state.theme].themeImg.positions[this.state.pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} onClick={this.pokingDiana} />
             </div>
         )
     }
