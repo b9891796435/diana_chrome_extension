@@ -37,7 +37,8 @@ export const getScheduleState = async () => {
         for(let i=0;i<5;i++){
             let a = await fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=104319441&host_uid=703007996&offset_dynamic_id=${offset}&need_top=1&platform=web`);
             res = await a.json()
-            offset=res.data.cards[11].desc.dynamic_id_str;
+            let cardsCount=res.data.cards.length-1;
+            offset=res.data.cards[cardsCount].desc.dynamic_id_str;
             let cardList = res.data.cards;
             for (let i of cardList) {
                 let card = JSON.parse(i.card).item;

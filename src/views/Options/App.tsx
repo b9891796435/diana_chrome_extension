@@ -242,6 +242,13 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     }
     return optionsArray;
   }
+  resetQuote=()=>{
+    let temp=this.state.quotes;
+    temp[this.state.theme]=quotes[this.state.theme]
+    this.setState({
+      quotes:temp
+    })
+  }
   selectTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     switch (e.target.value) {
       case "ava":
@@ -276,7 +283,8 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <select onChange={this.selectTheme}>
             {this.optionsThemeRender()}
           </select>
-          <h1>对话文本设置</h1>
+          <h1>对话文本设置
+          <MyButton text='重置当前主题文本' onClick={this.resetQuote}></MyButton></h1>
           <ArrayRender
             data={this.state.quotes[this.state.theme].daily}
             label="日常" newItem={this.handleDialogForArray("daily", "new")}
