@@ -23,6 +23,12 @@ let showDianaNotice = async () => {
         case "ava":
             meme.className = "ava memeImage";
             break;
+        case "bella":
+            meme.className = "bella memeImage bellaMemeImageAppearing"
+            meme.addEventListener("animationend", () => {
+                meme.className = "bella memeImage bellaMemeImageBlinking"
+            })
+            break;
         default:
             meme.className = "diana memeImage dianaMemeImageAppearing";
             meme.addEventListener("animationend", () => {
