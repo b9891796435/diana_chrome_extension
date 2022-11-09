@@ -14,13 +14,87 @@ type schedule = {
         img_src: string,
     }[],
     dynamicDate: number,
-    getDate: number
+    dynamicID: string,
+    getDate: number,
+
 }
 export type scheduleType = schedule | number
 export type searchEngineType = { url: string, icon?: string, engineName: string }[]
+//b站动态有四种，转发、视频、文字与图画
+//而文本节点也有四种，文本，表情，@xxxx与话题
+export type dynamicContentNode = {
+    type: 'RICH_TEXT_NODE_TYPE_TEXT',
+    text: string,
+} | {
+    type: 'RICH_TEXT_NODE_TYPE_TOPIC',
+    text: string,
+    jump_url: string,
+} | {
+    type: 'RICH_TEXT_NODE_TYPE_EMOJI',
+    text: string,
+    emoji: {
+        icon_url: string,
+    }
+} | {
+    type: 'RICH_TEXT_NODE_TYPE_AT',
+    text: string,
+    rid: string,
+}
+export type dynamicData = {
+    id_str: string,
+    type: 'DYNAMIC_TYPE_WORD',
+    modules: {
+        module_dynamic: {
+            desc: dynamicContentNode[]
+        }
+    },
+} | {
+    id_str: string,
+    type: 'DYNAMIC_TYPE_FORWARD',
+    modules: {
+        module_dynamic: {
+            desc: dynamicContentNode[]
+        }
+    },
+    orig: dynamicData
+} | {
+    id_str: string,
+    type: 'DYNAMIC_TYPE_AV',
+    modules: {
+        module_dynamic: {
+            desc: dynamicContentNode[],
+            major:{
+                archive:{
+                    jump_url:string,
+                    cover:string,
+                    title:string,
+                }
+            }
+        }
+    }
+} | {
+    id_str: string,
+    type: 'DYNAMIC_TYPE_DRAW',
+    modules: {
+        module_dynamic: {
+            desc: dynamicContentNode[],
+            major:{
+                draw:{
+                    items:{
+                        src:string;
+                    }
+                }
+            }
+        }
+    }
+}
+export const summaryBackdrop='@228w_228h_1e_1c.webp'
+export type dynamicListType = {
+    
+}
 type getRes = {
     (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine"): Promise<number>,
-    (key: "shouldShowNotice" | "morning" | "noon" | "evening" | "night" | "fetchLive" | "hideCarol"|"showNavigation"|"showTopsite"): Promise<boolean>,
+    (key: "shouldShowNotice" | "morning" | "noon" | "evening" | "night" | "fetchLive" | "hideCarol" | "showNavigation" | "showTopsite"): Promise<boolean>,
     (key: "date"): Promise<string>,
     (key: "quotes"): Promise<quotesType>
     (key: "toolList"): Promise<toolItemData[]>
@@ -41,8 +115,8 @@ type storageValues = {
     evening?: boolean,
     night?: boolean,
     hideCarol?: boolean,
-    showNavigation?:boolean,
-    showTopsite?:boolean,
+    showNavigation?: boolean,
+    showTopsite?: boolean,
     date?: string,
     quotes?: quotesType,
     toolList?: toolItemData[],

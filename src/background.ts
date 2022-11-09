@@ -1,7 +1,7 @@
 import { fixStorage } from "./tool/fixStorage"
 import { chromeGet, chromeSet } from "./tool/storageHandle";
 import memberList from "./constants/memberList"
-import type { liveType } from "./tool/storageHandle"
+import type { dynamicData, liveType } from "./tool/storageHandle"
 chrome.runtime.onInstalled.addListener(fixStorage);
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
     let i: keyof typeof memberList;
@@ -26,19 +26,33 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
         console.log(e);
         chromeSet({
             liveState: "error",
-            liveTime:Date.now()
+            liveTime: Date.now()
         });
     }
+}
+//b站居然改API了
+export const getDynamic = async (page: number, host_uid: number) => {
+    let offset = '';
+    let resArray: dynamicData[] = []
+    for (let i = 0; i < page; i++) {
+        let req = await fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?offset=${offset}&host_mid=${host_uid}&timezone_offset=-480`)
+        let resObj = await req.json();
+        if (resObj.code == 0) {
+            offset = resObj.data.offset;
+            resArray.concat(resObj.data.items)
+        }
+    }
+    return resArray
 }
 export const getScheduleState = async () => {
     let res;
     try {
-        let offset="0";
-        for(let i=0;i<5;i++){
+        let offset = "0";
+        for (let i = 0; i < 5; i++) {
             let a = await fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=104319441&host_uid=703007996&offset_dynamic_id=${offset}&need_top=1&platform=web`);
             res = await a.json()
-            let cardsCount=res.data.cards.length-1;
-            offset=res.data.cards[cardsCount].desc.dynamic_id_str;
+            let cardsCount = res.data.cards.length - 1;
+            offset = res.data.cards[cardsCount].desc.dynamic_id_str;
             let cardList = res.data.cards;
             for (let i of cardList) {
                 let card = JSON.parse(i.card).item;
@@ -49,7 +63,8 @@ export const getScheduleState = async () => {
                         scheduleState: {
                             images: card.pictures,
                             dynamicDate: card.upload_time * 1000,
-                            getDate: Date.now()
+                            getDate: Date.now(),
+                            dynamicID: i.desc.dynamic_id_str
                         }
                     })
                     return;
