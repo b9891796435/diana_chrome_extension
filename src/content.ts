@@ -19,23 +19,7 @@ let showDianaNotice = async () => {
     BGDiv.className = "dianaQuoteBackground";
 
     let meme = document.createElement("div");
-    switch (theme) {
-        case "ava":
-            meme.className = "ava memeImage";
-            break;
-        case "bella":
-            meme.className = "bella memeImage bellaMemeImageAppearing"
-            meme.addEventListener("animationend", () => {
-                meme.className = "bella memeImage bellaMemeImageBlinking"
-            })
-            break;
-        default:
-            meme.className = "diana memeImage dianaMemeImageAppearing";
-            meme.addEventListener("animationend", () => {
-                meme.className = "diana memeImage dianaMemeImageBlinking"
-            })
-            break;
-    }
+    meme.className = "carol memeImage";
     let quote = document.createElement("p");
     quote.className = "dianaQuote";
     let quotes = await chromeGet("quotes");

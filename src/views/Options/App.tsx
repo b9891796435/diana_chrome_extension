@@ -93,7 +93,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
   constructor(props: any) {
     super(props);
     this.state = {
-      theme: "diana",
+      theme: "carol",
       quotes: errorQuote,
       noticeTime: "",
       shouldShowNotice: true,
@@ -251,11 +251,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
   }
   selectTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     switch (e.target.value) {
-      case "ava":
-      case "bella":
       case "carol":
-      case "diana":
-      case "eileen":
         this.setState({
           theme: e.target.value
         })

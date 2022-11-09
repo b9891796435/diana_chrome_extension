@@ -76,7 +76,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             currentTimer: 0,
             autoTimer: 0,
             quotes,
-            theme:"diana"
+            theme:'carol'
         }
         let start: DOMHighResTimeStamp | undefined;
         let RAFfunc = (timestamp: DOMHighResTimeStamp) => {
@@ -84,7 +84,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 start = timestamp;
             }
             const elapsed = timestamp - start;
-            this.setState({ pose: Math.floor(elapsed / 3000) % 2 === 0 ? 0 : 1 })
+            this.setState({ pose: Math.floor(elapsed / 3000) % 2 === 0 ? 0 : 0 })
             requestAnimationFrame(RAFfunc);
         }
         requestAnimationFrame(RAFfunc);

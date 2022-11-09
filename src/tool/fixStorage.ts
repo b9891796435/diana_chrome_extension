@@ -7,10 +7,10 @@ export const fixStorage = () => {
                 chrome.storage.local.set({ quotes })
             }
             if ("notice" in res.quotes) {
-                alert("检测到旧版本插件数据，已迁移至新版本插件。刷新页面即可正常使用")
                 const temp = { ...quotes }
-                temp.diana = res.quotes;
+                temp.carol = res.quotes;
                 chrome.storage.local.set({ quotes: temp })
+                alert("检测到旧版本插件数据，已迁移至新版本插件。刷新页面即可正常使用")
             }
         }),
         chrome.storage.local.get("toolList").then(res => {
@@ -100,9 +100,9 @@ export const fixStorage = () => {
             }
         }),
         chrome.storage.local.get("theme").then(res => {
-            if (res.theme === undefined) {
+            if (res.theme !== 'carol') {
                 chrome.storage.local.set({
-                    theme: "diana"
+                    theme: "carol"
                 })
             }
         }),
@@ -158,11 +158,11 @@ export const resetStorage = () => {
         defaultEngine: 0
     });
     chrome.storage.local.set({
-        theme: "diana"
+        theme: "carol"
     });
     chrome.storage.local.set({
         hideCarol: false,
-        showNavigation:true,
-        showTopsite:false,
+        showNavigation: true,
+        showTopsite: false,
     })
 }

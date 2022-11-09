@@ -11,6 +11,7 @@ const styles={
         borderWidth:"4px",
         borderStyle:"solid",
         borderColor:"rgba(255,255,255,0.3)",
+        marginLeft:'32px'
     }
 }
 function Avatar(props:avatarProp){

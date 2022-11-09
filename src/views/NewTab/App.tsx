@@ -6,7 +6,7 @@ import "./App.css"
 import "../../themeColor.css";
 import { chromeGet } from '../../tool/storageHandle';
 function App() {
-  let [theme,setTheme]=useState<members>("diana")
+  let [theme,setTheme]=useState<members>('carol')
   useEffect(()=>{
     chromeGet("theme").then(res=>{
       setTheme(res);
