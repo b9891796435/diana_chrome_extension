@@ -318,14 +318,6 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
             <input type="checkbox" style={checkboxStyle} {...{checked:this.state.shouldShowNotice}} onClick={()=>this.setState({ shouldShowNotice:!this.state.shouldShowNotice })}/>
           </div>
           <div>
-            <span className='myInputForDianaContainer'>是否开启直播间状态检测:</span>
-            <input type="checkbox" style={checkboxStyle} {...{checked:this.state.fetchLive}} onClick={()=>this.setState({ fetchLive:!this.state.fetchLive })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否隐藏主页珈乐传送门:</span>
-            <input type="checkbox" style={checkboxStyle} {...{checked:this.state.hideCarol}} onClick={()=>this.setState({ hideCarol:!this.state.hideCarol })}/>
-          </div>
-          <div>
             <span className='myInputForDianaContainer'>是否显示快捷导航:</span>
             <input type="checkbox" style={checkboxStyle} {...{checked:this.state.showNavigation}} onClick={()=>this.setState({ showNavigation:!this.state.showNavigation })} />
           </div>
