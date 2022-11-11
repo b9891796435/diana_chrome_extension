@@ -3,20 +3,23 @@ import { chromeGet, searchEngineType } from "../../../tool/storageHandle";
 import NavigationItem from "../../../components/NavigationItem";
 import "./SearchBox.css"
 import { toolItemData } from "./YinTun/ToolItem";
+import debounce from '../../../tool/debounce'
 
 type searchProps = {
     keyword: string,
     currentEngine: number,
     searchEngines: searchEngineType,
     toolList: toolItemData[],
-    showNavigation:boolean,
-    showTopsite:boolean,
-    topsites:{title:string,url:string}[]
+    showNavigation: boolean,
+    showTopsite: boolean,
+    topsites: { title: string, url: string }[],
+    isAutoCompleteing: boolean
 }
 class SearchBox extends React.Component<{}, searchProps>{
     constructor(props: any) {
         super(props);
         this.state = {
+            isAutoCompleteing: false,
             keyword: "",
             currentEngine: 0,
             searchEngines: [
@@ -42,20 +45,20 @@ class SearchBox extends React.Component<{}, searchProps>{
                 },
             ],
             toolList: [],
-            showNavigation:true,
-            showTopsite:false,
-            topsites:[],
+            showNavigation: true,
+            showTopsite: false,
+            topsites: [],
         }
     }
     async componentDidMount() {
-        let topSitesGet=chrome.topSites.get as unknown as ()=>Promise<any>
+        let topSitesGet = chrome.topSites.get as unknown as () => Promise<any>
         this.setState({
             toolList: await chromeGet("toolList"),
             currentEngine: await chromeGet("defaultEngine"),
             searchEngines: await chromeGet("searchEngine"),
-            showNavigation:await chromeGet("showNavigation"),
-            showTopsite:await chromeGet("showTopsite"),
-            topsites:await topSitesGet()
+            showNavigation: await chromeGet("showNavigation"),
+            showTopsite: await chromeGet("showTopsite"),
+            topsites: await topSitesGet()
         })
         chrome.storage.onChanged.addListener(key => {
             if (key.toolList) {
@@ -65,8 +68,10 @@ class SearchBox extends React.Component<{}, searchProps>{
             }
         })
     }
+
     inputListener: (e: FormEvent<HTMLInputElement>) => void = (e) => {
         this.setState({ keyword: e.currentTarget.value });
+
     }
     enterListener: (e: KeyboardEvent<HTMLInputElement>) => void = (e) => {
         if (e.key == "Enter") {
@@ -82,16 +87,16 @@ class SearchBox extends React.Component<{}, searchProps>{
         for (let i = 0; i < Math.min(6, this.state.toolList.length); i++) {
             nodeArray.push(<NavigationItem key={this.state.toolList[i].url} url={this.state.toolList[i].url} summary={this.state.toolList[i].summary} />)
         }
-        let topArray=[];
-        let getSummary=(title:string)=>{
-            if(title.length<8){
+        let topArray = [];
+        let getSummary = (title: string) => {
+            if (title.length < 8) {
                 return title;
-            }else{
-                return title.slice(0,8)+"…"
+            } else {
+                return title.slice(0, 8) + "…"
             }
         }
-        for(let i in this.state.topsites){
-            if(Number(i)<5){
+        for (let i in this.state.topsites) {
+            if (Number(i) < 5) {
                 topArray.push(<NavigationItem key={this.state.topsites[i].url} url={this.state.topsites[i].url} summary={getSummary(this.state.topsites[i].title)} />)
             }
         }
@@ -109,14 +114,22 @@ class SearchBox extends React.Component<{}, searchProps>{
                                 </div>
                             </div>
                     }
-                    <input type="text" onChange={this.inputListener} value={this.state.keyword} onKeyDown={this.enterListener} className="searchBoxSearchBar" placeholder="输入关键词搜索，使用Tab切换搜索引擎，" />
+                    <div>
+                        <input type="text" onChange={this.inputListener} value={this.state.keyword} onKeyDown={this.enterListener} className={"searchBoxSearchBar " + (this.state.isAutoCompleteing ? 'autoComplete' : '')} placeholder="输入关键词搜索，使用Tab切换搜索引擎，" />
+                        {this.state.isAutoCompleteing ? <div className="searchBoxAutoCompleteDiv">
+                            <div>asdfasdf</div>
+                            <div>asdfasdf</div>
+                            <div>asdfasdf</div>
+                            <div>asdfasdf</div>
+                        </div> : null}
+                    </div>
                 </div>
                 <div className="searchBoxNavigationBarContainer">
-                    <div className="searchBoxNavigationBar" style={{display:this.state.showNavigation?"flex":"none"}}>
+                    <div className="searchBoxNavigationBar" style={{ display: this.state.showNavigation ? "flex" : "none" }}>
                         <div style={{ margin: "auto 0", color: skySub ? "#fff" : "#000" }}>快捷导航：</div>
                         {nodeArray}
                     </div>
-                    <div className="searchBoxNavigationBar" style={{display:this.state.showTopsite?"flex":"none"}}>
+                    <div className="searchBoxNavigationBar" style={{ display: this.state.showTopsite ? "flex" : "none" }}>
                         <div style={{ margin: "auto 0", color: skySub ? "#fff" : "#000" }}>常用网址：</div>
                         {topArray}
                     </div>

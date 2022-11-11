@@ -23,6 +23,9 @@ let showDianaNotice = async () => {
         case "ava":
             meme.className = "ava memeImage";
             break;
+        case "eileen":
+            meme.className = "eileen memeImage";
+            break;
         case "bella":
             meme.className = "bella memeImage bellaMemeImageAppearing"
             meme.addEventListener("animationend", () => {
@@ -51,7 +54,7 @@ let showDianaNotice = async () => {
     elem.appendChild(goBack);
     noticeNode = elem;
     removeNoticeNode = () => {
-        elem.className = "dianaNoticeContainer dianaNoticeRemove";
+        elem.className = "dianaNoticeContainer dianaNoticeRemove App " + theme;
         elem.addEventListener("animationend", () => {
             elem.remove();
         })

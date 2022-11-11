@@ -64,6 +64,13 @@ export const fixStorage = () => {
                 })
             }
         }),
+        chrome.storage.local.get("dynamicPages").then(res => {
+            if (res.dynamicPages === undefined) {
+                chrome.storage.local.set({
+                    dynamicPages: 1
+                })
+            }
+        }),
         chrome.storage.local.get("searchEngine").then(res => {
             if (res.searchEngine === undefined) {
                 chrome.storage.local.set({
@@ -99,8 +106,15 @@ export const fixStorage = () => {
                 })
             }
         }),
+        chrome.storage.local.get("dynamicTime").then(res => {
+            if (res.dynamicTime === undefined) {
+                chrome.storage.local.set({
+                    dynamicTime: 0
+                })
+            }
+        }),
         chrome.storage.local.get("theme").then(res => {
-            if (res.theme === undefined) {
+            if (!(res.theme in quotes)) {
                 chrome.storage.local.set({
                     theme: "diana"
                 })
@@ -110,6 +124,18 @@ export const fixStorage = () => {
             if (res.hideCarol === undefined) {
                 chrome.storage.local.set({
                     hideCarol: false
+                })
+            }
+        }),
+        chrome.storage.local.get("dynamicData").then(res => {
+            if (res.dynamicData === undefined) {
+                chrome.storage.local.set({
+                    dynamicData: {
+                        diana: [],
+                        ava: [],
+                        bella: [],
+                        eileen: []
+                    }
                 })
             }
         })
@@ -158,11 +184,26 @@ export const resetStorage = () => {
         defaultEngine: 0
     });
     chrome.storage.local.set({
+        dynamicPages: 1,
+    });
+    chrome.storage.local.set({
         theme: "diana"
     });
     chrome.storage.local.set({
-        hideCarol: false,
-        showNavigation:true,
-        showTopsite:false,
+        dynamicData: {
+            diana: [],
+            ava: [],
+            bella: [],
+            eileen: []
+        }
+    });
+    chrome.storage.local.set({
+        dynamicTime: 0
     })
+    chrome.storage.local.set({
+        hideCarol: false,
+        showNavigation: true,
+        showTopsite: false,
+    })
+
 }

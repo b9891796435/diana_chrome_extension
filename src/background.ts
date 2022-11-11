@@ -1,7 +1,7 @@
 import { fixStorage } from "./tool/fixStorage"
-import { chromeGet, chromeSet } from "./tool/storageHandle";
-import memberList from "./constants/memberList"
-import type { liveType } from "./tool/storageHandle"
+import { chromeGet, chromeSet, dynamicListType } from "./tool/storageHandle";
+import memberList, { members } from "./constants/memberList"
+import type { dynamicData, liveType } from "./tool/storageHandle"
 chrome.runtime.onInstalled.addListener(fixStorage);
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
     let i: keyof typeof memberList;
@@ -26,19 +26,50 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
         console.log(e);
         chromeSet({
             liveState: "error",
-            liveTime:Date.now()
+            liveTime: Date.now()
         });
     }
+}
+//b站居然改API了
+export const getDynamic = async (page: number, host_uid: string) => {
+    let offset = '';
+    let resArray: dynamicData[] = []
+    for (let i = 0; i < page; i++) {
+        let res = await fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?offset=${offset}&host_mid=${host_uid}&timezone_offset=-480`)
+        let resObj = await res.json();
+        if (resObj.code == 0) {
+            offset = resObj.data.offset;
+            resArray = resArray.concat(resObj.data.items)
+        }
+    }
+    return resArray
+}
+export const getMembersDynamic = async () => {
+    let temp: dynamicListType = {
+        ava: [],
+        bella: [],
+        diana: [],
+        eileen: [],
+    };
+    let pages = await chromeGet('dynamicPages');
+    for (let i in temp) {
+        let res=await getDynamic(pages, memberList[i as members].uid)
+        temp[i as members] = temp[i as members].concat(res)
+    }
+    chromeSet({
+        dynamicData: temp,
+        dynamicTime: Date.now(),
+    })
 }
 export const getScheduleState = async () => {
     let res;
     try {
-        let offset="0";
-        for(let i=0;i<5;i++){
+        let offset = "0";
+        for (let i = 0; i < 5; i++) {
             let a = await fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=104319441&host_uid=703007996&offset_dynamic_id=${offset}&need_top=1&platform=web`);
             res = await a.json()
-            let cardsCount=res.data.cards.length-1;
-            offset=res.data.cards[cardsCount].desc.dynamic_id_str;
+            let cardsCount = res.data.cards.length - 1;
+            offset = res.data.cards[cardsCount].desc.dynamic_id_str;
             let cardList = res.data.cards;
             for (let i of cardList) {
                 let card = JSON.parse(i.card).item;
@@ -49,7 +80,8 @@ export const getScheduleState = async () => {
                         scheduleState: {
                             images: card.pictures,
                             dynamicDate: card.upload_time * 1000,
-                            getDate: Date.now()
+                            getDate: Date.now(),
+                            dynamicID: i.desc.dynamic_id_str
                         }
                     })
                     return;
@@ -81,8 +113,13 @@ let getScheduleWrapped = () => {
 let getLiveWrapped = () => {
     dateCheck("liveTime", 120000, getLiveState)
 }
+let getMembersDynamicWrapped = () => {
+    dateCheck("dynamicTime", 300000, getMembersDynamic)
+}
 getLiveWrapped()
 getScheduleWrapped()
-setInterval(getLiveWrapped, 120000)
-setInterval(getScheduleWrapped, 600000)
+getMembersDynamicWrapped()
+setInterval(getLiveWrapped, 30000)
+setInterval(getScheduleWrapped, 30000)
+setInterval(getMembersDynamicWrapped, 30000);
 export { }

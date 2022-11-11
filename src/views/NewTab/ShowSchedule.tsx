@@ -8,7 +8,6 @@ import "./ShowSchedule.css";
 type scheduleState = {
     scheduleVisible: boolean,
     scheduleNow: scheduleType,
-    currentImage: number,
     isGettingSchedule: boolean
 }
 export default class ShowSchedule extends React.Component<{}, scheduleState>{
@@ -17,7 +16,6 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
         this.state = {
             scheduleVisible: false,
             scheduleNow: 0,
-            currentImage: 0,
             isGettingSchedule: false,
         }
     }
@@ -50,24 +48,21 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
     ImageRender = () => {//麻了，这就是屎山吗
         if (typeof (this.state.scheduleNow) !== "number") {
             let nodeArray: JSX.Element[] = []
-            let jumpImg = (imgId: number) => {
-                this.setState({
-                    currentImage: imgId
-                })
+            for (let i of this.state.scheduleNow.images) {
+                nodeArray.push(<img src={i.img_src} style={{ width: "100%" }} onClick={() => window.open(i.img_src)}></img>)
             }
-            for (let i in this.state.scheduleNow.images) {
-                nodeArray.push((<span className={Number(i) === this.state.currentImage ? "" : "linkClass"} onClick={() => jumpImg(Number(i))}> {Number(i) + 1}</span>))
-            }
-            let click = () => {
-                //@ts-expect-error
-                window.open(this.state.scheduleNow.images[this.state.currentImage].img_src)
+            let jumpToDynamic = () => {
+                if (typeof this.state.scheduleNow !== 'number') {
+                    window.open('https://t.bilibili.com/' + this.state.scheduleNow.dynamicID)
+                }
             }
             return (
                 <div>
                     <div>
-                        日程表共{this.state.scheduleNow.images.length}张<br />[ {nodeArray} ]<br />切换时会有一段加载时间
+                        日程表共{this.state.scheduleNow.images.length}张,
+                        <span className={"linkClass"} onClick={jumpToDynamic}>跳转至日程表动态</span><br />
                     </div>
-                    <img src={this.state.scheduleNow.images[this.state.currentImage].img_src} style={{ width: "100%" }} onClick={click} alt="" />
+                    {nodeArray}
                 </div>
             )
         } else {
@@ -76,18 +71,18 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
     }
     scheduleContent = () => {
         let ImageRender = this.ImageRender;
-        const parseTime=(time:Date)=>{
-            return( time.getMonth()+1)+"月"+time.getDate()+"日"+time.toString().split(" ")[4]
+        const parseTime = (time: Date) => {
+            return (time.getMonth() + 1) + "月" + time.getDate() + "日" + time.toString().split(" ")[4]
         }
         if (typeof (this.state.scheduleNow) === "number") {
-            let getDate=new Date(this.state.scheduleNow);
+            let getDate = new Date(this.state.scheduleNow);
             return (<div style={{ fontSize: "16px" }}>
                 日程表动态抓取失败，可能由于是第一次打开插件、网络波动、短时间内获取次数过多、b站更改API格式或羊驼发日程表的动态里没有加入日程表这三个字。<br />
                 上次获取时间：{parseTime(getDate)}，<span onClick={this.getLiveStateWrapper} className="linkClass">点击重试</span>
             </div>)
         } else {
             let dynamicDate = new Date(this.state.scheduleNow.dynamicDate);
-            let getDate=new Date(this.state.scheduleNow.getDate);
+            let getDate = new Date(this.state.scheduleNow.getDate);
             return (<div style={{ fontSize: "16px" }}>
                 日程表发布时间：{parseTime(dynamicDate)}<br />
                 日程表抓取时间：{parseTime(getDate)}，<span className="linkClass" onClick={this.getLiveStateWrapper}>点击重试</span><br />
@@ -97,7 +92,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
     }
     render(): React.ReactNode {//突然感受到可复用组件的力量了
         let ScheduleContent = this.scheduleContent
-        return (<div style={{ marginLeft: "auto" }}>
+        return (<div>
             <MyButton text="直播日程表" onClick={this.showSchedule}></MyButton>
             <PopupBox header={<div>直播日程表</div>} visible={this.state.scheduleVisible}>
                 <div>

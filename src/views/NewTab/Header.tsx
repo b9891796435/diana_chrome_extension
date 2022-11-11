@@ -5,6 +5,7 @@ import constants from "../../constants";
 import "./Header.css"
 import ShowSchedule from "./ShowSchedule";
 import { chromeGet } from "../../tool/storageHandle";
+import MembersDynamic from "./MembersDynamic";
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
 const styles = {
@@ -29,15 +30,6 @@ function Header() {
             setHideCarol(res);
         })
     }, [])
-    const carolAvatar = () => {
-        if (!hideCarol) {
-            return (
-                <Avatar link={userSpaceUrl + memberList.carol.uid} avatar={memberList.carol.avatar}></Avatar>
-            )
-        }else{
-            return null;
-        }
-    }
     return (
         <div style={styles.header} className="headerForDianaExtension">
             <a href="https://space.bilibili.com/703007996">
@@ -47,9 +39,9 @@ function Header() {
             }
             <Avatar link={userSpaceUrl + memberList.diana.uid} avatar={memberList.diana.avatar}></Avatar>
             <Avatar link={userSpaceUrl + memberList.ava.uid} avatar={memberList.ava.avatar}></Avatar>
-            {carolAvatar()}
             <Avatar link={userSpaceUrl + memberList.eileen.uid} avatar={memberList.eileen.avatar}></Avatar>
             <Avatar link={userSpaceUrl + memberList.bella.uid} avatar={memberList.bella.avatar}></Avatar>
+            <MembersDynamic></MembersDynamic>
             <ShowSchedule></ShowSchedule>
             <div className="transitionBlock"></div>
             <LivingPost></LivingPost>
