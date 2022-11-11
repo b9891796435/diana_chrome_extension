@@ -13,7 +13,19 @@
     width: 100%;
     padding: 0 12px 0 48px;
     border: none;
-    border-radius: 4px
+    border-radius: 4px;
+    box-sizing: border-box;
+    position:relative;
+}
+.searchBoxSearchBar.autoComplete{
+    border-radius: 4px 4px 0 0;
+}
+.searchBoxAutoCompleteDiv{
+    border-radius: 0 0 4px 4px;
+    position:absolute;
+    width: 100%;
+    top:48px;
+    background-color: #fff;
 }
 
 .searchBoxIconContainer {
@@ -27,6 +39,7 @@
     position: absolute;
     top: 8px;
     left: 8px;
+    z-index: 1;
 }
 
 .searchBoxDivIcon {

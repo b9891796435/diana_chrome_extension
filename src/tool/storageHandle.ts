@@ -19,7 +19,7 @@ type schedule = {
 
 }
 export type scheduleType = schedule | number
-export type searchEngineType = { url: string, icon?: string, engineName: string }[]
+export type searchEngineType = { url: string, icon?: string, engineName: string}[]
 //b站动态有四种，转发、视频、文字与图画
 //而文本节点也有四种，文本，表情，@xxxx与话题
 export type dynamicContentNode = {
@@ -92,7 +92,7 @@ export type dynamicData = {
                     jump_url: string,
                     cover: string,
                     title: string,
-                    desc:string
+                    desc: string
                 }
             }
         }

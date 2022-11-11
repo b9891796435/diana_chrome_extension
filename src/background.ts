@@ -114,7 +114,7 @@ let getLiveWrapped = () => {
     dateCheck("liveTime", 120000, getLiveState)
 }
 let getMembersDynamicWrapped = () => {
-    dateCheck("dynamicTime", 600000, getMembersDynamic)
+    dateCheck("dynamicTime", 300000, getMembersDynamic)
 }
 getLiveWrapped()
 getScheduleWrapped()

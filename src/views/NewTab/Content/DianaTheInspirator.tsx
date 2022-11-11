@@ -1,6 +1,6 @@
 import React from "react";
 import quotes from "../../../constants/storagePrototype/quotes";
-import memberList,{ members } from "../../../constants/memberList";
+import memberList, { members } from "../../../constants/memberList";
 import tool from "../../../tool"
 import { chromeGet, chromeSet } from "../../../tool/storageHandle";
 const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法写不出动画
@@ -63,8 +63,8 @@ type stateType = {
     currentDialog: string,
     currentTimer: any,//AnyScript,永远滴神！
     autoTimer: any,
-    quotes:typeof quotes,
-    theme:members,
+    quotes: typeof quotes,
+    theme: members,
 }
 class DianaTheInspirator extends React.Component<{}, stateType>{
     constructor(props: any) {
@@ -76,7 +76,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             currentTimer: 0,
             autoTimer: 0,
             quotes,
-            theme:"diana"
+            theme: "diana"
         }
         let start: DOMHighResTimeStamp | undefined;
         let RAFfunc = (timestamp: DOMHighResTimeStamp) => {
@@ -88,13 +88,13 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             requestAnimationFrame(RAFfunc);
         }
         requestAnimationFrame(RAFfunc);
-        this.pokingDiana()
     }
-    componentDidMount=async()=>{
+    componentDidMount = async () => {
         this.setState({
-            quotes:await chromeGet("quotes"),
-            theme:await chromeGet("theme")
+            quotes: await chromeGet("quotes"),
+            theme: await chromeGet("theme")
         })
+        this.pokingDiana()
         console.log(this.state)
     }
     pokingDiana = async () => {//理论上这个巨大的函数应该单拆出一个文件的，不过这个是单人项目，所以，摆！
@@ -106,7 +106,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 }, 70000)
             })
         }
-        const theme=this.state.theme;
+        const theme = this.state.theme;
         //简单来讲，先判定问安，然后判定起身喝水，最后是日常语录
         if (document.hasFocus())
             if (this.state.currentTimer == 0) {//当前对话框未弹出
