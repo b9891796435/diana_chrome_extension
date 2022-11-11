@@ -30,7 +30,7 @@ class ToolItem extends React.Component<itemProp, itemState>{
             try {
                 this.setState({ favicon: await getFavicon(this.props.itemData.url) })
             } catch (e) {
-                if (await chrome.storage.local.get("debugMode")) console.log(e)
+                console.log(e)
             }
         }
     }
@@ -39,9 +39,9 @@ class ToolItem extends React.Component<itemProp, itemState>{
             e.dataTransfer.setData("text/plain", this.props.subscript.toString());
         }
     }
-    handleDrop: React.DragEventHandler<HTMLDivElement>= (e) => {
-        if("swap" in this.props){
-            this.props.swap(this.props.subscript,Number(e.dataTransfer.getData("text/plain")))
+    handleDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
+        if ("swap" in this.props) {
+            this.props.swap(this.props.subscript, Number(e.dataTransfer.getData("text/plain")))
         }
         e.preventDefault();
         e.stopPropagation();
@@ -72,13 +72,13 @@ class ToolItem extends React.Component<itemProp, itemState>{
     }
     render(): React.ReactNode {
         return (
-            <div 
-            className="toolItemChild" 
-            draggable={"edit" in this.props&&this.props.edit}
-            onDragStart={this.dragStartHandler}
-            onDrop={e => this.handleDrop(e)}
-            onDragEnter={e=>e.preventDefault()}
-            onDragOver={e=>e.preventDefault()}
+            <div
+                className="toolItemChild"
+                draggable={"edit" in this.props && this.props.edit}
+                onDragStart={this.dragStartHandler}
+                onDrop={e => this.handleDrop(e)}
+                onDragEnter={e => e.preventDefault()}
+                onDragOver={e => e.preventDefault()}
             >
                 {this.contentBlock()}
             </div>
