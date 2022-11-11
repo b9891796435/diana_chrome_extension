@@ -12,7 +12,7 @@ type member={
     livingRoom:string,
     themeImg:themePack
 }
-export type members="ava"|"bella"|"carol"|"diana"|"eileen"
+export type members="ava"|"bella"|"diana"|"eileen"
 type list = {
     [index in members]: member
 }
@@ -41,19 +41,6 @@ const memberList:list={
             error:require("../assets/images/themePack/ava/error.png"),
             meme:require("../assets/images/themePack/ava/meme.png"),
             positions:[require("../assets/images/themePack/ava/position0.png"),require("../assets/images/themePack/ava/position1.png")]
-        }
-    },
-    carol:{
-        chineseName:"珈乐",
-        uid:"351609538",
-        avatar:require("../assets/images/carolAvatar.webp"),
-        post:require("../assets/images/carolLivingPost.webp"),
-        livingRoom:"https://live.bilibili.com/22634198?broadcast_type=0&is_room_feed=1",
-        themeImg:{
-            idol:require("../assets/images/themePack/carol/idol.png"),
-            error:require("../assets/images/themePack/carol/error.png"),
-            meme:require("../assets/images/themePack/carol/meme.png"),
-            positions:[require("../assets/images/themePack/carol/position0.png"),require("../assets/images/themePack/carol/position1.png")]
         }
     },
     eileen:{

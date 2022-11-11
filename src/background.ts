@@ -1,6 +1,6 @@
 import { fixStorage } from "./tool/fixStorage"
-import { chromeGet, chromeSet } from "./tool/storageHandle";
-import memberList from "./constants/memberList"
+import { chromeGet, chromeSet, dynamicListType } from "./tool/storageHandle";
+import memberList, { members } from "./constants/memberList"
 import type { dynamicData, liveType } from "./tool/storageHandle"
 chrome.runtime.onInstalled.addListener(fixStorage);
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
@@ -31,18 +31,35 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
     }
 }
 //b站居然改API了
-export const getDynamic = async (page: number, host_uid: number) => {
+export const getDynamic = async (page: number, host_uid: string) => {
     let offset = '';
     let resArray: dynamicData[] = []
     for (let i = 0; i < page; i++) {
-        let req = await fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?offset=${offset}&host_mid=${host_uid}&timezone_offset=-480`)
-        let resObj = await req.json();
+        let res = await fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?offset=${offset}&host_mid=${host_uid}&timezone_offset=-480`)
+        let resObj = await res.json();
         if (resObj.code == 0) {
             offset = resObj.data.offset;
-            resArray.concat(resObj.data.items)
+            resArray = resArray.concat(resObj.data.items)
         }
     }
     return resArray
+}
+export const getMembersDynamic = async () => {
+    let temp: dynamicListType = {
+        ava: [],
+        bella: [],
+        diana: [],
+        eileen: [],
+    };
+    let pages = await chromeGet('dynamicPages');
+    for (let i in temp) {
+        let res=await getDynamic(pages, memberList[i as members].uid)
+        temp[i as members] = temp[i as members].concat(res)
+    }
+    chromeSet({
+        dynamicData: temp,
+        dynamicTime: Date.now(),
+    })
 }
 export const getScheduleState = async () => {
     let res;
@@ -96,8 +113,14 @@ let getScheduleWrapped = () => {
 let getLiveWrapped = () => {
     dateCheck("liveTime", 120000, getLiveState)
 }
+let getMembersDynamicWrapped = () => {
+    dateCheck("dynamicTime", 600000, getMembersDynamic)
+}
 getLiveWrapped()
 getScheduleWrapped()
-setInterval(getLiveWrapped, 120000)
-setInterval(getScheduleWrapped, 600000)
+getMembersDynamicWrapped()
+setInterval(getLiveWrapped, 30000)
+setInterval(getScheduleWrapped, 30000)
+setInterval(getMembersDynamicWrapped, 30000);
+(window as any).asdfasdf=getMembersDynamic
 export { }

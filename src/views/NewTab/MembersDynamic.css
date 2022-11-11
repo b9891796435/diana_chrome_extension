@@ -1,0 +1,81 @@
+.dynamicItem {
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 24px 0;
+}
+
+.dynamicTitle {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+
+.dynamicAvatar {
+    display: block;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: solid 3px rgb(var(--fan));
+    margin: 0 8px;
+}
+
+.dynamicContent {
+    font-size: 16px;
+    white-space: pre-wrap;
+}
+
+.dynamicContent>a {
+    color: #00a1d6
+}
+
+.dynamicContent .dynamicEmoji {
+    width: 32px;
+    height: 32px;
+}
+
+.dynamicForward {
+    background-color: rgb(var(--ui-2));
+    border-radius: 4px;
+    padding: 4px 0
+}
+
+.dynamicGallery {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.dynamicGallery>img {
+    display: block;
+    width: 228px;
+    height: 228px;
+}
+
+.dynamicAv {
+    display: flex;
+    flex-direction: row;
+    height: 127px;
+    width: 520px;
+    margin: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dynamicAv>img {
+    display: block;
+    width: 203px;
+}
+
+.dynamicAv>div {
+    overflow-y: scroll;
+    background: rgb(var(--ui-2));
+    padding: 8px;
+}
+
+.dynamicAv .dynamicAvDesc {
+    font-size: 0.9em;
+    font-weight: 400;
+    color: #444;
+}

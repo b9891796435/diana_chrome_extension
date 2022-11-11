@@ -20,9 +20,10 @@ type settingsState = {
   isError: boolean,
   defaultEngine: number,
   searchEngine: searchEngineType,
-  hideCarol:boolean,
-  showTopsite:boolean,
-  showNavigation:boolean,
+  hideCarol: boolean,
+  showTopsite: boolean,
+  showNavigation: boolean,
+  dynamicPages: string
 }
 type quotesArrayName = "daily" | "notice"
 type quotesSingleName = "morning" | "noon" | "evening" | "night"
@@ -96,6 +97,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       theme: "diana",
       quotes: errorQuote,
       noticeTime: "",
+      dynamicPages: '',
       shouldShowNotice: true,
       fetchLive: true,
       infoMessage: "",
@@ -107,23 +109,24 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           engineName: "数据损坏"
         },
       ],
-      hideCarol:true,
-      showNavigation:true,
-      showTopsite:false,
+      hideCarol: true,
+      showNavigation: true,
+      showTopsite: false,
     }
   }
   async componentDidMount() {
     this.setState({
       quotes: await chromeGet("quotes"),
       noticeTime: (await chromeGet("noticeTime")).toString(),
+      dynamicPages: (await chromeGet("dynamicPages")).toString(),
       shouldShowNotice: await chromeGet("shouldShowNotice"),
       fetchLive: await chromeGet("fetchLive"),
       defaultEngine: await chromeGet("defaultEngine"),
       searchEngine: await chromeGet("searchEngine"),
       theme: await chromeGet("theme"),
       hideCarol: await chromeGet("hideCarol"),
-      showNavigation:await chromeGet("showNavigation"),
-      showTopsite:await chromeGet("showTopsite")
+      showNavigation: await chromeGet("showNavigation"),
+      showTopsite: await chromeGet("showTopsite")
     })
   }
   handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {
@@ -181,14 +184,15 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     chromeSet({
       quotes: this.state.quotes,
       noticeTime: Number(this.state.noticeTime),
+      dynamicPages: Number(this.state.dynamicPages),
       shouldShowNotice: this.state.shouldShowNotice,
       fetchLive: this.state.fetchLive,
       defaultEngine: this.state.defaultEngine,
       searchEngine: this.state.searchEngine,
       theme: this.state.theme,
-      hideCarol:this.state.hideCarol,
-      showNavigation:this.state.showNavigation,
-      showTopsite:this.state.showTopsite
+      hideCarol: this.state.hideCarol,
+      showNavigation: this.state.showNavigation,
+      showTopsite: this.state.showTopsite
     })
   }
   EngineRender = () => {
@@ -242,18 +246,17 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     }
     return optionsArray;
   }
-  resetQuote=()=>{
-    let temp=this.state.quotes;
-    temp[this.state.theme]=quotes[this.state.theme]
+  resetQuote = () => {
+    let temp = this.state.quotes;
+    temp[this.state.theme] = quotes[this.state.theme]
     this.setState({
-      quotes:temp
+      quotes: temp
     })
   }
   selectTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
     switch (e.target.value) {
       case "ava":
       case "bella":
-      case "carol":
       case "diana":
       case "eileen":
         this.setState({
@@ -284,7 +287,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
             {this.optionsThemeRender()}
           </select>
           <h1>对话文本设置
-          <MyButton text='重置当前主题文本' onClick={this.resetQuote}></MyButton></h1>
+            <MyButton text='重置当前主题文本' onClick={this.resetQuote}></MyButton></h1>
           <ArrayRender
             data={this.state.quotes[this.state.theme].daily}
             label="日常" newItem={this.handleDialogForArray("daily", "new")}
@@ -317,25 +320,22 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           </div>
           <h1>其他设置</h1>
           <MyInput label="久坐提醒间隔时间（单位：毫秒）" value={this.state.noticeTime} onChange={e => this.setState({ noticeTime: e.target.value })}></MyInput>
+          <MyInput label="成员朋友圈抓取页数（每页12条，设置过高会导致无法使用b站api）" value={this.state.dynamicPages} onChange={e => this.setState({ dynamicPages: e.target.value })}></MyInput>
           <div>
             <span className='myInputForDianaContainer'>是否开启跨页久坐提醒:</span>
-            <input type="checkbox" style={checkboxStyle} {...{checked:this.state.shouldShowNotice}} onClick={()=>this.setState({ shouldShowNotice:!this.state.shouldShowNotice })}/>
+            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.shouldShowNotice }} onClick={() => this.setState({ shouldShowNotice: !this.state.shouldShowNotice })} />
           </div>
           <div>
             <span className='myInputForDianaContainer'>是否开启直播间状态检测:</span>
-            <input type="checkbox" style={checkboxStyle} {...{checked:this.state.fetchLive}} onClick={()=>this.setState({ fetchLive:!this.state.fetchLive })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否隐藏主页珈乐传送门:</span>
-            <input type="checkbox" style={checkboxStyle} {...{checked:this.state.hideCarol}} onClick={()=>this.setState({ hideCarol:!this.state.hideCarol })}/>
+            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.fetchLive }} onClick={() => this.setState({ fetchLive: !this.state.fetchLive })} />
           </div>
           <div>
             <span className='myInputForDianaContainer'>是否显示快捷导航:</span>
-            <input type="checkbox" style={checkboxStyle} {...{checked:this.state.showNavigation}} onClick={()=>this.setState({ showNavigation:!this.state.showNavigation })} />
+            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showNavigation }} onClick={() => this.setState({ showNavigation: !this.state.showNavigation })} />
           </div>
           <div>
             <span className='myInputForDianaContainer'>是否显示常用网页:</span>
-            <input type="checkbox" style={checkboxStyle} {...{checked:this.state.showTopsite}} onClick={()=>this.setState({ showTopsite:!this.state.showTopsite })} />
+            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showTopsite }} onClick={() => this.setState({ showTopsite: !this.state.showTopsite })} />
           </div>
           <div>
             <MyMessage text={this.state.infoMessage} style={{ display: this.state.infoMessage ? "block" : "none", backgroundColor: this.state.isError ? "#ff4d4f" : "#52c41a" }}></MyMessage>

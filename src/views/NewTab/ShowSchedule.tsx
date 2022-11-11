@@ -105,7 +105,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
     }
     render(): React.ReactNode {//突然感受到可复用组件的力量了
         let ScheduleContent = this.scheduleContent
-        return (<div style={{ marginLeft: "auto" }}>
+        return (<div>
             <MyButton text="直播日程表" onClick={this.showSchedule}></MyButton>
             <PopupBox header={<div>直播日程表</div>} visible={this.state.scheduleVisible}>
                 <div>

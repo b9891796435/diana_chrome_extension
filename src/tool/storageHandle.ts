@@ -7,7 +7,7 @@ export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date"
     | "morning" | "noon" | "evening" | "night" | "notice"
     | "tabCount" | "toolList" | "liveState" | "fetchLive"
     | "scheduleState" | "liveTime" | "searchEngine" | "defaultEngine"
-    | "theme" | "hideCarol" | "showNavigation" | "showTopsite"
+    | "theme" | "hideCarol" | "showNavigation" | "showTopsite" | "dynamicData" | "dynamicPages" | "dynamicTime"
 export type liveType = members | "none" | "error"
 type schedule = {
     images: {
@@ -44,16 +44,32 @@ export type dynamicData = {
     id_str: string,
     type: 'DYNAMIC_TYPE_WORD',
     modules: {
+        module_author: {
+            mid: number,
+            pub_ts: number,
+            name: string,
+            face: string,
+            pub_time: string,
+            jump_url: string
+        },
         module_dynamic: {
-            desc: dynamicContentNode[]
+            desc: { rich_text_nodes: null | dynamicContentNode[] }
         }
     },
 } | {
     id_str: string,
     type: 'DYNAMIC_TYPE_FORWARD',
     modules: {
+        module_author: {
+            mid: number
+            pub_ts: number
+            name: string
+            face: string,
+            pub_time: string
+            jump_url: string
+        },
         module_dynamic: {
-            desc: dynamicContentNode[]
+            desc: { rich_text_nodes: null | dynamicContentNode[] }
         }
     },
     orig: dynamicData
@@ -61,13 +77,22 @@ export type dynamicData = {
     id_str: string,
     type: 'DYNAMIC_TYPE_AV',
     modules: {
+        module_author: {
+            mid: number
+            pub_ts: number
+            name: string
+            face: string,
+            pub_time: string
+            jump_url: string
+        },
         module_dynamic: {
-            desc: dynamicContentNode[],
-            major:{
-                archive:{
-                    jump_url:string,
-                    cover:string,
-                    title:string,
+            desc: { rich_text_nodes: null | dynamicContentNode[] },
+            major: {
+                archive: {
+                    jump_url: string,
+                    cover: string,
+                    title: string,
+                    desc:string
                 }
             }
         }
@@ -76,24 +101,32 @@ export type dynamicData = {
     id_str: string,
     type: 'DYNAMIC_TYPE_DRAW',
     modules: {
+        module_author: {
+            mid: number
+            pub_ts: number
+            name: string
+            face: string,
+            pub_time: string
+            jump_url: string
+        },
         module_dynamic: {
-            desc: dynamicContentNode[],
-            major:{
-                draw:{
-                    items:{
-                        src:string;
-                    }
+            desc: { rich_text_nodes: null | dynamicContentNode[] },
+            major: {
+                draw: {
+                    items: {
+                        src: string;
+                    }[]
                 }
             }
         }
     }
 }
-export const summaryBackdrop='@228w_228h_1e_1c.webp'
+export const summaryBackdrop = '@228w_228h_1e_1c.webp'
 export type dynamicListType = {
-    
+    [key in members]: dynamicData[]
 }
 type getRes = {
-    (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine"): Promise<number>,
+    (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime"): Promise<number>,
     (key: "shouldShowNotice" | "morning" | "noon" | "evening" | "night" | "fetchLive" | "hideCarol" | "showNavigation" | "showTopsite"): Promise<boolean>,
     (key: "date"): Promise<string>,
     (key: "quotes"): Promise<quotesType>
@@ -102,6 +135,7 @@ type getRes = {
     (key: "scheduleState"): Promise<scheduleType>
     (key: "searchEngine"): Promise<searchEngineType>
     (key: "theme"): Promise<members>
+    (key: 'dynamicData'): Promise<dynamicListType>
 }
 type storageValues = {
     noticeTime?: number,
@@ -109,6 +143,8 @@ type storageValues = {
     tabCount?: number,
     liveTime?: number,
     defaultEngine?: number,
+    dynamicPages?: number,
+    dynamicTime?: number,
     shouldShowNotice?: boolean,
     morning?: boolean,
     noon?: boolean,
@@ -125,6 +161,7 @@ type storageValues = {
     scheduleState?: scheduleType,
     searchEngine?: searchEngineType,
     theme?: members,
+    dynamicData?: dynamicListType,
 }
 export const chromeGet: getRes = async (key: storageKeys) => {
     let res = await chrome.storage.local.get(key);
