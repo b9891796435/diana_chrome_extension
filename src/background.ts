@@ -122,5 +122,4 @@ getMembersDynamicWrapped()
 setInterval(getLiveWrapped, 30000)
 setInterval(getScheduleWrapped, 30000)
 setInterval(getMembersDynamicWrapped, 30000);
-(window as any).asdfasdf=getMembersDynamic
 export { }

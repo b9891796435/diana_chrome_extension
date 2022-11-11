@@ -8,7 +8,6 @@ import "./ShowSchedule.css";
 type scheduleState = {
     scheduleVisible: boolean,
     scheduleNow: scheduleType,
-    currentImage: number,
     isGettingSchedule: boolean
 }
 export default class ShowSchedule extends React.Component<{}, scheduleState>{
@@ -17,7 +16,6 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
         this.state = {
             scheduleVisible: false,
             scheduleNow: 0,
-            currentImage: 0,
             isGettingSchedule: false,
         }
     }
@@ -50,17 +48,8 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
     ImageRender = () => {//麻了，这就是屎山吗
         if (typeof (this.state.scheduleNow) !== "number") {
             let nodeArray: JSX.Element[] = []
-            let jumpImg = (imgId: number) => {
-                this.setState({
-                    currentImage: imgId
-                })
-            }
-            for (let i in this.state.scheduleNow.images) {
-                nodeArray.push((<span className={Number(i) === this.state.currentImage ? "" : "linkClass"} onClick={() => jumpImg(Number(i))}> {Number(i) + 1}</span>))
-            }
-            let click = () => {
-                // @ts-expect-error
-                window.open(this.state.scheduleNow.images[this.state.currentImage].img_src)
+            for (let i of this.state.scheduleNow.images) {
+                nodeArray.push(<img src={i.img_src} style={{ width: "100%" }} onClick={() => window.open(i.img_src)}></img>)
             }
             let jumpToDynamic = () => {
                 if (typeof this.state.scheduleNow !== 'number') {
@@ -72,10 +61,8 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
                     <div>
                         日程表共{this.state.scheduleNow.images.length}张,
                         <span className={"linkClass"} onClick={jumpToDynamic}>跳转至日程表动态</span><br />
-                        [ {nodeArray} ]<br />
-                        切换时会有一段加载时间
                     </div>
-                    <img src={this.state.scheduleNow.images[this.state.currentImage].img_src} style={{ width: "100%" }} onClick={click} alt="" />
+                    {nodeArray}
                 </div>
             )
         } else {
