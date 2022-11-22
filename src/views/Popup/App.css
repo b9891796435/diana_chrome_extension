@@ -41,7 +41,7 @@ body {
 }
 .App div:first-child{
   position:relative;
-  height: 30px;
+  height: 24px;
 } 
 .App div:first-child img{
   position:absolute;
