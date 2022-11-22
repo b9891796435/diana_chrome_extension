@@ -19,7 +19,7 @@ type schedule = {
 
 }
 export type scheduleType = schedule | number
-export type searchEngineType = { url: string, icon?: string, engineName: string}[]
+export type searchEngineType = { url: string, icon?: string, engineName: string }[]
 //b站动态有四种，转发、视频、文字与图画
 //而文本节点也有四种，文本，表情，@xxxx与话题
 export type dynamicContentNode = {
@@ -40,18 +40,19 @@ export type dynamicContentNode = {
     text: string,
     rid: string,
 }
+export type authorModule = {
+    mid: number,
+    pub_ts: number,
+    name: string,
+    face: string,
+    pub_time: string,
+    jump_url: string
+}
 export type dynamicData = {
     id_str: string,
     type: 'DYNAMIC_TYPE_WORD',
     modules: {
-        module_author: {
-            mid: number,
-            pub_ts: number,
-            name: string,
-            face: string,
-            pub_time: string,
-            jump_url: string
-        },
+        module_author: authorModule,
         module_dynamic: {
             desc: { rich_text_nodes: null | dynamicContentNode[] }
         }
@@ -60,14 +61,7 @@ export type dynamicData = {
     id_str: string,
     type: 'DYNAMIC_TYPE_FORWARD',
     modules: {
-        module_author: {
-            mid: number
-            pub_ts: number
-            name: string
-            face: string,
-            pub_time: string
-            jump_url: string
-        },
+        module_author: authorModule,
         module_dynamic: {
             desc: { rich_text_nodes: null | dynamicContentNode[] }
         }
@@ -77,14 +71,7 @@ export type dynamicData = {
     id_str: string,
     type: 'DYNAMIC_TYPE_AV',
     modules: {
-        module_author: {
-            mid: number
-            pub_ts: number
-            name: string
-            face: string,
-            pub_time: string
-            jump_url: string
-        },
+        module_author: authorModule,
         module_dynamic: {
             desc: { rich_text_nodes: null | dynamicContentNode[] },
             major: {
@@ -101,14 +88,7 @@ export type dynamicData = {
     id_str: string,
     type: 'DYNAMIC_TYPE_DRAW',
     modules: {
-        module_author: {
-            mid: number
-            pub_ts: number
-            name: string
-            face: string,
-            pub_time: string
-            jump_url: string
-        },
+        module_author: authorModule,
         module_dynamic: {
             desc: { rich_text_nodes: null | dynamicContentNode[] },
             major: {
@@ -117,6 +97,21 @@ export type dynamicData = {
                         src: string;
                     }[]
                 }
+            }
+        }
+    }
+} | {
+    id_str: string,
+    type: 'DYNAMIC_TYPE_LIVE_RCMD',
+    modules: {
+        module_author: authorModule,
+        module_dynamic: {
+            desc: { rich_text_nodes: null | dynamicContentNode[] },
+            major: {
+                live_rcmd: {
+                    content: string
+                },
+                type: "MAJOR_TYPE_LIVE_RCMD"
             }
         }
     }
