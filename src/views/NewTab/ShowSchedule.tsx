@@ -23,7 +23,6 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
         this.setState({
             scheduleNow: await chromeGet("scheduleState"),
         });
-        console.log(this.state)
         chrome.storage.onChanged.addListener(async key => {
             if (key.scheduleState) {
                 this.setState({ scheduleNow: key.scheduleState.newValue });

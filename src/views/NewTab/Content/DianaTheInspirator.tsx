@@ -95,7 +95,6 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             theme: await chromeGet("theme")
         })
         this.pokingDiana()
-        console.log(this.state)
     }
     pokingDiana = async () => {//理论上这个巨大的函数应该单拆出一个文件的，不过这个是单人项目，所以，摆！
         const setRetrigger = () => {
