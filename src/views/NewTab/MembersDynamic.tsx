@@ -1,6 +1,6 @@
 import React from "react";
 import { getScheduleState } from "../../background";
-import { chromeGet, dynamicData, dynamicListType, summaryBackdrop } from "../../tool/storageHandle";
+import { chromeGet, dynamicData, dynamicListType, liveRCMDType, summaryBackdrop } from "../../tool/storageHandle";
 import memberList, { members } from "../../constants/memberList";
 import PopupBox from "../../components/PopupBox";
 import MyButton from "../../components/MyButton";
@@ -33,6 +33,9 @@ export default class MembersDynamic extends React.Component<{}, membersDynamicSt
                 this.setState({ membersDynamicNow: key.dynamicData.newValue });
             }
         })
+        if (window.location.hash === ("#dynamic")) {
+            this.setState({ membersDynamicVisible: true })
+        }
     }
     showDynamic = () => {
         this.setState({ membersDynamicVisible: this.state.membersDynamicVisible ? false : true })
@@ -91,6 +94,20 @@ export default class MembersDynamic extends React.Component<{}, membersDynamicSt
                     <div>
                         <div>{avDetail.title}</div>
                         <div className="dynamicAvDesc">{avDetail.desc}</div>
+                    </div>
+                </div>
+            </a>
+            )
+        }
+        if (dynamic.type == "DYNAMIC_TYPE_LIVE_RCMD") {
+            let liveDetail: liveRCMDType = JSON.parse(dynamic.modules.module_dynamic.major.live_rcmd.content);
+            nodeArray.push(<a href={'https:' + liveDetail.live_play_info.link} target='_blank'>
+                <div className="dynamicAv">
+                    <img src={liveDetail.live_play_info.cover} alt="" />
+                    <div>
+                        <div>{liveDetail.live_play_info.title}</div>
+
+                        <div className="dynamicAvDesc">正在直播中~</div>
                     </div>
                 </div>
             </a>

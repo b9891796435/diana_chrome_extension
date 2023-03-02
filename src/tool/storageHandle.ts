@@ -8,6 +8,7 @@ export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date"
     | "tabCount" | "toolList" | "liveState" | "fetchLive"
     | "scheduleState" | "liveTime" | "searchEngine" | "defaultEngine"
     | "theme" | "hideCarol" | "showNavigation" | "showTopsite" | "dynamicData" | "dynamicPages" | "dynamicTime"
+    | "showLiveBadge" | "showDynamicBadge" | "dynamicBadgeText" | "updateNoticeIDSTR" | "lastDynamicIDSTR"
 export type liveType = members | "none" | "error"
 type schedule = {
     images: {
@@ -116,14 +117,27 @@ export type dynamicData = {
         }
     }
 }
+export type liveRCMDType = {
+    live_play_info: {
+        cover: string,
+        title: string,
+        link: string,
+    }
+}
+export type lastDynamicRecord = {
+    [key in members]: string
+}
 export const summaryBackdrop = '@228w_228h_1e_1c.webp'
 export type dynamicListType = {
     [key in members]: dynamicData[]
 }
 type getRes = {
-    (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime"): Promise<number>,
-    (key: "shouldShowNotice" | "morning" | "noon" | "evening" | "night" | "fetchLive" | "hideCarol" | "showNavigation" | "showTopsite"): Promise<boolean>,
-    (key: "date"): Promise<string>,
+    (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime" | "dynamicBadgeText"): Promise<number>,
+    (key: "shouldShowNotice"
+        | "morning" | "noon" | "evening" | "night" | "fetchLive"
+        | "hideCarol" | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
+    (key: "date" | "updateNoticeIDSTR"): Promise<string>,
+    (key: "lastDynamicIDSTR"): Promise<lastDynamicRecord>,
     (key: "quotes"): Promise<quotesType>
     (key: "toolList"): Promise<toolItemData[]>
     (key: "liveState"): Promise<liveType>
@@ -140,6 +154,7 @@ type storageValues = {
     defaultEngine?: number,
     dynamicPages?: number,
     dynamicTime?: number,
+    dynamicBadgeText?: number,
     shouldShowNotice?: boolean,
     morning?: boolean,
     noon?: boolean,
@@ -148,7 +163,11 @@ type storageValues = {
     hideCarol?: boolean,
     showNavigation?: boolean,
     showTopsite?: boolean,
+    showLiveBadge?: boolean,
+    showDynamicBadge?: boolean,
     date?: string,
+    updateNoticeIDSTR?: string,
+    lastDynamicIDSTR?: lastDynamicRecord,
     quotes?: quotesType,
     toolList?: toolItemData[],
     liveState?: liveType,
