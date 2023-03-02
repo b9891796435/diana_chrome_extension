@@ -3,6 +3,21 @@ import { chromeGet, chromeSet, dynamicListType } from "./tool/storageHandle";
 import memberList, { members } from "./constants/memberList"
 import type { dynamicData, liveType } from "./tool/storageHandle"
 chrome.runtime.onInstalled.addListener(fixStorage);
+export const renderDynamicBadge = async () => {
+    let liveState = await chromeGet('liveState');
+    let liveBadge = await chromeGet('showLiveBadge');
+    let badgeCount = await chromeGet('dynamicBadgeText');
+    await chrome.action.setBadgeBackgroundColor({ color: 'rgb(255,240,246)' })
+    //@ts-ignore
+    await chrome.action.setBadgeTextColor({ color: 'rgb(120,6,80)' })
+    if (liveBadge && !(liveState === 'none' || liveState === 'error')) {
+        chrome.action.setBadgeText({ text: 'LIVE' });
+    } else if (await chromeGet('showDynamicBadge') && badgeCount !== 0) {
+        chrome.action.setBadgeText({ text: String(badgeCount) })
+    } else {
+        chrome.action.setBadgeText({ text: '' });
+    }
+}
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
     let i: keyof typeof memberList;
     let temp: liveType = "none"
@@ -21,14 +36,16 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
             }
         }
         chromeSet({ liveState: temp });
-
+        renderDynamicBadge()
     } catch (e) {
         console.log(e);
         chromeSet({
             liveState: "error",
-            liveTime: Date.now()
         });
     }
+    chromeSet({
+        liveTime: Date.now()
+    })
 }
 //b站居然改API了
 export const getDynamic = async (page: number, host_uid: string) => {
@@ -52,14 +69,35 @@ export const getMembersDynamic = async () => {
         eileen: [],
     };
     let pages = await chromeGet('dynamicPages');
-    for (let i in temp) {
-        let res=await getDynamic(pages, memberList[i as members].uid)
-        temp[i as members] = temp[i as members].concat(res)
+    if (await chromeGet('showDynamicBadge')) {
+        let lastIDSTR = await chromeGet('lastDynamicIDSTR');
+        let badgeCount = await chromeGet('dynamicBadgeText');
+        for (let i in temp) {
+            let res = await getDynamic(pages, memberList[i as members].uid)
+            if (res[0].id_str != lastIDSTR[i as members]) {
+                badgeCount++;
+            }
+            temp[i as members] = temp[i as members].concat(res)
+        }
+        await chromeSet({ dynamicBadgeText: badgeCount });
+        renderDynamicBadge();
+    } else {
+        for (let i in temp) {
+            let res = await getDynamic(pages, memberList[i as members].uid)
+            temp[i as members] = temp[i as members].concat(res)
+        }
     }
     chromeSet({
         dynamicData: temp,
         dynamicTime: Date.now(),
+        lastDynamicIDSTR: {
+            ava: temp.ava[0].id_str,
+            bella: temp.bella[0].id_str,
+            diana: temp.diana[0].id_str,
+            eileen: temp.eileen[0].id_str
+        }
     })
+    console.log(temp);
 }
 export const getScheduleState = async () => {
     let res;
@@ -73,7 +111,6 @@ export const getScheduleState = async () => {
             let cardList = res.data.cards;
             for (let i of cardList) {
                 let card = JSON.parse(i.card).item;
-                console.log(JSON.parse(i.card))
                 let description = card?.description as string | undefined;
                 if (description && description.match("日程表")) {
                     chromeSet({
@@ -116,10 +153,11 @@ let getLiveWrapped = () => {
 let getMembersDynamicWrapped = () => {
     dateCheck("dynamicTime", 300000, getMembersDynamic)
 }
-getLiveWrapped()
-getScheduleWrapped()
-getMembersDynamicWrapped()
-setInterval(getLiveWrapped, 30000)
-setInterval(getScheduleWrapped, 30000)
+getLiveWrapped();
+getScheduleWrapped();
+getMembersDynamicWrapped();
+renderDynamicBadge();
+setInterval(getLiveWrapped, 30000);
+setInterval(getScheduleWrapped, 30000);
 setInterval(getMembersDynamicWrapped, 30000);
 export { }
