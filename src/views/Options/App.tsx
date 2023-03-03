@@ -359,7 +359,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           </div>
           <div style={{ display: "flex" }}>
             <MyButton text={"保存"} onClick={this.saveSetting} />
-            <MyButton text={"重置设置"} onClick={() => { if (window.confirm("即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），是否确认？")) resetStorage() }} />
+            <MyButton text={"重置设置"} onClick={() => { if (window.confirm("即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），是否确认？")) if (window.confirm("您即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），该操作无法撤销！该操作无法撤销！该操作无法撤销！是否确认？")) resetStorage() }} />
           </div>
         </div>
       </div>

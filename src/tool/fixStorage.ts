@@ -135,10 +135,10 @@ export const fixStorage = () => {
                 })
             }
         }),
-        chrome.storage.local.get("updateNoticeIDSTR").then(res => {
-            if (res.updateNoticeIDSTR === undefined) {
+        chrome.storage.local.get("knownVersion").then(res => {
+            if (res.knownVersion === undefined) {
                 chrome.storage.local.set({
-                    updateNoticeIDSTR: "0"
+                    knownVersion: chrome.runtime.getManifest().version,
                 })
             }
         }),
@@ -224,7 +224,7 @@ export const resetStorage = () => {
         theme: "diana"
     });
     chrome.storage.local.set({
-        updateNoticeIDSTR: "0"
+        knownVersion: chrome.runtime.getManifest().version,
     })
     chrome.storage.local.set({
         dynamicData: {

@@ -8,7 +8,7 @@ export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date"
     | "tabCount" | "toolList" | "liveState" | "fetchLive"
     | "scheduleState" | "liveTime" | "searchEngine" | "defaultEngine"
     | "theme" | "hideCarol" | "showNavigation" | "showTopsite" | "dynamicData" | "dynamicPages" | "dynamicTime"
-    | "showLiveBadge" | "showDynamicBadge" | "dynamicBadgeText" | "updateNoticeIDSTR" | "lastDynamicIDSTR"
+    | "showLiveBadge" | "showDynamicBadge" | "dynamicBadgeText" | "knownVersion" | "lastDynamicIDSTR" | "knownVersion"
 export type liveType = members | "none" | "error"
 type schedule = {
     images: {
@@ -136,7 +136,7 @@ type getRes = {
     (key: "shouldShowNotice"
         | "morning" | "noon" | "evening" | "night" | "fetchLive"
         | "hideCarol" | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
-    (key: "date" | "updateNoticeIDSTR"): Promise<string>,
+    (key: "date" | "knownVersion"): Promise<string>,
     (key: "lastDynamicIDSTR"): Promise<lastDynamicRecord>,
     (key: "quotes"): Promise<quotesType>
     (key: "toolList"): Promise<toolItemData[]>
@@ -166,7 +166,7 @@ type storageValues = {
     showLiveBadge?: boolean,
     showDynamicBadge?: boolean,
     date?: string,
-    updateNoticeIDSTR?: string,
+    knownVersion?: string,
     lastDynamicIDSTR?: lastDynamicRecord,
     quotes?: quotesType,
     toolList?: toolItemData[],

@@ -74,12 +74,22 @@ export const getMembersDynamic = async () => {
         let badgeCount = await chromeGet('dynamicBadgeText');
         for (let i in temp) {
             let res = await getDynamic(pages, memberList[i as members].uid)
-            if (res[0].id_str != lastIDSTR[i as members]) {
+            res = res.sort((a, b) => b.modules.module_author.pub_ts - a.modules.module_author.pub_ts);//获得按时间排序的动态
+            if (res[0].type != 'DYNAMIC_TYPE_LIVE_RCMD') {
+                if (res[0].id_str != lastIDSTR[i as members]) {
+                    lastIDSTR[i as members] = res[0].id_str;
+                    badgeCount++;
+                }
+            } else if (res[1].id_str != lastIDSTR[i as members]) {
+                lastIDSTR[i as members] = res[1].id_str;
                 badgeCount++;
             }
             temp[i as members] = temp[i as members].concat(res)
         }
-        await chromeSet({ dynamicBadgeText: badgeCount });
+        await chromeSet({
+            dynamicBadgeText: badgeCount,
+            lastDynamicIDSTR: lastIDSTR
+        });
         renderDynamicBadge();
     } else {
         for (let i in temp) {
@@ -90,12 +100,6 @@ export const getMembersDynamic = async () => {
     chromeSet({
         dynamicData: temp,
         dynamicTime: Date.now(),
-        lastDynamicIDSTR: {
-            ava: temp.ava[0].id_str,
-            bella: temp.bella[0].id_str,
-            diana: temp.diana[0].id_str,
-            eileen: temp.eileen[0].id_str
-        }
     })
     console.log(temp);
 }
@@ -130,6 +134,26 @@ export const getScheduleState = async () => {
         console.log(e, res)
         chromeSet({ scheduleState: Date.now() })
     }
+}
+export const getUpdate = async () => {
+    let res = await getDynamic(2, '104319441');
+    for (let i of res) {
+        let context = i.modules.module_dynamic.desc.rich_text_nodes;
+        if (i.type == 'DYNAMIC_TYPE_WORD' && context) {
+            try {
+                let newVersion = JSON.parse(context[0].text).version;
+                let nowVersion = await chromeGet('knownVersion');
+                if (newVersion !== nowVersion) {
+                    return JSON.parse(context[0].text) as { version: string, url: string, content: string };
+                } else {
+                    return null;
+                }
+            } catch (e) {
+                continue;
+            }
+        }
+    }
+    return null;
 }
 let dateCheck = async (propName: any, timeout: number, func: Function) => {
     let time = await chromeGet(propName) as any;
