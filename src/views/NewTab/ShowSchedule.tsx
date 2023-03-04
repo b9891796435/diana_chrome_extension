@@ -65,7 +65,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
                 </div>
             )
         } else {
-            return (<div>adsfafadsfa</div>);
+            return (<div>这是什么？bug，修一下……这是什么？bug，修一下……这是什么？bug，修一下……这是什么？bug，修一下……</div>);
         }
     }
     scheduleContent = () => {

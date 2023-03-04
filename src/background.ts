@@ -142,8 +142,16 @@ export const getUpdate = async () => {
         if (i.type == 'DYNAMIC_TYPE_WORD' && context) {
             try {
                 let newVersion = JSON.parse(context[0].text).version;
-                let nowVersion = await chromeGet('knownVersion');
-                if (newVersion !== nowVersion) {
+                let nowVersion = chrome.runtime.getManifest().version;
+                let nowVersionArray = nowVersion.split('.').map((i: string) => Number(i));
+                let knownVersion = (await chromeGet('knownVersion'));
+                let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));
+                if (nowVersionArray[0] > knownVersionArray[0] || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] > knownVersionArray[1]) || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] == knownVersionArray[1] && nowVersionArray[2] < knownVersionArray[2])) {
+                    await chromeSet({ knownVersion: chrome.runtime.getManifest().version })
+                    knownVersion = nowVersion;
+                }
+                if (newVersion !== knownVersion) {
+                    console.log(newVersion,nowVersion,knownVersion)
                     return JSON.parse(context[0].text) as { version: string, url: string, content: string };
                 } else {
                     return null;
