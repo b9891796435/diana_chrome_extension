@@ -6,7 +6,7 @@ export const fixStorage = () => {
             if (res.quotes === undefined) {
                 chrome.storage.local.set({ quotes })
             }
-            if ("notice" in res.quotes) {
+            else if ("notice" in res.quotes) {
                 alert("检测到旧版本插件数据，已迁移至新版本插件。刷新页面即可正常使用")
                 const temp = { ...quotes }
                 temp.diana = res.quotes;
@@ -21,6 +21,11 @@ export const fixStorage = () => {
         chrome.storage.local.get("noticeTime").then(res => {
             if (typeof (res.noticeTime) !== "number") {
                 chrome.storage.local.set({ noticeTime: 5400000 });
+            }
+        }),
+        chrome.storage.local.get("dynamicBadgeText").then(res => {
+            if (typeof (res.dynamicBadgeText) !== "number") {
+                chrome.storage.local.set({ dynamicBadgeText: 0 });
             }
         }),
         chrome.storage.local.get("shouldShowNotice").then(res => {
@@ -41,6 +46,16 @@ export const fixStorage = () => {
         chrome.storage.local.get("showTopsite").then(res => {
             if (res.showTopsite === undefined) {
                 chrome.storage.local.set({ showTopsite: false })
+            }
+        }),
+        chrome.storage.local.get("showLiveBadge").then(res => {
+            if (res.showLiveBadge === undefined) {
+                chrome.storage.local.set({ showLiveBadge: false })
+            }
+        }),
+        chrome.storage.local.get("showDynamicBadge").then(res => {
+            if (res.showDynamicBadge === undefined) {
+                chrome.storage.local.set({ showDynamicBadge: false })
             }
         }),
         chrome.storage.local.get("liveState").then(res => {
@@ -120,6 +135,25 @@ export const fixStorage = () => {
                 })
             }
         }),
+        chrome.storage.local.get("knownVersion").then(res => {
+            if (res.knownVersion === undefined) {
+                chrome.storage.local.set({
+                    knownVersion: chrome.runtime.getManifest().version,
+                })
+            }
+        }),
+        chrome.storage.local.get("lastDynamicRecord").then(res => {
+            if (res.lastDynamicRecord === undefined) {
+                chrome.storage.local.set({
+                    lastDynamicRecord: {
+                        diana: '0',
+                        ava: '0',
+                        bella: '0',
+                        eileen: '0'
+                    }
+                })
+            }
+        }),
         chrome.storage.local.get("hideCarol").then(res => {
             if (res.hideCarol === undefined) {
                 chrome.storage.local.set({
@@ -190,6 +224,9 @@ export const resetStorage = () => {
         theme: "diana"
     });
     chrome.storage.local.set({
+        knownVersion: chrome.runtime.getManifest().version,
+    })
+    chrome.storage.local.set({
         dynamicData: {
             diana: [],
             ava: [],
@@ -204,6 +241,16 @@ export const resetStorage = () => {
         hideCarol: false,
         showNavigation: true,
         showTopsite: false,
+        showDynamicBadge: false,
+        showLiveBadge: false,
+    })
+    chrome.storage.local.set({
+        lastDynamicRecord: {
+            diana: '0',
+            ava: '0',
+            bella: '0',
+            eileen: '0'
+        }
     })
 
 }

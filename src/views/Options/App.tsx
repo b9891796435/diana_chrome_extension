@@ -22,8 +22,10 @@ type settingsState = {
   searchEngine: searchEngineType,
   hideCarol: boolean,
   showTopsite: boolean,
+  showLiveBadge: boolean,
+  showDynamicBadge: boolean,
   showNavigation: boolean,
-  dynamicPages: string
+  dynamicPages: string,
 }
 type quotesArrayName = "daily" | "notice"
 type quotesSingleName = "morning" | "noon" | "evening" | "night"
@@ -112,6 +114,8 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       hideCarol: true,
       showNavigation: true,
       showTopsite: false,
+      showLiveBadge: false,
+      showDynamicBadge: false
     }
   }
   async componentDidMount() {
@@ -126,7 +130,9 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       theme: await chromeGet("theme"),
       hideCarol: await chromeGet("hideCarol"),
       showNavigation: await chromeGet("showNavigation"),
-      showTopsite: await chromeGet("showTopsite")
+      showTopsite: await chromeGet("showTopsite"),
+      showLiveBadge: await chromeGet("showLiveBadge"),
+      showDynamicBadge: await chromeGet("showDynamicBadge"),
     })
   }
   handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {
@@ -181,6 +187,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       }
     }
     this.setState({ infoMessage: "保存成功", isError: false });
+    console.log(this.state)
     chromeSet({
       quotes: this.state.quotes,
       noticeTime: Number(this.state.noticeTime),
@@ -192,7 +199,9 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       theme: this.state.theme,
       hideCarol: this.state.hideCarol,
       showNavigation: this.state.showNavigation,
-      showTopsite: this.state.showTopsite
+      showTopsite: this.state.showTopsite,
+      showLiveBadge: this.state.showLiveBadge,
+      showDynamicBadge: this.state.showDynamicBadge
     })
   }
   EngineRender = () => {
@@ -338,11 +347,19 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
             <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showTopsite }} onClick={() => this.setState({ showTopsite: !this.state.showTopsite })} />
           </div>
           <div>
+            <span className='myInputForDianaContainer'>是否显示动态更新红点:</span>
+            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showDynamicBadge }} onClick={() => this.setState({ showDynamicBadge: !this.state.showDynamicBadge })} />
+          </div>
+          <div>
+            <span className='myInputForDianaContainer'>是否显示直播红点:</span>
+            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showLiveBadge }} onClick={() => this.setState({ showLiveBadge: !this.state.showLiveBadge })} />
+          </div>
+          <div>
             <MyMessage text={this.state.infoMessage} style={{ display: this.state.infoMessage ? "block" : "none", backgroundColor: this.state.isError ? "#ff4d4f" : "#52c41a" }}></MyMessage>
           </div>
           <div style={{ display: "flex" }}>
             <MyButton text={"保存"} onClick={this.saveSetting} />
-            <MyButton text={"重置设置"} onClick={() => { if (window.confirm("即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），是否确认？")) resetStorage() }} />
+            <MyButton text={"重置设置"} onClick={() => { if (window.confirm("即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），是否确认？")) if (window.confirm("您即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），该操作无法撤销！该操作无法撤销！该操作无法撤销！是否确认？")) resetStorage() }} />
           </div>
         </div>
       </div>

@@ -3,6 +3,21 @@ import { chromeGet, chromeSet, dynamicListType } from "./tool/storageHandle";
 import memberList, { members } from "./constants/memberList"
 import type { dynamicData, liveType } from "./tool/storageHandle"
 chrome.runtime.onInstalled.addListener(fixStorage);
+export const renderDynamicBadge = async () => {
+    let liveState = await chromeGet('liveState');
+    let liveBadge = await chromeGet('showLiveBadge');
+    let badgeCount = await chromeGet('dynamicBadgeText');
+    await chrome.action.setBadgeBackgroundColor({ color: 'rgb(255,240,246)' })
+    //@ts-ignore
+    await chrome.action.setBadgeTextColor({ color: 'rgb(120,6,80)' })
+    if (liveBadge && !(liveState === 'none' || liveState === 'error')) {
+        chrome.action.setBadgeText({ text: 'LIVE' });
+    } else if (await chromeGet('showDynamicBadge') && badgeCount !== 0) {
+        chrome.action.setBadgeText({ text: String(badgeCount) })
+    } else {
+        chrome.action.setBadgeText({ text: '' });
+    }
+}
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
     let i: keyof typeof memberList;
     let temp: liveType = "none"
@@ -21,14 +36,16 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
             }
         }
         chromeSet({ liveState: temp });
-
+        renderDynamicBadge()
     } catch (e) {
         console.log(e);
         chromeSet({
             liveState: "error",
-            liveTime: Date.now()
         });
     }
+    chromeSet({
+        liveTime: Date.now()
+    })
 }
 //b站居然改API了
 export const getDynamic = async (page: number, host_uid: string) => {
@@ -52,14 +69,39 @@ export const getMembersDynamic = async () => {
         eileen: [],
     };
     let pages = await chromeGet('dynamicPages');
-    for (let i in temp) {
-        let res=await getDynamic(pages, memberList[i as members].uid)
-        temp[i as members] = temp[i as members].concat(res)
+    if (await chromeGet('showDynamicBadge')) {
+        let lastIDSTR = await chromeGet('lastDynamicIDSTR');
+        let badgeCount = await chromeGet('dynamicBadgeText');
+        for (let i in temp) {
+            let res = await getDynamic(pages, memberList[i as members].uid)
+            res = res.sort((a, b) => b.modules.module_author.pub_ts - a.modules.module_author.pub_ts);//获得按时间排序的动态
+            if (res[0].type != 'DYNAMIC_TYPE_LIVE_RCMD') {
+                if (res[0].id_str != lastIDSTR[i as members]) {
+                    lastIDSTR[i as members] = res[0].id_str;
+                    badgeCount++;
+                }
+            } else if (res[1].id_str != lastIDSTR[i as members]) {
+                lastIDSTR[i as members] = res[1].id_str;
+                badgeCount++;
+            }
+            temp[i as members] = temp[i as members].concat(res)
+        }
+        await chromeSet({
+            dynamicBadgeText: badgeCount,
+            lastDynamicIDSTR: lastIDSTR
+        });
+        renderDynamicBadge();
+    } else {
+        for (let i in temp) {
+            let res = await getDynamic(pages, memberList[i as members].uid)
+            temp[i as members] = temp[i as members].concat(res)
+        }
     }
     chromeSet({
         dynamicData: temp,
         dynamicTime: Date.now(),
     })
+    console.log(temp);
 }
 export const getScheduleState = async () => {
     let res;
@@ -73,7 +115,6 @@ export const getScheduleState = async () => {
             let cardList = res.data.cards;
             for (let i of cardList) {
                 let card = JSON.parse(i.card).item;
-                console.log(JSON.parse(i.card))
                 let description = card?.description as string | undefined;
                 if (description && description.match("日程表")) {
                     chromeSet({
@@ -93,6 +134,34 @@ export const getScheduleState = async () => {
         console.log(e, res)
         chromeSet({ scheduleState: Date.now() })
     }
+}
+export const getUpdate = async () => {
+    let res = await getDynamic(2, '104319441');
+    for (let i of res) {
+        let context = i.modules.module_dynamic.desc.rich_text_nodes;
+        if (i.type == 'DYNAMIC_TYPE_WORD' && context) {
+            try {
+                let newVersion = JSON.parse(context[0].text).version;
+                let nowVersion = chrome.runtime.getManifest().version;
+                let nowVersionArray = nowVersion.split('.').map((i: string) => Number(i));
+                let knownVersion = (await chromeGet('knownVersion'));
+                let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));
+                if (nowVersionArray[0] > knownVersionArray[0] || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] > knownVersionArray[1]) || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] == knownVersionArray[1] && nowVersionArray[2] < knownVersionArray[2])) {
+                    await chromeSet({ knownVersion: chrome.runtime.getManifest().version })
+                    knownVersion = nowVersion;
+                }
+                if (newVersion !== knownVersion) {
+                    console.log(newVersion,nowVersion,knownVersion)
+                    return JSON.parse(context[0].text) as { version: string, url: string, content: string };
+                } else {
+                    return null;
+                }
+            } catch (e) {
+                continue;
+            }
+        }
+    }
+    return null;
 }
 let dateCheck = async (propName: any, timeout: number, func: Function) => {
     let time = await chromeGet(propName) as any;
@@ -116,10 +185,11 @@ let getLiveWrapped = () => {
 let getMembersDynamicWrapped = () => {
     dateCheck("dynamicTime", 300000, getMembersDynamic)
 }
-getLiveWrapped()
-getScheduleWrapped()
-getMembersDynamicWrapped()
-setInterval(getLiveWrapped, 30000)
-setInterval(getScheduleWrapped, 30000)
+getLiveWrapped();
+getScheduleWrapped();
+getMembersDynamicWrapped();
+renderDynamicBadge();
+setInterval(getLiveWrapped, 30000);
+setInterval(getScheduleWrapped, 30000);
 setInterval(getMembersDynamicWrapped, 30000);
 export { }
