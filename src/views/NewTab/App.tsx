@@ -18,6 +18,7 @@ function App() {
       if (window.confirm('发现新版本\n' + res.content + '\n点击确定以跳转至更新页，点击取消以跳过该版本')) {
         window.location.href = res.url
       } else {
+        console.log(res.version)
         chromeSet({ knownVersion: res.version })
       }
     }

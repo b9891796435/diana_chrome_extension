@@ -138,21 +138,20 @@ export const getScheduleState = async () => {
 export const getUpdate = async () => {
     let res = await getDynamic(2, '104319441');
     for (let i of res) {
-        let context = i.modules.module_dynamic.desc.rich_text_nodes;
-        if (i.type == 'DYNAMIC_TYPE_WORD' && context) {
+        if (i.type == 'DYNAMIC_TYPE_WORD') {
+            let context = i.modules.module_dynamic.desc.text;
             try {
-                let newVersion = JSON.parse(context[0].text).version;
+                let newVersion = JSON.parse(context).version;
                 let nowVersion = chrome.runtime.getManifest().version;
                 let nowVersionArray = nowVersion.split('.').map((i: string) => Number(i));
                 let knownVersion = (await chromeGet('knownVersion'));
                 let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));
-                if (nowVersionArray[0] > knownVersionArray[0] || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] > knownVersionArray[1]) || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] == knownVersionArray[1] && nowVersionArray[2] < knownVersionArray[2])) {
+                if (nowVersionArray[0] > knownVersionArray[0] || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] > knownVersionArray[1]) || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] == knownVersionArray[1] && nowVersionArray[2] > knownVersionArray[2])) {
                     await chromeSet({ knownVersion: chrome.runtime.getManifest().version })
                     knownVersion = nowVersion;
                 }
                 if (newVersion !== knownVersion) {
-                    console.log(newVersion,nowVersion,knownVersion)
-                    return JSON.parse(context[0].text) as { version: string, url: string, content: string };
+                    return JSON.parse(context) as { version: string, url: string, content: string };
                 } else {
                     return null;
                 }
