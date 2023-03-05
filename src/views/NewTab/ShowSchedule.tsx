@@ -81,7 +81,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
             let getDate = new Date(this.state.scheduleNow);
             return (<div style={{ fontSize: "16px" }}>
                 日程表动态抓取失败，可能由于是第一次打开插件、网络波动、短时间内获取次数过多、b站更改API格式或羊驼发日程表的动态里没有加入日程表这三个字。<br />
-                上次获取时间：{parseTime(getDate)}，<span onClick={this.getLiveStateWrapper} className="linkClass">点击重试</span>
+                上次获取时间：{parseTime(getDate)} <br /><span onClick={this.getLiveStateWrapper} className="linkClass">点击重试</span>
             </div>)
         } else {
             let dynamicDate = new Date(this.state.scheduleNow.dynamicDate);
@@ -92,6 +92,9 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
             let schedule2Display = week;
             if (day >= 5 && new Date().getDay() <= 2) {
                 schedule2Display++;
+            }
+            if (schedule2Display <= this.state.scheduleNow.images.length) {
+                schedule2Display = this.state.scheduleNow.images.length - 1
             }
             return (<div style={{ fontSize: "16px" }}>
                 日程表发布时间：{parseTime(dynamicDate)}<br />

@@ -156,7 +156,7 @@ export const getUpdate = async () => {
                 } else {
                     return null;
                 }
-            } catch (e) {
+            } catch (e) {//逻辑是假定能被正确解析的json字符串一定是更新所用的字符串
                 continue;
             }
         }
