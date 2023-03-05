@@ -55,7 +55,10 @@ export type dynamicData = {
     modules: {
         module_author: authorModule,
         module_dynamic: {
-            desc: { rich_text_nodes: null | dynamicContentNode[] }
+            desc: {
+                rich_text_nodes: null | dynamicContentNode[],
+                text: string
+            }
         }
     },
 } | {
