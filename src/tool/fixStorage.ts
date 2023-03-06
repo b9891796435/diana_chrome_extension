@@ -142,10 +142,10 @@ export const fixStorage = () => {
                 })
             }
         }),
-        chrome.storage.local.get("lastDynamicRecord").then(res => {
-            if (res.lastDynamicRecord === undefined) {
+        chrome.storage.local.get("lastDynamicIDSTR").then(res => {
+            if (res.lastDynamicIDSTR === undefined) {
                 chrome.storage.local.set({
-                    lastDynamicRecord: {
+                    lastDynamicIDSTR: {
                         diana: '0',
                         ava: '0',
                         bella: '0',
@@ -245,7 +245,7 @@ export const resetStorage = () => {
         showLiveBadge: false,
     })
     chrome.storage.local.set({
-        lastDynamicRecord: {
+        lastDynamicIDSTR: {
             diana: '0',
             ava: '0',
             bella: '0',
