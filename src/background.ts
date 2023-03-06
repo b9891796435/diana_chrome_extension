@@ -7,15 +7,13 @@ export const renderDynamicBadge = async () => {
     let liveState = await chromeGet('liveState');
     let liveBadge = await chromeGet('showLiveBadge');
     let badgeCount = await chromeGet('dynamicBadgeText');
-    await chrome.action.setBadgeBackgroundColor({ color: 'rgb(255,240,246)' })
-    //@ts-ignore
-    await chrome.action.setBadgeTextColor({ color: 'rgb(120,6,80)' })
+    await chrome.browserAction.setBadgeBackgroundColor({ color: 'rgb(255,240,246)' })
     if (liveBadge && !(liveState === 'none' || liveState === 'error')) {
-        chrome.action.setBadgeText({ text: 'LIVE' });
+        chrome.browserAction.setBadgeText({ text: 'LIVE' });
     } else if (await chromeGet('showDynamicBadge') && badgeCount !== 0) {
-        chrome.action.setBadgeText({ text: String(badgeCount) })
+        chrome.browserAction.setBadgeText({ text: String(badgeCount) })
     } else {
-        chrome.action.setBadgeText({ text: '' });
+        chrome.browserAction.setBadgeText({ text: '' });
     }
 }
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。

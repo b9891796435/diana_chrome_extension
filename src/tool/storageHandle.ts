@@ -180,11 +180,16 @@ type storageValues = {
     theme?: members,
     dynamicData?: dynamicListType,
 }
+export const chromeMV2GetPromise = (key: any) => {//太啥比了
+    return new Promise<any>(resolve => {
+        chrome.storage.local.get(key, resolve);
+    })
+}
 export const chromeGet: getRes = async (key: storageKeys) => {
-    let res = await chrome.storage.local.get(key);
+    let res = await chromeMV2GetPromise(key);
     if (!res[key]) {
         await fixStorage();
-        res = await chrome.storage.local.get(key);
+        res = await chromeMV2GetPromise(key);
     }
     return res[key];
 }

@@ -1,8 +1,9 @@
 import quotes from "../constants/storagePrototype/quotes";
 import toolList from "../constants/storagePrototype/toolList"
+import { chromeMV2GetPromise } from "./storageHandle";
 export const fixStorage = () => {
     return Promise.all([
-        chrome.storage.local.get("quotes").then(res => {
+        chromeMV2GetPromise("quotes").then(res => {
             if (res.quotes === undefined) {
                 chrome.storage.local.set({ quotes })
             }
@@ -13,80 +14,80 @@ export const fixStorage = () => {
                 chrome.storage.local.set({ quotes: temp })
             }
         }),
-        chrome.storage.local.get("toolList").then(res => {
+        chromeMV2GetPromise("toolList").then(res => {
             if (res.toolList === undefined || !Array.isArray(res.toolList)) {
                 chrome.storage.local.set({ toolList })
             }
         }),
-        chrome.storage.local.get("noticeTime").then(res => {
+        chromeMV2GetPromise("noticeTime").then(res => {
             if (typeof (res.noticeTime) !== "number") {
                 chrome.storage.local.set({ noticeTime: 5400000 });
             }
         }),
-        chrome.storage.local.get("dynamicBadgeText").then(res => {
+        chromeMV2GetPromise("dynamicBadgeText").then(res => {
             if (typeof (res.dynamicBadgeText) !== "number") {
                 chrome.storage.local.set({ dynamicBadgeText: 0 });
             }
         }),
-        chrome.storage.local.get("shouldShowNotice").then(res => {
+        chromeMV2GetPromise("shouldShowNotice").then(res => {
             if (res.shouldShowNotice === undefined) {
                 chrome.storage.local.set({ shouldShowNotice: true })
             }
         }),
-        chrome.storage.local.get("fetchLive").then(res => {
+        chromeMV2GetPromise("fetchLive").then(res => {
             if (res.fetchLive === undefined) {
                 chrome.storage.local.set({ fetchLive: true })
             }
         }),
-        chrome.storage.local.get("showNavigation").then(res => {
+        chromeMV2GetPromise("showNavigation").then(res => {
             if (res.showNavigation === undefined) {
                 chrome.storage.local.set({ showNavigation: true })
             }
         }),
-        chrome.storage.local.get("showTopsite").then(res => {
+        chromeMV2GetPromise("showTopsite").then(res => {
             if (res.showTopsite === undefined) {
                 chrome.storage.local.set({ showTopsite: false })
             }
         }),
-        chrome.storage.local.get("showLiveBadge").then(res => {
+        chromeMV2GetPromise("showLiveBadge").then(res => {
             if (res.showLiveBadge === undefined) {
                 chrome.storage.local.set({ showLiveBadge: false })
             }
         }),
-        chrome.storage.local.get("showDynamicBadge").then(res => {
+        chromeMV2GetPromise("showDynamicBadge").then(res => {
             if (res.showDynamicBadge === undefined) {
                 chrome.storage.local.set({ showDynamicBadge: false })
             }
         }),
-        chrome.storage.local.get("liveState").then(res => {
+        chromeMV2GetPromise("liveState").then(res => {
             if (res.liveState === undefined) {
                 chrome.storage.local.set({
                     liveState: "none"
                 })
             }
         }),
-        chrome.storage.local.get("scheduleState").then(res => {
+        chromeMV2GetPromise("scheduleState").then(res => {
             if (res.scheduleState === undefined) {
                 chrome.storage.local.set({
                     scheduleState: Date.now()
                 })
             }
         }),
-        chrome.storage.local.get("liveTime").then(res => {
+        chromeMV2GetPromise("liveTime").then(res => {
             if (res.liveTime === undefined) {
                 chrome.storage.local.set({
                     liveTime: 0
                 })
             }
         }),
-        chrome.storage.local.get("dynamicPages").then(res => {
+        chromeMV2GetPromise("dynamicPages").then(res => {
             if (res.dynamicPages === undefined) {
                 chrome.storage.local.set({
                     dynamicPages: 1
                 })
             }
         }),
-        chrome.storage.local.get("searchEngine").then(res => {
+        chromeMV2GetPromise("searchEngine").then(res => {
             if (res.searchEngine === undefined) {
                 chrome.storage.local.set({
                     searchEngine: [
@@ -114,35 +115,35 @@ export const fixStorage = () => {
                 })
             }
         }),
-        chrome.storage.local.get("defaultEngine").then(res => {
+        chromeMV2GetPromise("defaultEngine").then(res => {
             if (res.defaultEngine === undefined) {
                 chrome.storage.local.set({
                     defaultEngine: 0
                 })
             }
         }),
-        chrome.storage.local.get("dynamicTime").then(res => {
+        chromeMV2GetPromise("dynamicTime").then(res => {
             if (res.dynamicTime === undefined) {
                 chrome.storage.local.set({
                     dynamicTime: 0
                 })
             }
         }),
-        chrome.storage.local.get("theme").then(res => {
+        chromeMV2GetPromise("theme").then(res => {
             if (!(res.theme in quotes)) {
                 chrome.storage.local.set({
                     theme: "diana"
                 })
             }
         }),
-        chrome.storage.local.get("knownVersion").then(res => {
+        chromeMV2GetPromise("knownVersion").then(res => {
             if (res.knownVersion === undefined) {
                 chrome.storage.local.set({
                     knownVersion: chrome.runtime.getManifest().version,
                 })
             }
         }),
-        chrome.storage.local.get("lastDynamicIDSTR").then(res => {
+        chromeMV2GetPromise("lastDynamicIDSTR").then(res => {
             if (res.lastDynamicIDSTR === undefined) {
                 chrome.storage.local.set({
                     lastDynamicIDSTR: {
@@ -154,14 +155,14 @@ export const fixStorage = () => {
                 })
             }
         }),
-        chrome.storage.local.get("hideCarol").then(res => {
+        chromeMV2GetPromise("hideCarol").then(res => {
             if (res.hideCarol === undefined) {
                 chrome.storage.local.set({
                     hideCarol: false
                 })
             }
         }),
-        chrome.storage.local.get("dynamicData").then(res => {
+        chromeMV2GetPromise("dynamicData").then(res => {
             if (res.dynamicData === undefined) {
                 chrome.storage.local.set({
                     dynamicData: {
