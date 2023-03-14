@@ -8,7 +8,7 @@ export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date"
     | "tabCount" | "toolList" | "liveState" | "fetchLive"
     | "scheduleState" | "liveTime" | "searchEngine" | "defaultEngine"
     | "theme" | "hideCarol" | "showNavigation" | "showTopsite" | "dynamicData" | "dynamicPages" | "dynamicTime"
-    | "showLiveBadge" | "showDynamicBadge" | "dynamicBadgeText" | "knownVersion" | "lastDynamicIDSTR" | "knownVersion"
+    | "showLiveBadge" | "showDynamicBadge" | "dynamicBadgeText" | "knownVersion" | "lastDynamicIDSTR" | "knownVersion" | "dynamicAvatar"
 export type liveType = members | "none" | "error"
 type schedule = {
     images: {
@@ -138,7 +138,7 @@ type getRes = {
     (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime" | "dynamicBadgeText"): Promise<number>,
     (key: "shouldShowNotice"
         | "morning" | "noon" | "evening" | "night" | "fetchLive"
-        | "hideCarol" | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
+        | "hideCarol" | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge" | "dynamicAvatar"): Promise<boolean>,
     (key: "date" | "knownVersion"): Promise<string>,
     (key: "lastDynamicIDSTR"): Promise<lastDynamicRecord>,
     (key: "quotes"): Promise<quotesType>
@@ -168,6 +168,7 @@ type storageValues = {
     showTopsite?: boolean,
     showLiveBadge?: boolean,
     showDynamicBadge?: boolean,
+    dynamicAvatar?: boolean,
     date?: string,
     knownVersion?: string,
     lastDynamicIDSTR?: lastDynamicRecord,

@@ -38,6 +38,11 @@ export const fixStorage = () => {
                 chrome.storage.local.set({ fetchLive: true })
             }
         }),
+        chrome.storage.local.get("dynamicAvatar").then(res => {
+            if (res.dynamicAvatar === undefined) {
+                chrome.storage.local.set({ dynamicAvatar: false })
+            }
+        }),
         chrome.storage.local.get("showNavigation").then(res => {
             if (res.showNavigation === undefined) {
                 chrome.storage.local.set({ showNavigation: true })
@@ -243,6 +248,7 @@ export const resetStorage = () => {
         showTopsite: false,
         showDynamicBadge: false,
         showLiveBadge: false,
+        dynamicAvatar: false,
     })
     chrome.storage.local.set({
         lastDynamicIDSTR: {

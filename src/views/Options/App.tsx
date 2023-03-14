@@ -25,6 +25,7 @@ type settingsState = {
   showLiveBadge: boolean,
   showDynamicBadge: boolean,
   showNavigation: boolean,
+  dynamicAvatar: boolean,
   dynamicPages: string,
 }
 type quotesArrayName = "daily" | "notice"
@@ -115,7 +116,8 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       showNavigation: true,
       showTopsite: false,
       showLiveBadge: false,
-      showDynamicBadge: false
+      showDynamicBadge: false,
+      dynamicAvatar: false
     }
   }
   async componentDidMount() {
@@ -133,6 +135,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       showTopsite: await chromeGet("showTopsite"),
       showLiveBadge: await chromeGet("showLiveBadge"),
       showDynamicBadge: await chromeGet("showDynamicBadge"),
+      dynamicAvatar: await chromeGet("dynamicAvatar"),
     })
   }
   handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {
@@ -201,7 +204,8 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       showNavigation: this.state.showNavigation,
       showTopsite: this.state.showTopsite,
       showLiveBadge: this.state.showLiveBadge,
-      showDynamicBadge: this.state.showDynamicBadge
+      showDynamicBadge: this.state.showDynamicBadge,
+      dynamicAvatar: this.state.dynamicAvatar
     })
   }
   EngineRender = () => {
@@ -353,6 +357,10 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <div>
             <span className='myInputForDianaContainer'>是否显示直播红点:</span>
             <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showLiveBadge }} onClick={() => this.setState({ showLiveBadge: !this.state.showLiveBadge })} />
+          </div>
+          <div>
+            <span className='myInputForDianaContainer'>主页是否动态获取头像:</span>
+            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.dynamicAvatar }} onClick={() => this.setState({ dynamicAvatar: !this.state.dynamicAvatar })} />
           </div>
           <div>
             <MyMessage text={this.state.infoMessage} style={{ display: this.state.infoMessage ? "block" : "none", backgroundColor: this.state.isError ? "#ff4d4f" : "#52c41a" }}></MyMessage>
