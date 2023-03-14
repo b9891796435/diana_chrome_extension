@@ -25,7 +25,13 @@ const styles = {
     },
 }
 function Header() {
-    useEffect(() => {
+    const [avatar, setAvatar] = useState<{ [index in members]: string }>({
+        ava: memberList.ava.avatar,
+        bella: memberList.bella.avatar,
+        diana: memberList.diana.avatar,
+        eileen: memberList.eileen.avatar
+    });
+    useEffect(() => {// 基本可以断定setstate会在更新时对比原state，所以想偷懒在原avatar上改是不行的
         chromeGet("dynamicAvatar").then(async res => {
             if (res) {
                 let temp = Object.assign({}, avatar)
@@ -37,12 +43,6 @@ function Header() {
             }
         })
     }, [])
-    const [avatar, setAvatar] = useState<{ [index in members]: string }>({
-        ava: memberList.ava.avatar,
-        bella: memberList.bella.avatar,
-        diana: memberList.diana.avatar,
-        eileen: memberList.eileen.avatar
-    });
     return (
         <div style={styles.header} className="headerForDianaExtension">
             <a href="https://space.bilibili.com/703007996">
