@@ -23,8 +23,13 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
     let temp: liveType = "none"
     try {
         for (i in memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
-            let res = await fetch(`https://api.bilibili.com/x/space/acc/info?mid=${memberList[i].uid}&jsonp=jsonp`);
-            res = await res.json()
+            let res:any = await fetch(`https://api.bilibili.com/x/space/acc/info?mid=${memberList[i].uid}&jsonp=jsonp`);
+            res = await res.text()
+            try{
+                res = JSON.parse(res)
+            }catch(e){
+                res = JSON.parse(res.slice(46))
+            }
             let data = res as any;
             if (data.data.live_room.liveStatus) {
                 temp = i;
