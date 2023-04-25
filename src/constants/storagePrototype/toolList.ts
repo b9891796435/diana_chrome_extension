@@ -1,1 +1,1 @@
-export default [{ url: "https://asoulcnki.asia", summary: "枝网查重" }, { url: "https://asoulwiki.com", summary: "一个魂百科" }]
+export default [{ url: "https://developer.mozilla.org/zh-CN/docs/Learn", summary: "MDN" }, { url: "https://space.bilibili.com/3493082517474232", summary: "尼驼" }]

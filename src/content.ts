@@ -69,15 +69,14 @@ setInterval(async () => {
     if (document.hasFocus() && shouldShowNotice) {
         let notice = await chromeGet("notice")
         let noticeTime = await chromeGet("noticeTime")
+        let currentTheme=await chromeGet("theme")
         if (Date.now() - notice >= noticeTime) {
             chromeSet({ notice: Date.now() });
-            let d = new Image();
-            d.src = "https://raw.githubusercontent.com/b9891796435/duskmoon-bot-doc/main/src/assets/dianaJumping.png";
-            let a = new Image();
-            a.src = "https://raw.githubusercontent.com/b9891796435/duskmoon-bot-doc/main/src/assets/avaJump.png"
+            let img = new Image();
+            img.src = `https://raw.githubusercontent.com/b9891796435/duskmoon-bot-doc/main/src/assets/${currentTheme}Jumping.png`;
             setTimeout(() => {
                 showDianaNotice();
-            }, 10000)
+            }, 3000)
         }
     }
 }, 10000)
