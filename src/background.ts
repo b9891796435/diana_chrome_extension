@@ -146,6 +146,10 @@ export const getUpdate = async () => {
         if (i.type == 'DYNAMIC_TYPE_WORD') {
             let context = i.modules.module_dynamic.desc.text;
             try {
+                let content = JSON.parse(context) as { version: string, url: string, content: string, agent:'chrome'|'edge' }
+                if(content.agent=='edge'){
+                    continue
+                }
                 let newVersion = JSON.parse(context).version;
                 let nowVersion = chrome.runtime.getManifest().version;
                 let nowVersionArray = nowVersion.split('.').map((i: string) => Number(i));

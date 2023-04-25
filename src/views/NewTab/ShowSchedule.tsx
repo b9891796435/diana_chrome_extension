@@ -93,7 +93,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
             if (day >= 5 && new Date().getDay() <= 2) {
                 schedule2Display++;
             }
-            if (schedule2Display <= this.state.scheduleNow.images.length) {
+            if (schedule2Display >= this.state.scheduleNow.images.length) {
                 schedule2Display = this.state.scheduleNow.images.length - 1
             }
             return (<div style={{ fontSize: "16px" }}>

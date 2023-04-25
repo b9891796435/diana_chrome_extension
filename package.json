@@ -1,6 +1,6 @@
 {
   "name": "diana-chrome-extension",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "private": true,
   "dependencies": {
     "@types/jest": "^27.4.1",
