@@ -2,7 +2,27 @@ import { fixStorage } from "./tool/fixStorage"
 import { chromeGet, chromeSet, dynamicListType } from "./tool/storageHandle";
 import memberList, { members } from "./constants/memberList"
 import type { dynamicData, liveType } from "./tool/storageHandle"
+import md5 from 'js-md5';
 chrome.runtime.onInstalled.addListener(fixStorage);
+const getMixinKey = async () => {
+    let keys = (await (await fetch('https://api.bilibili.com/x/web-interface/nav')).json()).data.wbi_img
+    const getKeyFromUrl = (e: string) => e.substring(e.lastIndexOf("/") + 1, e.length).split(".")[0]
+    let e = getKeyFromUrl(keys.img_url) + getKeyFromUrl(keys.sub_url)
+    console.log(keys)
+    let t: string[] = [];
+    return [46, 47, 18, 2, 53, 8, 23, 32, 15, 50,
+        10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33,
+        9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13,
+        37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0,
+        1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59,
+        6, 63, 57, 62, 11, 36, 20, 34, 44, 52].forEach((function (r) {
+            e.charAt(r) && t.push(e.charAt(r))
+        }
+        )), t.join("").slice(0, 32);
+}
+const getEncKey = (argv: string, mixinKey: string) => {
+    return md5(argv + mixinKey)
+}
 export const renderDynamicBadge = async () => {
     let liveState = await chromeGet('liveState');
     let liveBadge = await chromeGet('showLiveBadge');
@@ -18,16 +38,21 @@ export const renderDynamicBadge = async () => {
         chrome.action.setBadgeText({ text: '' });
     }
 }
+
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
     let i: keyof typeof memberList;
-    let temp: liveType = "none"
+    let temp: liveType = "none";
+    let timeNow = Math.round(Date.now() / 1e3);
+    let mixinKey = await getMixinKey();
     try {
         for (i in memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
-            let res:any = await fetch(`https://api.bilibili.com/x/space/acc/info?mid=${memberList[i].uid}&jsonp=jsonp`);
+            let originParam = `mid=${memberList[i].uid}&platform=web&token=&web_location=1550101&wts=${timeNow}`
+            let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${originParam}&w_rid=${getEncKey(originParam, mixinKey)}`);
+            console.log(originParam, getEncKey(originParam, mixinKey), mixinKey)
             res = await res.text()
-            try{
+            try {
                 res = JSON.parse(res)
-            }catch(e){
+            } catch (e) {
                 res = JSON.parse(res.slice(46))
             }
             let data = res as any;
@@ -146,8 +171,8 @@ export const getUpdate = async () => {
         if (i.type == 'DYNAMIC_TYPE_WORD') {
             let context = i.modules.module_dynamic.desc.text;
             try {
-                let content = JSON.parse(context) as { version: string, url: string, content: string, agent:'chrome'|'edge' }
-                if(content.agent=='edge'){
+                let content = JSON.parse(context) as { version: string, url: string, content: string, agent: 'chrome' | 'edge' }
+                if (content.agent == 'edge') {
                     continue
                 }
                 let newVersion = JSON.parse(context).version;
