@@ -33,12 +33,6 @@ type quotesSingleHandlerGenerator = {
   (arg0: quotesSingleName): React.ChangeEventHandler<HTMLInputElement>
 }
 type handleType = "new" | "delete" | "change"
-const checkboxStyle: React.CSSProperties = {
-  width: "20px",
-  height: "20px",
-  margin: "0",
-  verticalAlign: "bottom",
-}
 const iconStyle: React.CSSProperties = {
   position: "absolute",
   width: "20px",
@@ -330,30 +324,12 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <h1>其他设置</h1>
           <MyInput label="久坐提醒间隔时间（单位：毫秒）" value={this.state.noticeTime} onChange={e => this.setState({ noticeTime: e.target.value })}></MyInput>
           <MyInput label="成员朋友圈抓取页数（每页12条，设置过高会导致无法使用b站api）" value={this.state.dynamicPages} onChange={e => this.setState({ dynamicPages: e.target.value })}></MyInput>
-          <div>
-            <span className='myInputForDianaContainer'>是否开启跨页久坐提醒:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.shouldShowNotice }} onClick={() => this.setState({ shouldShowNotice: !this.state.shouldShowNotice })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否开启直播间状态检测:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.fetchLive }} onClick={() => this.setState({ fetchLive: !this.state.fetchLive })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示快捷导航:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showNavigation }} onClick={() => this.setState({ showNavigation: !this.state.showNavigation })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示常用网页:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showTopsite }} onClick={() => this.setState({ showTopsite: !this.state.showTopsite })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示动态更新红点:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showDynamicBadge }} onClick={() => this.setState({ showDynamicBadge: !this.state.showDynamicBadge })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示直播红点:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showLiveBadge }} onClick={() => this.setState({ showLiveBadge: !this.state.showLiveBadge })} />
-          </div>
+          <MyInput label='是否开启跨页久坐提醒:' value={this.state.shouldShowNotice} onChange={() => this.setState({ shouldShowNotice: !this.state.shouldShowNotice })}></MyInput>
+          <MyInput label='是否开启直播间状态检测:' value={this.state.fetchLive} onChange={() => this.setState({ fetchLive: !this.state.fetchLive })}></MyInput>
+          <MyInput label='是否显示快捷导航:' value={this.state.showNavigation} onChange={() => this.setState({ showNavigation: !this.state.showNavigation })}></MyInput>
+          <MyInput label='是否显示常用网页:' value={this.state.showTopsite} onChange={() => this.setState({ showTopsite: !this.state.showTopsite })}></MyInput>
+          <MyInput label='是否显示动态更新红点:' value={this.state.showDynamicBadge} onChange={() => this.setState({ showDynamicBadge: !this.state.showDynamicBadge })}></MyInput>
+          <MyInput label='是否显示直播红点:' value={this.state.showLiveBadge} onChange={() => this.setState({ showLiveBadge: !this.state.showLiveBadge })}></MyInput>
           <div>
             <MyMessage text={this.state.infoMessage} style={{ display: this.state.infoMessage ? "block" : "none", backgroundColor: this.state.isError ? "#ff4d4f" : "#52c41a" }}></MyMessage>
           </div>
