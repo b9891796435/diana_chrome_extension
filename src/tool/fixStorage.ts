@@ -28,6 +28,59 @@ export const fixStorage = () => {
                 chrome.storage.local.set({ dynamicBadgeText: 0 });
             }
         }),
+        chrome.storage.local.get("selectedSkin").then(res => {
+            if (typeof (res.selectedSkin) !== "number") {
+                chrome.storage.local.set({ selectedSkin: 0 });
+            }
+        }),
+        chrome.storage.local.get("skinPackage").then(res => {
+            let skPack = res.skinPackage
+            if (!skPack || !('ava' in skPack && 'bella' in skPack && 'diana' in skPack && 'eileen' in skPack)) {
+                chrome.storage.local.set({
+                    skinPackage: {
+                        ava: [],
+                        bella: [],
+                        diana: [{
+                            name: 'you&idol初始皮肤',
+                            materials: [
+                                {
+                                    name: '嘉然小姐',
+                                    fps: 0.5,
+                                    positon: {
+                                        bottom: '0px',
+                                        left: '0px',
+                                    },
+                                    isInspirator: true,
+                                    src: [require("../assets/images/themePack/diana/position0.png"), require("../assets/images/themePack/diana/position1.png")],
+                                    size: {
+                                        height: 'calc(54% - 27px)'
+                                    },
+                                    zIndex: 4
+                                }, {
+                                    name: '花盆与路灯',
+                                    fps: 1,
+                                    position: {
+                                        bottom: '0px',
+                                        left: '0px',
+                                    },
+                                    isInspirator: false,
+                                    src: [require("../assets/images/background/flower_pot.png")],
+                                    size: {
+                                        height: 'calc(100% - 50px)'
+                                    },
+                                    zIndex: 3
+                                }
+                            ],
+                            dialogPosition: {
+                                left: 'calc((%height%px / 1080) * 437 - 225px)',
+                                bottom: 'calc(54% - 27px)',
+                            }
+                        }],
+                        eileen: [],
+                    }
+                })
+            }
+        }),
         chrome.storage.local.get("shouldShowNotice").then(res => {
             if (res.shouldShowNotice === undefined) {
                 chrome.storage.local.set({ shouldShowNotice: true })
@@ -170,8 +223,51 @@ export const fixStorage = () => {
 }
 export const resetStorage = () => {
     chrome.storage.local.set({ quotes });
-    chrome.storage.local.set({ toolList });
+    chrome.storage.local.set({ toolList }); chrome.storage.local.set({
+        skinPackage: {
+            ava: [],
+            bella: [],
+            diana: [{
+                name: 'you&idol初始皮肤',
+                materials: [
+                    {
+                        name: '嘉然小姐',
+                        fps: 0.5,
+                        positon: {
+                            bottom: '0px',
+                            left: '0px',
+                        },
+                        isInspirator: true,
+                        src: [require("../assets/images/themePack/diana/position0.png"), require("../assets/images/themePack/diana/position1.png")],
+                        size: {
+                            height: 'calc(54% - 27px)'
+                        },
+                        zIndex: 4
+                    }, {
+                        name: '花盆与路灯',
+                        fps: 1,
+                        position: {
+                            bottom: '0px',
+                            left: '0px',
+                        },
+                        isInspirator: false,
+                        src: [require("../assets/images/background/flower_pot.png")],
+                        size: {
+                            height: 'calc(100% - 50px)'
+                        },
+                        zIndex: 3
+                    }
+                ],
+                dialogPosition: {
+                    left: 'calc((%height%px / 1080) * 437 - 225px)',
+                    bottom: 'calc(54% - 27px)',
+                }
+            }],
+            eileen: [],
+        }
+    })
     chrome.storage.local.set({ noticeTime: 5400000 });
+    chrome.storage.local.set({ selectedSkin: 0 });
     chrome.storage.local.set({ shouldShowNotice: true });
     chrome.storage.local.set({ fetchLive: true });
     chrome.storage.local.set({

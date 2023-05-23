@@ -48,7 +48,6 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
         for (i in memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
             let originParam = `mid=${memberList[i].uid}&platform=web&token=&web_location=1550101&wts=${timeNow}`
             let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${originParam}&w_rid=${getEncKey(originParam, mixinKey)}`);
-            console.log(originParam, getEncKey(originParam, mixinKey), mixinKey)
             res = await res.text()
             try {
                 res = JSON.parse(res)

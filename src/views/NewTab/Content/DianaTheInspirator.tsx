@@ -14,6 +14,7 @@ const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法
     },
     diana: {
         height: "calc(54% - 27px)",//(100% - 50px) * ( 588 / 1080 )，这个比例是然比图与花盆图实际像素高之比。
+        //太感谢注释了，还好我有写注释的习惯
         zIndex: 4,
         cursor: "pointer"
     },

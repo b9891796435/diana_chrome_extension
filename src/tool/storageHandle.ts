@@ -129,8 +129,34 @@ export const summaryBackdrop = '@228w_228h_1e_1c.webp'
 export type dynamicListType = {
     [key in members]: dynamicData[]
 }
+export type positionType = {
+    left?: string,
+    right?: string,
+    bottom?: string,
+    top?: string
+}
+export type material = {
+    name: string,
+    src: string[],
+    fps: number,
+    position: positionType,
+    size: {
+        width?: string,
+        height?: string
+    },
+    isInspirator?: boolean,
+    zIndex:number
+}
+export type skin = {
+    name: string,
+    materials: material[]
+    dialogPosition: positionType
+}
+export type skinPackage = {
+    [key in members]: skin[]
+}
 type getRes = {
-    (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime" | "dynamicBadgeText"): Promise<number>,
+    (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime" | "dynamicBadgeText" | 'selectedSkin'): Promise<number>,
     (key: "shouldShowNotice"
         | "morning" | "noon" | "evening" | "night" | "fetchLive"
         | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
@@ -143,7 +169,7 @@ type getRes = {
     (key: "searchEngine"): Promise<searchEngineType>
     (key: "theme"): Promise<members>
     (key: 'dynamicData'): Promise<dynamicListType>
-    
+    (key: 'skinPackage'): Promise<skinPackage>
 }
 type storageValues = {
     noticeTime?: number,
@@ -154,6 +180,7 @@ type storageValues = {
     dynamicPages?: number,
     dynamicTime?: number,
     dynamicBadgeText?: number,
+    selectedSkin?: number,
     shouldShowNotice?: boolean,
     morning?: boolean,
     noon?: boolean,
@@ -174,6 +201,7 @@ type storageValues = {
     searchEngine?: searchEngineType,
     theme?: members,
     dynamicData?: dynamicListType,
+    skinPackage?: skinPackage,
 }
 export const chromeGet: getRes = async (key: storageKeys) => {
     let res = await chrome.storage.local.get(key);
