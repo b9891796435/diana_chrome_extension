@@ -3,12 +3,8 @@ import { fixStorage } from "./fixStorage";//只要type标的好，语法错误�
 import type { toolItemData } from "../views/NewTab/Content/YinTun/ToolItem";
 import type { members } from "../constants/memberList"
 import type { quotesType } from "../constants/storagePrototype/quotes";
-export type storageKeys = "quotes" | "noticeTime" | "shouldShowNotice" | "date"
-    | "morning" | "noon" | "evening" | "night" | "notice"
-    | "tabCount" | "toolList" | "liveState" | "fetchLive"
-    | "scheduleState" | "liveTime" | "searchEngine" | "defaultEngine"
-    | "theme" | "hideCarol" | "showNavigation" | "showTopsite" | "dynamicData" | "dynamicPages" | "dynamicTime"
-    | "showLiveBadge" | "showDynamicBadge" | "dynamicBadgeText" | "knownVersion" | "lastDynamicIDSTR" | "knownVersion"
+export type storageKeys = keyof storageValues;
+
 export type liveType = members | "none" | "error"
 type schedule = {
     images: {
@@ -17,7 +13,6 @@ type schedule = {
     dynamicDate: number,
     dynamicID: string,
     getDate: number,
-
 }
 export type scheduleType = schedule | number
 export type searchEngineType = { url: string, icon?: string, engineName: string }[]
@@ -138,7 +133,7 @@ type getRes = {
     (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime" | "dynamicBadgeText"): Promise<number>,
     (key: "shouldShowNotice"
         | "morning" | "noon" | "evening" | "night" | "fetchLive"
-        | "hideCarol" | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
+        | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
     (key: "date" | "knownVersion"): Promise<string>,
     (key: "lastDynamicIDSTR"): Promise<lastDynamicRecord>,
     (key: "quotes"): Promise<quotesType>
@@ -148,6 +143,7 @@ type getRes = {
     (key: "searchEngine"): Promise<searchEngineType>
     (key: "theme"): Promise<members>
     (key: 'dynamicData'): Promise<dynamicListType>
+    
 }
 type storageValues = {
     noticeTime?: number,
@@ -163,7 +159,6 @@ type storageValues = {
     noon?: boolean,
     evening?: boolean,
     night?: boolean,
-    hideCarol?: boolean,
     showNavigation?: boolean,
     showTopsite?: boolean,
     showLiveBadge?: boolean,

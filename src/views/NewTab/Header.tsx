@@ -24,12 +24,6 @@ const styles = {
     },
 }
 function Header() {
-    const [hideCarol, setHideCarol] = useState<boolean>(true);
-    useEffect(() => {
-        chromeGet("hideCarol").then(res => {
-            setHideCarol(res);
-        })
-    }, [])
     return (
         <div style={styles.header} className="headerForDianaExtension">
             <a href="https://space.bilibili.com/703007996">

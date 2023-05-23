@@ -154,13 +154,6 @@ export const fixStorage = () => {
                 })
             }
         }),
-        chrome.storage.local.get("hideCarol").then(res => {
-            if (res.hideCarol === undefined) {
-                chrome.storage.local.set({
-                    hideCarol: false
-                })
-            }
-        }),
         chrome.storage.local.get("dynamicData").then(res => {
             if (res.dynamicData === undefined) {
                 chrome.storage.local.set({
@@ -238,7 +231,6 @@ export const resetStorage = () => {
         dynamicTime: 0
     })
     chrome.storage.local.set({
-        hideCarol: false,
         showNavigation: true,
         showTopsite: false,
         showDynamicBadge: false,
@@ -252,5 +244,4 @@ export const resetStorage = () => {
             eileen: '0'
         }
     })
-
 }
