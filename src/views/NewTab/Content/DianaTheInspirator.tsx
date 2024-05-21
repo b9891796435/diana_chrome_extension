@@ -67,6 +67,7 @@ type stateType = {
     autoTimer: any,
     curr_quote: quote,
     theme: members,
+    selectedSkin: number
 }
 class DianaTheInspirator extends React.Component<{}, stateType> {
     constructor(props: any) {
@@ -78,7 +79,8 @@ class DianaTheInspirator extends React.Component<{}, stateType> {
             currentTimer: 0,
             autoTimer: 0,
             curr_quote: quotes[0],
-            theme: "diana"
+            theme: "diana",
+            selectedSkin: 2
         }
         let start: DOMHighResTimeStamp | undefined;
         let RAFfunc = (timestamp: DOMHighResTimeStamp) => {
@@ -94,7 +96,8 @@ class DianaTheInspirator extends React.Component<{}, stateType> {
     componentDidMount = async () => {
         this.setState({
             curr_quote: await chromeGet("curr_quote"),
-            theme: await chromeGet("theme")
+            theme: await chromeGet("theme"),
+            selectedSkin: await chromeGet("selectedSkin")
         })
         this.pokingDiana()
     }
@@ -181,11 +184,11 @@ class DianaTheInspirator extends React.Component<{}, stateType> {
         return (
             <div style={styles.container}>
                 <div style={Object.assign({}, styles.dialog, { opacity: this.state.dialogVisible ? "1" : "0" })}>
-                    <img src={memberList[getMemberIndex(this.state.theme)].themeImg.meme} alt="" style={styles.givingHeartMeme} />
+                    <img src={memberList[this.state.selectedSkin].themeImg.meme} alt="" style={styles.givingHeartMeme} />
                     <p style={styles.quote}>{this.state.currentDialog}</p>
                 </div>
                 <img src={require("../../../assets/images/background/flower_pot.png")} alt="" style={styles.pot} />
-                <img src={memberList[getMemberIndex(this.state.theme)].themeImg.positions[this.state.pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} onClick={this.pokingDiana} />
+                <img src={memberList[this.state.selectedSkin].themeImg.positions[this.state.pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} onClick={this.pokingDiana} />
             </div>
         )
     }

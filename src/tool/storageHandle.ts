@@ -173,36 +173,64 @@ type getRes = {
     (key: 'skinPackage'): Promise<skinPackage>
 }
 type storageValues = {
+    //久坐提醒间隔时间
     noticeTime?: number,
+    //上次提醒时间戳
     notice?: number,
+    //使用该插件后打开的标签页数量
     tabCount?: number,
+    //上次获取直播间请求时间戳
     liveTime?: number,
+    //主页默认使用的搜索引擎
     defaultEngine?: number,
+    //成员朋友圈每次抓取页数
     dynamicPages?: number,
+    //上次抓取成员动态时间
     dynamicTime?: number,
+    //插件角标的内容
     dynamicBadgeText?: number,
+    //当前使用的主页皮肤
     selectedSkin?: number,
+    //是否展示久坐提醒
     shouldShowNotice?: boolean,
+    //下面四条记载的是今日是否展示过早午晚夜安
     morning?: boolean,
     noon?: boolean,
     evening?: boolean,
     night?: boolean,
+    //是否展示主页快捷导航
     showNavigation?: boolean,
+    //是否展示最近高频打开的页面
     showTopsite?: boolean,
+    //是否展示当前正在直播角标
     showLiveBadge?: boolean,
+    //是否展示动态角标
     showDynamicBadge?: boolean,
+    //主页中保存的上次问安日期，如果超过24点则刷新问安变量
     date?: string,
+    //已知的版本，用于提醒更新
     knownVersion?: string,
+    //已知各成员最后一条动态id
     lastDynamicIDSTR?: lastDynamicRecord,
+    //所有语录
     quotes?: quote[],
+    //当前使用的语录
     curr_quote?: quote,
+    //快捷导航
     toolList?: toolItemData[],
+    //当前各直播间状态
     liveState?: liveType,
+    //是否抓取直播间
     fetchLive?: boolean,
+    //当前日程表的状态
     scheduleState?: scheduleType,
+    //所有的搜索引擎
     searchEngine?: searchEngineType,
+    //当前使用的主题
     theme?: members,
+    //所有的动态数据
     dynamicData?: dynamicListType,
+    //预备日后自定义皮肤使用的皮肤包变量。
     skinPackage?: skinPackage,
 }
 export const chromeGet: getRes = async (key: storageKeys) => {

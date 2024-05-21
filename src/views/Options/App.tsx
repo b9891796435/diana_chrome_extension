@@ -27,6 +27,7 @@ type settingsState = {
   showDynamicBadge: boolean,
   showNavigation: boolean,
   dynamicPages: string,
+  selectedSkin: number
 }
 type quotesArrayName = "daily" | "notice"
 type quotesSingleName = "morning" | "noon" | "evening" | "night"
@@ -68,6 +69,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
   constructor(props: any) {
     super(props);
     this.state = {
+      selectedSkin: 3,
       theme: 3,
       quotes: errorQuote,
       curr_quote: 0,
@@ -94,6 +96,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
   async componentDidMount() {
     let currTheme = await chromeGet("theme");
     this.setState({
+      selectedSkin: await chromeGet("selectedSkin"),
       quotes: await chromeGet("quotes"),
       noticeTime: (await chromeGet("noticeTime")).toString(),
       dynamicPages: (await chromeGet("dynamicPages")).toString(),
@@ -173,6 +176,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       defaultEngine: this.state.defaultEngine,
       searchEngine: this.state.searchEngine,
       theme: memberMap[this.state.theme],
+      selectedSkin: this.state.selectedSkin,
       curr_quote: this.state.quotes[this.state.curr_quote],
       showNavigation: this.state.showNavigation,
       showTopsite: this.state.showTopsite,
@@ -252,14 +256,20 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
         case SELECT_TYPE.SKIN:
           this.setState({
             //TODO 修改当前皮肤
-            theme: Number(e.target.value)
+            selectedSkin: Number(e.target.value)
           });
           break;
       }
     }
   }
   optionsThemeRender = (options: any[], indexState: number, getter = (item: any) => item) => {
-    let optionsArray = [];//options为需要渲染的选项数组，indexState为当前选中的index的state，getter为如何从options中获取到需要渲染的字符串，默认为直接获取，也可传入getter
+    let optionsArray = [];
+    /**
+     * options为需要渲染的选项数组
+     * indexState为当前选中的index的state
+     * getter为如何从options中获取到需要渲染的字符串，默认为直接获取，也可传入getter
+     * 选项对应的
+     */
     for (let i = 0; i < options.length; i++) {
       if (i == indexState) {
         optionsArray.push(<option value={i} selected>{getter(options[i])}</option>)
@@ -277,7 +287,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <h1>设置好之后要到页面最下方保存哦</h1>
           <section className='combineBox'>
             <div>
-              <h1>当前主题</h1>
+              <h1>当前主题（设置界面色系）</h1>
               <select onChange={this.selectOption(SELECT_TYPE.THEME)}>
                 {this.optionsThemeRender(memberList, this.state.theme, i => i.chineseName)}
               </select>
@@ -289,9 +299,9 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
               </select>
             </div>
             <div>
-              <h1>当前皮肤</h1>
+              <h1>当前主页皮肤</h1>
               <select onChange={this.selectOption(SELECT_TYPE.SKIN)}>
-                {this.optionsThemeRender(memberList, this.state.theme, i => i.chineseName)}
+                {this.optionsThemeRender(memberList, this.state.selectedSkin, i => i.chineseName)}
               </select>
             </div>
           </section>
