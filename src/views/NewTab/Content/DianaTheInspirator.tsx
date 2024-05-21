@@ -1,6 +1,7 @@
 import React from "react";
+import type { quote } from "../../../constants/storagePrototype/quotes";
 import quotes from "../../../constants/storagePrototype/quotes";
-import memberList, { members } from "../../../constants/memberList";
+import memberList, { members, getMemberIndex } from "../../../constants/memberList";
 import tool from "../../../tool"
 import { chromeGet, chromeSet } from "../../../tool/storageHandle";
 const styles = {//Vue scoped css用习惯了有点懒得改，可惜对象写法写不出动画
@@ -64,10 +65,10 @@ type stateType = {
     currentDialog: string,
     currentTimer: any,//AnyScript,永远滴神！
     autoTimer: any,
-    quotes: typeof quotes,
+    curr_quote: quote,
     theme: members,
 }
-class DianaTheInspirator extends React.Component<{}, stateType>{
+class DianaTheInspirator extends React.Component<{}, stateType> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -76,7 +77,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
             currentDialog: "关注嘉然然，顿顿解馋馋",
             currentTimer: 0,
             autoTimer: 0,
-            quotes,
+            curr_quote: quotes[0],
             theme: "diana"
         }
         let start: DOMHighResTimeStamp | undefined;
@@ -92,7 +93,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
     }
     componentDidMount = async () => {
         this.setState({
-            quotes: await chromeGet("quotes"),
+            curr_quote: await chromeGet("curr_quote"),
             theme: await chromeGet("theme")
         })
         this.pokingDiana()
@@ -150,7 +151,7 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 if (timeToRequest != "none") {//若时间段符合问安时间段
                     const requestRes = await chromeGet(timeToRequest);
                     if (!requestRes) {
-                        setDialog(this.state.quotes[theme][timeToRequest]);
+                        setDialog(this.state.curr_quote[timeToRequest]);
                         let temp: { [key: string]: boolean } = {};
                         temp[timeToRequest] = true
                         chromeSet(temp);
@@ -162,13 +163,13 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
                 const requestRes = await chromeGet("notice");
                 const noticeTime = await chromeGet("noticeTime")
                 if (Date.now() - requestRes >= noticeTime) {
-                    setDialog(this.state.quotes[theme].notice[Math.floor(Math.random() * this.state.quotes[theme].notice.length)])//简简单单一个乃0乃1随机器
+                    setDialog(this.state.curr_quote.notice[Math.floor(Math.random() * this.state.curr_quote.notice.length)])//简简单单一个乃0乃1随机器
                     await chromeSet({ notice: Date.now() });
                     setRetrigger()
                     return;
                 }
                 //提醒运动喝水结束，日常对话
-                setDialog(this.state.quotes[theme].daily[Math.floor(Math.random() * this.state.quotes[theme].daily.length)]);
+                setDialog(this.state.curr_quote.daily[Math.floor(Math.random() * this.state.curr_quote.daily.length)]);
                 setRetrigger()
                 return;
             } else {//若当前已有计时器
@@ -180,11 +181,11 @@ class DianaTheInspirator extends React.Component<{}, stateType>{
         return (
             <div style={styles.container}>
                 <div style={Object.assign({}, styles.dialog, { opacity: this.state.dialogVisible ? "1" : "0" })}>
-                    <img src={memberList[this.state.theme].themeImg.meme} alt="" style={styles.givingHeartMeme} />
+                    <img src={memberList[getMemberIndex(this.state.theme)].themeImg.meme} alt="" style={styles.givingHeartMeme} />
                     <p style={styles.quote}>{this.state.currentDialog}</p>
                 </div>
                 <img src={require("../../../assets/images/background/flower_pot.png")} alt="" style={styles.pot} />
-                <img src={memberList[this.state.theme].themeImg.positions[this.state.pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} onClick={this.pokingDiana} />
+                <img src={memberList[getMemberIndex(this.state.theme)].themeImg.positions[this.state.pose]} alt="" style={Object.assign({}, styles.pot, styles.diana)} onClick={this.pokingDiana} />
             </div>
         )
     }

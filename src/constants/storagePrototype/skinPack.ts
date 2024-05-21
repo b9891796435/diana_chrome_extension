@@ -1,6 +1,6 @@
-export default {
-    ava: [{
-        name: 'you&idol初始皮肤',
+export default [
+    {
+        name: '嘉然（预设）',
         materials: [
             {
                 name: '嘉然小姐',
@@ -34,9 +34,8 @@ export default {
             left: 'calc((%height%px / 1080) * 437 - 225px)',
             bottom: 'calc(54% - 27px)',
         }
-    }],
-    bella: [{
-        name: 'you&idol初始皮肤',
+    }, {
+        name: '向晚（预设）',
         materials: [
             {
                 name: '嘉然小姐',
@@ -70,9 +69,8 @@ export default {
             left: 'calc((%height%px / 1080) * 437 - 225px)',
             bottom: 'calc(54% - 27px)',
         }
-    }],
-    diana: [{
-        name: 'you&idol初始皮肤',
+    }, {
+        name: '乃琳（预设）',
         materials: [
             {
                 name: '嘉然小姐',
@@ -106,9 +104,8 @@ export default {
             left: 'calc((%height%px / 1080) * 437 - 225px)',
             bottom: 'calc(54% - 27px)',
         }
-    }],
-    eileen: [{
-        name: 'you&idol初始皮肤',
+    }, {
+        name: '贝拉（预设）',
         materials: [
             {
                 name: '嘉然小姐',
@@ -142,5 +139,5 @@ export default {
             left: 'calc((%height%px / 1080) * 437 - 225px)',
             bottom: 'calc(54% - 27px)',
         }
-    }],
-}
+    }
+]

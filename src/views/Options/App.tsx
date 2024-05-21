@@ -3,16 +3,18 @@ import MyMessage from '../../components/MyMessage';
 import MyInput from '../../components/MyInput';
 import MyButton from '../../components/MyButton';
 import ArrayRender from './ArrayRender';
-import quotes, { quotesType } from '../../constants/storagePrototype/quotes';
-import { members } from '../../constants/memberList';
+import quotes, { quote } from '../../constants/storagePrototype/quotes';
+import { memberMap } from '../../constants/memberList';
 import { chromeGet, chromeSet, searchEngineType } from '../../tool/storageHandle';
 import { resetStorage } from "../../tool/fixStorage"
 import memberList from '../../constants/memberList';
 import "./App.css"
 import "../../themeColor.css"
 type settingsState = {
-  theme: members,
-  quotes: quotesType,
+  theme: number,
+  quotes: quote[],
+  curr_quote: number,//注意这里的curr_quote并非存储中的curr，只是临时用于存储当前状态的变量。请在保存时存储对应的语录对象而非一个数字。
+  curr_editing: number,//当前正在修改的文本预设
   noticeTime: string,
   shouldShowNotice: boolean,
   fetchLive: boolean,
@@ -40,44 +42,15 @@ const iconStyle: React.CSSProperties = {
   height: "20px",
   cursor: "pointer"
 }
-const errorQuote = {
-  ava: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, bella: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, carol: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, diana: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, eileen: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }
-}
+const errorQuote = [{//啧，希望这个永远都不会被展示吧
+  name: "数据损坏",
+  daily: ["数据损坏"],
+  morning: "数据损坏",
+  noon: "数据损坏",
+  evening: "数据损坏",
+  night: "数据损坏",
+  notice: ["数据损坏"],
+}]
 const settingErrors = {
   dailyEmpty: "日常条目中至少请保留一条数据",
   noticeEmpty: "久坐提醒条目中至少请保留一条数据",
@@ -85,12 +58,20 @@ const settingErrors = {
   engineNotSafe: "搜索引擎url只接受以https://开头的网址",
   engineNameEmpty: "搜索引擎名称不能为空"
 }
+enum SELECT_TYPE {
+  THEME = 0,
+  QUOTE,
+  SKIN,
+  EDITING
+}
 class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕我要回Vue
   constructor(props: any) {
     super(props);
     this.state = {
-      theme: "diana",
+      theme: 3,
       quotes: errorQuote,
+      curr_quote: 0,
+      curr_editing: 0,
       noticeTime: "",
       dynamicPages: '',
       shouldShowNotice: true,
@@ -111,6 +92,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     }
   }
   async componentDidMount() {
+    let currTheme = await chromeGet("theme");
     this.setState({
       quotes: await chromeGet("quotes"),
       noticeTime: (await chromeGet("noticeTime")).toString(),
@@ -119,31 +101,34 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       fetchLive: await chromeGet("fetchLive"),
       defaultEngine: await chromeGet("defaultEngine"),
       searchEngine: await chromeGet("searchEngine"),
-      theme: await chromeGet("theme"),
+      theme: memberMap.findIndex(i => i == currTheme),
       showNavigation: await chromeGet("showNavigation"),
       showTopsite: await chromeGet("showTopsite"),
       showLiveBadge: await chromeGet("showLiveBadge"),
       showDynamicBadge: await chromeGet("showDynamicBadge"),
     })
   }
-  handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {
-    let temp = { ...this.state.quotes };
+  placeholder = () => {
+    console.log('测试中')
+  }
+  handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {//处理数组中的
+    let temp = this.state.quotes;
     switch (handleType) {
       case "new": {
         return () => {
-          temp[this.state.theme][attr] = temp[this.state.theme][attr].concat([""]);
+          temp[this.state.curr_quote][attr] = temp[this.state.curr_quote][attr].concat([""]);
           this.setState({ quotes: temp });
         }
       }
       case "delete": {
         return (i: number) => {
-          temp[this.state.theme][attr] = temp[this.state.theme][attr].slice(0, i).concat(temp[this.state.theme][attr].slice(i + 1, temp[this.state.theme][attr].length));
+          temp[this.state.curr_quote][attr] = temp[this.state.curr_quote][attr].slice(0, i).concat(temp[this.state.curr_quote][attr].slice(i + 1, temp[this.state.curr_quote][attr].length));
           this.setState({ quotes: temp });
         }
       }
       case "change": {
         return (e: React.ChangeEvent<HTMLInputElement>, i: number) => {
-          temp[this.state.theme][attr][i] = e.target.value;
+          temp[this.state.curr_quote][attr][i] = e.target.value;
           this.setState({ quotes: temp });
         }
       }
@@ -152,16 +137,16 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
   handleDialogForSingle: quotesSingleHandlerGenerator = quoteType => {//写完发现这函数名好大只哦
     return e => {
       let temp = { ...this.state.quotes };
-      temp[this.state.theme][quoteType] = e.target.value;
+      temp[this.state.curr_quote][quoteType] = e.target.value;
       this.setState({ quotes: temp })
     }
   }
   saveSetting = () => {
-    if (this.state.quotes[this.state.theme].daily.length === 0) {
+    if (this.state.quotes[this.state.curr_quote].daily.length === 0) {
       this.setState({ infoMessage: settingErrors.dailyEmpty, isError: true });
       return;
     }
-    if (this.state.quotes[this.state.theme].notice.length === 0) {
+    if (this.state.quotes[this.state.curr_quote].notice.length === 0) {
       this.setState({ infoMessage: settingErrors.noticeEmpty, isError: true });
       return;
     }
@@ -187,7 +172,8 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       fetchLive: this.state.fetchLive,
       defaultEngine: this.state.defaultEngine,
       searchEngine: this.state.searchEngine,
-      theme: this.state.theme,
+      theme: memberMap[this.state.theme],
+      curr_quote: this.state.quotes[this.state.curr_quote],
       showNavigation: this.state.showNavigation,
       showTopsite: this.state.showTopsite,
       showLiveBadge: this.state.showLiveBadge,
@@ -245,32 +231,40 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     }
     return optionsArray;
   }
-  resetQuote = () => {
-    let temp = this.state.quotes;
-    temp[this.state.theme] = quotes[this.state.theme]
-    this.setState({
-      quotes: temp
-    })
-  }
-  selectTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    switch (e.target.value) {
-      case "ava":
-      case "bella":
-      case "diana":
-      case "eileen":
-        this.setState({
-          theme: e.target.value
-        })
-        break;
+  selectOption = (type: SELECT_TYPE) => {//先想了想我该怎么把这个Type作为参数放到事件处理函数里，再一想我直接一个闭包上去不就解决了（
+    return (e: React.ChangeEvent<HTMLSelectElement>) => {
+      switch (type) {
+        case SELECT_TYPE.THEME:
+          this.setState({
+            theme: Number(e.target.value)
+          });
+          break;
+        case SELECT_TYPE.EDITING:
+          this.setState({
+            curr_editing: Number(e.target.value)
+          });
+          break;
+        case SELECT_TYPE.QUOTE:
+          this.setState({
+            curr_quote: Number(e.target.value)
+          });
+          break;
+        case SELECT_TYPE.SKIN:
+          this.setState({
+            //TODO 修改当前皮肤
+            theme: Number(e.target.value)
+          });
+          break;
+      }
     }
   }
-  optionsThemeRender = () => {
-    let optionsArray = [];
-    for (let i in memberList) {
-      if (i == this.state.theme) {
-        optionsArray.push(<option value={i} selected>{memberList[i].chineseName}</option>)
+  optionsThemeRender = (options: any[], indexState: number, getter = (item: any) => item) => {
+    let optionsArray = [];//options为需要渲染的选项数组，indexState为当前选中的index的state，getter为如何从options中获取到需要渲染的字符串，默认为直接获取，也可传入getter
+    for (let i = 0; i < options.length; i++) {
+      if (i == indexState) {
+        optionsArray.push(<option value={i} selected>{getter(options[i])}</option>)
       } else {
-        optionsArray.push(<option value={i}>{memberList[i as members].chineseName}</option>)
+        optionsArray.push(<option value={i}>{getter(options[i])}</option>)
       }
     }
     return optionsArray;
@@ -278,27 +272,52 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
   render(): React.ReactNode {
 
     return (
-      <div className={"App " + this.state.theme}>
+      <div className={"App " + memberMap[this.state.theme]}>
         <div className="settingContainerForDiana">
           <h1>设置好之后要到页面最下方保存哦</h1>
-          <h1>主题设置</h1>
-          <select onChange={this.selectTheme}>
-            {this.optionsThemeRender()}
-          </select>
+          <section className='combineBox'>
+            <div>
+              <h1>当前主题</h1>
+              <select onChange={this.selectOption(SELECT_TYPE.THEME)}>
+                {this.optionsThemeRender(memberList, this.state.theme, i => i.chineseName)}
+              </select>
+            </div>
+            <div>
+              <h1>当前对话文本预设</h1>
+              <select onChange={this.selectOption(SELECT_TYPE.QUOTE)}>
+                {this.optionsThemeRender(this.state.quotes, this.state.curr_quote, i => i.name)}
+              </select>
+            </div>
+            <div>
+              <h1>当前皮肤</h1>
+              <select onChange={this.selectOption(SELECT_TYPE.SKIN)}>
+                {this.optionsThemeRender(memberList, this.state.theme, i => i.chineseName)}
+              </select>
+            </div>
+          </section>
           <h1>对话文本设置
-            <MyButton text='重置当前主题文本' onClick={this.resetQuote}></MyButton></h1>
+
+          </h1>
+          <div>
+            当前正在设置预设：
+            <select onChange={this.selectOption(SELECT_TYPE.EDITING)}>
+              {this.optionsThemeRender(this.state.quotes, this.state.curr_editing, i => i.name)}
+            </select>
+            <MyButton text='复制本套预设' onClick={this.placeholder}></MyButton>
+            <MyButton text='删除本套预设' onClick={this.placeholder}></MyButton>
+          </div>
           <ArrayRender
-            data={this.state.quotes[this.state.theme].daily}
+            data={this.state.quotes[this.state.curr_editing].daily}
             label="日常" newItem={this.handleDialogForArray("daily", "new")}
             deleteItem={this.handleDialogForArray("daily", "delete")}
             onChange={this.handleDialogForArray("daily", "change") as (e: React.ChangeEvent<HTMLInputElement>, i: number) => void}
           />
-          <MyInput label='早间' value={this.state.quotes[this.state.theme].morning} onChange={this.handleDialogForSingle("morning")} />
-          <MyInput label='午间' value={this.state.quotes[this.state.theme].noon} onChange={this.handleDialogForSingle("noon")} />
-          <MyInput label='晚间' value={this.state.quotes[this.state.theme].evening} onChange={this.handleDialogForSingle("evening")} />
-          <MyInput label='深夜' value={this.state.quotes[this.state.theme].night} onChange={this.handleDialogForSingle("night")} />
+          <MyInput label='早间' value={this.state.quotes[this.state.curr_editing].morning} onChange={this.handleDialogForSingle("morning")} />
+          <MyInput label='午间' value={this.state.quotes[this.state.curr_editing].noon} onChange={this.handleDialogForSingle("noon")} />
+          <MyInput label='晚间' value={this.state.quotes[this.state.curr_editing].evening} onChange={this.handleDialogForSingle("evening")} />
+          <MyInput label='深夜' value={this.state.quotes[this.state.curr_editing].night} onChange={this.handleDialogForSingle("night")} />
           <ArrayRender
-            data={this.state.quotes[this.state.theme].notice}
+            data={this.state.quotes[this.state.curr_editing].notice}
             label="久坐提醒" newItem={this.handleDialogForArray("notice", "new")}
             deleteItem={this.handleDialogForArray("notice", "delete")}
             onChange={this.handleDialogForArray("notice", "change") as (e: React.ChangeEvent<HTMLInputElement>, i: number) => void}

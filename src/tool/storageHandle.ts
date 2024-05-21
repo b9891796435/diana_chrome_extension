@@ -2,7 +2,7 @@ import { fixStorage } from "./fixStorage";//只要type标的好，语法错误�
 //加了属性记得去fixStorage添加未定义时的修补机制
 import type { toolItemData } from "../views/NewTab/Content/YinTun/ToolItem";
 import type { members } from "../constants/memberList"
-import type { quotesType } from "../constants/storagePrototype/quotes";
+import type { quote } from "../constants/storagePrototype/quotes";
 export type storageKeys = keyof storageValues;
 
 export type liveType = members | "none" | "error"
@@ -145,7 +145,7 @@ export type material = {
         height?: string
     },
     isInspirator?: boolean,
-    zIndex:number
+    zIndex: number
 }
 export type skin = {
     name: string,
@@ -162,7 +162,8 @@ type getRes = {
         | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
     (key: "date" | "knownVersion"): Promise<string>,
     (key: "lastDynamicIDSTR"): Promise<lastDynamicRecord>,
-    (key: "quotes"): Promise<quotesType>
+    (key: "quotes"): Promise<quote[]>
+    (key: "curr_quote"): Promise<quote>
     (key: "toolList"): Promise<toolItemData[]>
     (key: "liveState"): Promise<liveType>
     (key: "scheduleState"): Promise<scheduleType>
@@ -193,7 +194,8 @@ type storageValues = {
     date?: string,
     knownVersion?: string,
     lastDynamicIDSTR?: lastDynamicRecord,
-    quotes?: quotesType,
+    quotes?: quote[],
+    curr_quote?: quote,
     toolList?: toolItemData[],
     liveState?: liveType,
     fetchLive?: boolean,

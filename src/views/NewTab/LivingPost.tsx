@@ -1,5 +1,5 @@
 import React from "react";
-import memberList from "../../constants/memberList";
+import memberList, { getMemberIndex } from "../../constants/memberList";
 import { chromeGet, liveType } from "../../tool/storageHandle";
 const styles = {
     livingPostDiv: {
@@ -61,10 +61,10 @@ export default class LivingPost extends React.Component<{}, postState> {
         } else {
             return (
                 <div style={styles.livingPostDiv}>
-                    <a href={memberList[this.state.nowLiving].livingRoom}>
-                        <span style={styles.livingNotice}>{memberList[this.state.nowLiving].chineseName + "正在直播，点击以进入直播间"}</span>
+                    <a href={memberList[getMemberIndex(this.state.nowLiving)].livingRoom}>
+                        <span style={styles.livingNotice}>{memberList[getMemberIndex(this.state.nowLiving)].chineseName + "正在直播，点击以进入直播间"}</span>
                     </a>
-                    <img src={memberList[this.state.nowLiving].post} alt="" style={styles.livingPost} />
+                    <img src={memberList[getMemberIndex(this.state.nowLiving)].post} alt="" style={styles.livingPost} />
                 </div>
             )
         }

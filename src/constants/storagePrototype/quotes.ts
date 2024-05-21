@@ -1,6 +1,7 @@
 import { members } from "../memberList"
 
-type quote = {
+export type quote = {
+    name: string,
     daily: string[],
     morning: string,
     noon: string,
@@ -9,16 +10,17 @@ type quote = {
     notice: string[]
 }
 const ava: quote = {
+    name: '向晚（预设）',
     daily: [
         "顶碗人！！嗨嗨！！！≈≈D  D≈≈ ",
-        "你为什么老看我啊，是不是我的身体很有魅力？啊你不用说了，你不用解释了",//BV1zv411Y7Rg
         "顶碗人！顶碗人在哪里！！",
         "兄弟们冲呀！！",
         "喜欢……也不是不可以啦",
         "水母 水母 普通透明的生物 期待委婉的保护",
         "这里是Asoul成员AvavaAva向晚！",
         "你摸太上面啦！",
-        "拉胯抛瓦！"
+        "拉胯抛瓦！",
+        "我要抱抱！"
     ],
     morning: "早安！顶碗人！",//晚晚的标点符号只有问号和叹号（乐
     noon: "中午吃饭！迎接太阳！！满满的正能量！！",
@@ -30,6 +32,7 @@ const ava: quote = {
     ]
 }
 const bella: quote = {
+    name: '贝拉（预设）',
     daily: [
         "贝极星大笨蛋！嘿嘿嘿~",
         "心有灵犀的贝极星肯定知道我接下来要说啥了！",
@@ -50,6 +53,7 @@ const bella: quote = {
     ]
 }
 const diana: quote = {
+    name: '嘉然（预设）',
     daily: [
         "嘉心糖要好好吃饭，每天都要开开心心的",//BV1bz4y1z7uu
         "我的小脑袋瓜里想的都是什么？想的都是你们呀",//BV1zv411Y7Rg
@@ -70,6 +74,7 @@ const diana: quote = {
     ]
 }
 const eileen: quote = {
+    name: '乃琳（预设）',
     daily: [
         '奶淇琳宝，要加油哦！',
         '奶淇琳，今天过得怎么样~开心嘛？',
@@ -89,10 +94,7 @@ const eileen: quote = {
         "奶淇琳宝坐了很长时间的话起来活动一下吧~",
     ]
 }
-export type quotesType = {
-    [key in members]: quote
-}
-const quotes: quotesType = {
+const quotes = [
     ava, bella, diana, eileen
-};
+];
 export default quotes;

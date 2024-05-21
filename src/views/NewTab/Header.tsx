@@ -27,8 +27,8 @@ const styles = {
 function Header() {
     const avatarList = () => {
         let res = [];
-        for (let i in memberList) {
-            res.push(<Avatar link={userSpaceUrl + memberList[i as members].uid} avatar={memberList[i as members].avatar}></Avatar>)
+        for (let i of memberList) {
+            res.push(<Avatar link={userSpaceUrl + i.uid} avatar={i.avatar}></Avatar>)
         }
         return res
     }

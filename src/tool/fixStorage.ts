@@ -7,10 +7,25 @@ export const fixStorage = () => {
                 chrome.storage.local.set({ quotes })
             }
             else if ("notice" in res.quotes) {
-                alert("检测到旧版本插件数据，已迁移至新版本插件。刷新页面即可正常使用")
-                const temp = { ...quotes }
-                temp.diana = res.quotes;
+                alert("检测到1.x版本插件数据，已迁移至新版本插件。点击确定后刷新页面即可正常使用")
+                let temp = [...quotes]
+                res.quotes.name = "迁移的旧版本数据";
+                temp.push(res.quotes)
                 chrome.storage.local.set({ quotes: temp })
+            } else if ('ava' in res.quotes) {
+                alert("检测到2.x版本插件数据，已迁移至新版本插件。点击确定后刷新页面即可正常使用")
+                let { ava, bella, diana, eileen } = res.quotes
+                ava.name = '迁移的向晚语录'
+                bella.name = '迁移的贝拉语录'
+                diana.name = '迁移的嘉然语录'
+                eileen.name = '迁移的乃琳语录'
+                let temp = [...quotes, ava, bella, diana, eileen]
+                chrome.storage.local.set({ quotes: temp })
+            }
+        }),
+        chrome.storage.local.get("curr_quote").then(res => {
+            if (res.curr_quote === undefined || typeof res.curr_quote !== 'object' || !res.curr_quote.name) {
+                chrome.storage.local.set({ curr_quote: quotes[0] })
             }
         }),
         chrome.storage.local.get("toolList").then(res => {

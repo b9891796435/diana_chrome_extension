@@ -4,7 +4,7 @@ import memberList, { members } from "./constants/memberList"
 import type { dynamicData, liveType } from "./tool/storageHandle"
 import md5 from 'js-md5';
 chrome.runtime.onInstalled.addListener(fixStorage);
-const getMixinKey = async () => {
+const getMixinKey = async () => {//啊B又在搞幺蛾子了
     let keys = (await (await fetch('https://api.bilibili.com/x/web-interface/nav')).json()).data.wbi_img
     const getKeyFromUrl = (e: string) => e.substring(e.lastIndexOf("/") + 1, e.length).split(".")[0]
     let e = getKeyFromUrl(keys.img_url) + getKeyFromUrl(keys.sub_url)
@@ -40,13 +40,12 @@ export const renderDynamicBadge = async () => {
 }
 
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
-    let i: keyof typeof memberList;
     let temp: liveType = "none";
     let timeNow = Math.round(Date.now() / 1e3);
     let mixinKey = await getMixinKey();
     try {
-        for (i in memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
-            let originParam = `mid=${memberList[i].uid}&platform=web&token=&web_location=1550101&wts=${timeNow}`
+        for (let i of memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
+            let originParam = `mid=${i.uid}&platform=web&token=&web_location=1550101&wts=${timeNow}`
             let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${originParam}&w_rid=${getEncKey(originParam, mixinKey)}`);
             res = await res.text()
             try {
@@ -56,7 +55,7 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
             }
             let data = res as any;
             if (data.data.live_room.liveStatus) {
-                temp = i;
+                temp = i.englishName;
                 break;
             }
             let a = await chrome.storage.local.get("debugMode")
@@ -101,19 +100,19 @@ export const getMembersDynamic = async () => {
     if (await chromeGet('showDynamicBadge')) {
         let lastIDSTR = await chromeGet('lastDynamicIDSTR');
         let badgeCount = await chromeGet('dynamicBadgeText');
-        for (let i in temp) {
-            let res = await getDynamic(pages, memberList[i as members].uid)
+        for (let i of memberList) {
+            let res = await getDynamic(pages, i.uid)
             res = res.sort((a, b) => b.modules.module_author.pub_ts - a.modules.module_author.pub_ts);//获得按时间排序的动态
             if (res[0].type != 'DYNAMIC_TYPE_LIVE_RCMD') {
-                if (res[0].id_str != lastIDSTR[i as members]) {
-                    lastIDSTR[i as members] = res[0].id_str;
+                if (res[0].id_str != lastIDSTR[i.englishName]) {
+                    lastIDSTR[i.englishName] = res[0].id_str;
                     badgeCount++;
                 }
-            } else if (res[1].id_str != lastIDSTR[i as members]) {
-                lastIDSTR[i as members] = res[1].id_str;
+            } else if (res[1].id_str != lastIDSTR[i.englishName]) {
+                lastIDSTR[i.englishName] = res[1].id_str;
                 badgeCount++;
             }
-            temp[i as members] = temp[i as members].concat(res)
+            temp[i.englishName] = temp[i.englishName].concat(res)
         }
         await chromeSet({
             dynamicBadgeText: badgeCount,
@@ -121,9 +120,9 @@ export const getMembersDynamic = async () => {
         });
         renderDynamicBadge();
     } else {
-        for (let i in temp) {
-            let res = await getDynamic(pages, memberList[i as members].uid)
-            temp[i as members] = temp[i as members].concat(res)
+        for (let i of memberList) {
+            let res = await getDynamic(pages, i.uid)
+            temp[i.englishName] = temp[i.englishName].concat(res)
         }
     }
     chromeSet({
@@ -158,7 +157,7 @@ export const getScheduleState = async () => {
                 }
             }
         }
-        throw new Error("找不到最新日程表，可能由于动态过多、b站更改API格式或羊驼发日程表的动态里没写日程表这仨字")
+        throw new Error("找不到最新日程表，可能由于动态过多、b站更改API格式或羊驼发日程表的动态里没写“日程表”这三个字")
     } catch (e) {
         console.log(e, res)
         chromeSet({ scheduleState: Date.now() })
