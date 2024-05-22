@@ -11,7 +11,7 @@ chromeGet("tabCount").then(res => {
 
 let showDianaNotice = async () => {
     let noticeNode, removeNoticeNode;
-    let curr_quote = await chromeGet('curr_quote');//TODO:combine
+    let curr_quote = await chromeGet('curr_quote');
     let theme = 'diana'
     let elem = document.createElement("div");
     elem.className = "dianaNoticeContainer App " + theme;
