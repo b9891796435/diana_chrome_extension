@@ -165,6 +165,24 @@ export const getScheduleState = async () => {
         chromeSet({ scheduleState: Date.now() })
     }
 }
+/**
+ * 鉴定版本号
+ * @param knownVersion 已知版本
+ * @param newVersion 将要进行比较的新版本
+ * @returns 若为真则后者更新，否则两者相等或前者更新
+ */
+export const judgeNewVersion = (knownVersion: string, newVersion: string) => {//为true则代表
+    let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));//分离好的已知版本
+    let newVersionArray = newVersion.split('.').map((i: string) => Number(i));//分离好的现版本
+    for (let i = 0; i < 3; i++) {//因为自己只会使用3段版本，所以比较前三位即可
+        if (knownVersionArray[i] > newVersionArray[i]) {
+            return false
+        } else if (knownVersionArray[i] < newVersionArray[i]) {
+            return true
+        }
+    }
+    return false;
+}
 export const getUpdate = async () => {
     let res = await getDynamic(2, '104319441');
     for (let i of res) {
@@ -175,16 +193,15 @@ export const getUpdate = async () => {
                 if (content.agent == 'edge') {
                     continue
                 }
-                let newVersion = JSON.parse(context).version;
-                let nowVersion = chrome.runtime.getManifest().version;
-                let nowVersionArray = nowVersion.split('.').map((i: string) => Number(i));
+                let newVersion = JSON.parse(context).version;//新版本
+                let nowVersion = chrome.runtime.getManifest().version;//现版本
                 let knownVersion = (await chromeGet('knownVersion'));
-                let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));
-                if (nowVersionArray[0] > knownVersionArray[0] || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] > knownVersionArray[1]) || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] == knownVersionArray[1] && nowVersionArray[2] > knownVersionArray[2])) {
-                    await chromeSet({ knownVersion: chrome.runtime.getManifest().version })
+                if (judgeNewVersion(knownVersion, nowVersion)) {//假设现版本比已知版本新，则设置已知版本为现版本
+                    //之前写的纯纯依托
+                    await chromeSet({ knownVersion: nowVersion })
                     knownVersion = nowVersion;
                 }
-                if (newVersion !== knownVersion) {
+                if (judgeNewVersion(knownVersion, newVersion)) {
                     return JSON.parse(context) as { version: string, url: string, content: string };
                 } else {
                     return null;
