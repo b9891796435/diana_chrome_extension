@@ -1,6 +1,8 @@
 .toolBoxContentDiv {
     display: flex;
     padding: 16px;
+    height: 70vh;
+    width: 80vw;
     margin: 0;
     flex-wrap: wrap;
 }

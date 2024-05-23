@@ -21,3 +21,7 @@
   .gettingLive.isGetting:hover{
     background-color: #00000055;
   }
+  .scheduleContainer{
+    width: 80vw;
+    height: 70vh;
+  }

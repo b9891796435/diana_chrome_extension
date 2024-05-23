@@ -1,3 +1,4 @@
+import { getMemberIndex } from "../constants/memberList";
 import quotes from "../constants/storagePrototype/quotes";
 import toolList from "../constants/storagePrototype/toolList";
 export const fixStorage = () => {
@@ -200,7 +201,7 @@ export const fixStorage = () => {
             }
         }),
         chrome.storage.local.get("theme").then(res => {
-            if (!(res.theme in quotes)) {
+            if (!(typeof getMemberIndex(res.theme) == 'number')) {
                 chrome.storage.local.set({
                     theme: "diana"
                 })

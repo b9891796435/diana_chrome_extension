@@ -11,7 +11,7 @@ type scheduleState = {
     isGettingSchedule: boolean,
     fullScheduleDisplayed: boolean,
 }
-export default class ShowSchedule extends React.Component<{}, scheduleState>{
+export default class ShowSchedule extends React.Component<{}, scheduleState> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -112,7 +112,7 @@ export default class ShowSchedule extends React.Component<{}, scheduleState>{
         return (<div>
             <MyButton text="直播日程表" onClick={this.showSchedule}></MyButton>
             <PopupBox header={<div>直播日程表</div>} visible={this.state.scheduleVisible}>
-                <div>
+                <div className="scheduleContainer">
                     <div className={this.state.isGettingSchedule ? "gettingLive isGetting" : "gettingLive"} onClick={() => { if (!this.state.isGettingSchedule) this.showSchedule() }} />
                     <ScheduleContent />
                 </div>

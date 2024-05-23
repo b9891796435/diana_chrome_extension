@@ -65,7 +65,6 @@
 
 .dynamicAv>img {
     display: block;
-    width: 203px;
 }
 
 .dynamicAv>div {
@@ -78,4 +77,9 @@
     font-size: 0.9em;
     font-weight: 400;
     color: #444;
+}
+
+.dynamicContainer {
+    width: 80vw;
+    height: 70vh;
 }

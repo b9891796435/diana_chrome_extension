@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { ReactEventHandler } from 'react'
 import MyMessage from '../../components/MyMessage';
 import MyInput from '../../components/MyInput';
 import MyButton from '../../components/MyButton';
 import ArrayRender from './ArrayRender';
 import quotes, { quote } from '../../constants/storagePrototype/quotes';
+import PopupBox from '../../components/PopupBox';
 import { memberMap } from '../../constants/memberList';
 import { chromeGet, chromeSet, searchEngineType } from '../../tool/storageHandle';
 import { resetStorage } from "../../tool/fixStorage"
@@ -14,7 +15,8 @@ type settingsState = {
   theme: number,
   quotes: quote[],
   curr_quote: number,//注意这里的curr_quote并非存储中的curr，只是临时用于存储当前状态的变量。请在保存时存储对应的语录对象而非一个数字。
-  curr_editing: number,//当前正在修改的文本预设
+  currName: string,
+  renameVisible: boolean;
   noticeTime: string,
   shouldShowNotice: boolean,
   fetchLive: boolean,
@@ -62,8 +64,7 @@ const settingErrors = {
 enum SELECT_TYPE {
   THEME = 0,
   QUOTE,
-  SKIN,
-  EDITING
+  SKIN
 }
 class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕我要回Vue
   constructor(props: any) {
@@ -73,8 +74,9 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       theme: 3,
       quotes: errorQuote,
       curr_quote: 0,
-      curr_editing: 0,
       noticeTime: "",
+      currName: '',
+      renameVisible: false,
       dynamicPages: '',
       shouldShowNotice: true,
       fetchLive: true,
@@ -110,9 +112,62 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       showLiveBadge: await chromeGet("showLiveBadge"),
       showDynamicBadge: await chromeGet("showDynamicBadge"),
     })
+    let currQuoteObj = await chromeGet('curr_quote');
+    let quoteIdx = this.state.quotes.findIndex(i => i.name == currQuoteObj.name)
+    this.setState({
+      curr_quote: quoteIdx
+    })
   }
   placeholder = () => {
-    console.log('测试中')
+    console.log('开发中')
+  }
+  handleRenameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ currName: e.target.value })
+  }
+  confirmRename = () => {
+    let temp = [...this.state.quotes]
+    temp[this.state.curr_quote].name = this.getCopyName(this.state.currName);
+    this.setState({
+      quotes: temp
+    })
+  }
+  getCopyName = (copyName: string) => {
+    let currCopyName = copyName, currIdx = 1;
+    if (this.state.quotes.findIndex(i => i.name == copyName) == -1) return copyName;//扩展用于更名时检测重名
+    if (this.state.quotes.findIndex(i => i.name == (currCopyName + ' ' + currIdx)) == -1) return currCopyName + ' ' + currIdx;
+    while (this.state.quotes.findIndex(i => i.name == (currCopyName + ' ' + currIdx)) != -1) {
+      currIdx += 1
+    }
+    return currCopyName + ' ' + currIdx
+  }
+  copyQuote = (quoteIdx: number) => {
+    let temp = [...this.state.quotes]
+    let newQuote = JSON.parse(JSON.stringify(this.state.quotes[quoteIdx]))
+    newQuote.name = this.getCopyName(newQuote.name)
+    temp.push(newQuote)
+    this.setState({
+      quotes: temp
+    })
+  }
+  deleteQuote = (quoteIdx: number) => {
+    let temp = [...this.state.quotes]
+    if (temp.length == 1) {
+      alert('请至少保留一组对话文本');
+      return;
+    }
+    temp.splice(quoteIdx, 1);
+    console.log(temp,this.state)
+    this.setState({
+      curr_quote: this.state.curr_quote == 0 ? 0 : this.state.curr_quote - 1,
+      quotes: temp,
+    })
+  }
+  renameQuote = (quoteIdx: number, newName: string) => {
+    let temp = [...this.state.quotes]
+    temp[quoteIdx].name = this.getCopyName(newName)
+    this.setState({
+      quotes: temp
+    })
   }
   handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {//处理数组中的
     let temp = this.state.quotes;
@@ -243,11 +298,6 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
             theme: Number(e.target.value)
           });
           break;
-        case SELECT_TYPE.EDITING:
-          this.setState({
-            curr_editing: Number(e.target.value)
-          });
-          break;
         case SELECT_TYPE.QUOTE:
           this.setState({
             curr_quote: Number(e.target.value)
@@ -293,7 +343,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
               </select>
             </div>
             <div>
-              <h1>当前对话文本预设</h1>
+              <h1>当前对话文本</h1>
               <select onChange={this.selectOption(SELECT_TYPE.QUOTE)}>
                 {this.optionsThemeRender(this.state.quotes, this.state.curr_quote, i => i.name)}
               </select>
@@ -305,29 +355,28 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
               </select>
             </div>
           </section>
-          <h1>对话文本设置
-
-          </h1>
+          <h1>对话文本设置</h1>
           <div>
-            当前正在设置预设：
-            <select onChange={this.selectOption(SELECT_TYPE.EDITING)}>
-              {this.optionsThemeRender(this.state.quotes, this.state.curr_editing, i => i.name)}
-            </select>
-            <MyButton text='复制本套预设' onClick={this.placeholder}></MyButton>
-            <MyButton text='删除本套预设' onClick={this.placeholder}></MyButton>
+            <PopupBox header={<div>更名</div>} visible={this.state.renameVisible}>
+              <MyInput label='新名称' value={this.state.currName} onChange={this.handleRenameInput}></MyInput>
+              <MyButton text='确认更名' onClick={() => { this.setState({ renameVisible: !this.state.renameVisible }); this.confirmRename() }}></MyButton>
+            </PopupBox>
+            <MyButton text='为本套文本更名' onClick={() => this.setState({ renameVisible: !this.state.renameVisible })}></MyButton>
+            <MyButton text='复制本套文本' onClick={() => this.copyQuote(this.state.curr_quote)}></MyButton>
+            <MyButton text='删除本套文本' onClick={() => this.deleteQuote(this.state.curr_quote)}></MyButton>
           </div>
           <ArrayRender
-            data={this.state.quotes[this.state.curr_editing].daily}
+            data={this.state.quotes[this.state.curr_quote].daily}
             label="日常" newItem={this.handleDialogForArray("daily", "new")}
             deleteItem={this.handleDialogForArray("daily", "delete")}
             onChange={this.handleDialogForArray("daily", "change") as (e: React.ChangeEvent<HTMLInputElement>, i: number) => void}
           />
-          <MyInput label='早间' value={this.state.quotes[this.state.curr_editing].morning} onChange={this.handleDialogForSingle("morning")} />
-          <MyInput label='午间' value={this.state.quotes[this.state.curr_editing].noon} onChange={this.handleDialogForSingle("noon")} />
-          <MyInput label='晚间' value={this.state.quotes[this.state.curr_editing].evening} onChange={this.handleDialogForSingle("evening")} />
-          <MyInput label='深夜' value={this.state.quotes[this.state.curr_editing].night} onChange={this.handleDialogForSingle("night")} />
+          <MyInput label='早间' value={this.state.quotes[this.state.curr_quote].morning} onChange={this.handleDialogForSingle("morning")} />
+          <MyInput label='午间' value={this.state.quotes[this.state.curr_quote].noon} onChange={this.handleDialogForSingle("noon")} />
+          <MyInput label='晚间' value={this.state.quotes[this.state.curr_quote].evening} onChange={this.handleDialogForSingle("evening")} />
+          <MyInput label='深夜' value={this.state.quotes[this.state.curr_quote].night} onChange={this.handleDialogForSingle("night")} />
           <ArrayRender
-            data={this.state.quotes[this.state.curr_editing].notice}
+            data={this.state.quotes[this.state.curr_quote].notice}
             label="久坐提醒" newItem={this.handleDialogForArray("notice", "new")}
             deleteItem={this.handleDialogForArray("notice", "delete")}
             onChange={this.handleDialogForArray("notice", "change") as (e: React.ChangeEvent<HTMLInputElement>, i: number) => void}
