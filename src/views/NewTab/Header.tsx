@@ -40,8 +40,6 @@ function Header() {
                 //我们是Asoul！
             }
             {avatarList()}
-            <Avatar link={'https://space.bilibili.com/3537115310721781'} avatar={require('../../assets/images/GladysAvatar.jpg')}></Avatar>
-            <Avatar link={'https://space.bilibili.com/3537115310721181'} avatar={require('../../assets/images/FionaAvatar.jpg')}></Avatar>
             <MembersDynamic></MembersDynamic>
             <ShowSchedule></ShowSchedule>
             <div className="transitionBlock"></div>

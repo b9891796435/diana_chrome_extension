@@ -13,7 +13,9 @@ type member = {
     livingRoom: string,
     themeImg: themePack
 }
-export type members = "ava" | "bella" | "diana" | "eileen"
+export type firstMembers = "ava" | "bella" | "diana" | "eileen"
+export type secondMembers = 'fiona' | 'gladys'
+export type members = firstMembers | secondMembers
 const memberList: member[] = [
     {//晚晚，要幸福哦
         chineseName: "向晚",
@@ -72,14 +74,45 @@ const memberList: member[] = [
             positions: [require("../assets/images/themePack/eileen/position0.png"), require("../assets/images/themePack/eileen/position1.png")]
         }
     },
+    {
+        chineseName: "心宜",
+        englishName: 'fiona',
+        uid: "3537115310721181",
+        avatar: require("../assets/images/fionaAvatar.jpg"),
+        post: require("../assets/images/fionaLivingPost.webp"),
+        livingRoom: "https://live.bilibili.com/22625027?broadcast_type=0&is_room_feed=1",
+        themeImg: {
+            idol: require("../assets/images/themePack/fiona/idol.png"),
+            error: require("../assets/images/themePack/fiona/error.png"),
+            meme: require("../assets/images/themePack/fiona/meme.png"),
+            positions: [require("../assets/images/themePack/diana/position0.png"), require("../assets/images/themePack/diana/position1.png")]
+        }
+    },
+    {
+        chineseName: "思诺",
+        englishName: 'gladys',
+        uid: "3537115310721781",
+        avatar: require("../assets/images/gladysAvatar.jpg"),
+        post: require("../assets/images/gladysLivingPost.webp"),
+        livingRoom: "https://live.bilibili.com/22625027?broadcast_type=0&is_room_feed=1",
+        themeImg: {
+            idol: require("../assets/images/themePack/gladys/idol.png"),
+            error: require("../assets/images/themePack/gladys/error.png"),
+            meme: require("../assets/images/themePack/gladys/meme.png"),
+            positions: [require("../assets/images/themePack/diana/position0.png"), require("../assets/images/themePack/diana/position1.png")]
+        }
+    },
 ]
+
 export default memberList;
-export const memberMap: members[] = ['ava', 'bella', 'diana', 'eileen']
+export const memberMap: members[] = ['ava', 'bella', 'diana', 'eileen', 'fiona', 'gladys']
 export const getMemberIndex = (memberEng: members) => {
     switch (memberEng) {
         case 'ava': return 0;
         case 'bella': return 1;
         case 'diana': return 2;
         case 'eileen': return 3;
+        case 'fiona': return 4;
+        case 'gladys': return 5;
     }
 }

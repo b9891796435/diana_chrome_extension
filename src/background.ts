@@ -95,6 +95,8 @@ export const getMembersDynamic = async () => {
         bella: [],
         diana: [],
         eileen: [],
+        fiona: [],
+        gladys: []
     };
     let pages = await chromeGet('dynamicPages');
     if (await chromeGet('showDynamicBadge')) {

@@ -10,7 +10,7 @@ type membersDynamicState = {
     membersDynamicNow: dynamicListType,
     isGettingDynamic: boolean
 }
-export default class MembersDynamic extends React.Component<{}, membersDynamicState>{
+export default class MembersDynamic extends React.Component<{}, membersDynamicState> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -19,7 +19,9 @@ export default class MembersDynamic extends React.Component<{}, membersDynamicSt
                 ava: [],
                 bella: [],
                 diana: [],
-                eileen: []
+                eileen: [],
+                fiona: [],
+                gladys: [],
             },
             isGettingDynamic: false,
         }
@@ -153,7 +155,7 @@ export default class MembersDynamic extends React.Component<{}, membersDynamicSt
         return (<div style={{ marginLeft: "auto" }}>
             <MyButton text="成员朋友圈" onClick={this.showDynamic}></MyButton>
             <PopupBox header={<div>成员朋友圈</div>} visible={this.state.membersDynamicVisible}>
-                <div>
+                <div className="dynamicContainer">
                     <div className={this.state.isGettingDynamic ? "gettingLive isGetting" : "gettingLive"} onClick={() => { if (!this.state.isGettingDynamic) this.showDynamic() }} />
                     {this.dynamicList()}
                 </div>
