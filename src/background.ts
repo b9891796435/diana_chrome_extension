@@ -1,6 +1,6 @@
 import { fixStorage } from "./tool/fixStorage"
 import { chromeGet, chromeSet, dynamicListType } from "./tool/storageHandle";
-import memberList, { members } from "./constants/memberList"
+import memberList, { judgeSecondMember, members } from "./constants/memberList"
 import type { dynamicData, liveType } from "./tool/storageHandle"
 import md5 from 'js-md5';
 chrome.runtime.onInstalled.addListener(fixStorage);
@@ -102,7 +102,11 @@ export const getMembersDynamic = async () => {
     if (await chromeGet('showDynamicBadge')) {
         let lastIDSTR = await chromeGet('lastDynamicIDSTR');
         let badgeCount = await chromeGet('dynamicBadgeText');
+        let showSecondMember=await chromeGet('showSecondMember')
         for (let i of memberList) {
+            if (!showSecondMember&&judgeSecondMember(i.englishName)) {
+                continue
+            }
             let res = await getDynamic(pages, i.uid)
             res = res.sort((a, b) => b.modules.module_author.pub_ts - a.modules.module_author.pub_ts);//获得按时间排序的动态
             if (res[0].type != 'DYNAMIC_TYPE_LIVE_RCMD') {

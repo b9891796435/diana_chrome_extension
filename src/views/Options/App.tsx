@@ -28,6 +28,7 @@ type settingsState = {
   showLiveBadge: boolean,
   showDynamicBadge: boolean,
   showNavigation: boolean,
+  showSecondMember: boolean,
   dynamicPages: string,
   selectedSkin: number
 }
@@ -79,6 +80,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       renameVisible: false,
       dynamicPages: '',
       shouldShowNotice: true,
+      showSecondMember: true,
       fetchLive: true,
       infoMessage: "",
       isError: true,
@@ -111,6 +113,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       showTopsite: await chromeGet("showTopsite"),
       showLiveBadge: await chromeGet("showLiveBadge"),
       showDynamicBadge: await chromeGet("showDynamicBadge"),
+      showSecondMember: await chromeGet('showSecondMember')
     })
     let currQuoteObj = await chromeGet('curr_quote');
     let quoteIdx = this.state.quotes.findIndex(i => i.name == currQuoteObj.name)
@@ -156,7 +159,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       return;
     }
     temp.splice(quoteIdx, 1);
-    console.log(temp,this.state)
+    console.log(temp, this.state)
     this.setState({
       curr_quote: this.state.curr_quote == 0 ? 0 : this.state.curr_quote - 1,
       quotes: temp,
@@ -236,7 +239,8 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       showNavigation: this.state.showNavigation,
       showTopsite: this.state.showTopsite,
       showLiveBadge: this.state.showLiveBadge,
-      showDynamicBadge: this.state.showDynamicBadge
+      showDynamicBadge: this.state.showDynamicBadge,
+      showSecondMember: this.state.showSecondMember
     })
   }
   EngineRender = () => {
@@ -404,6 +408,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <MyInput label='是否显示常用网页:' value={this.state.showTopsite} onChange={() => this.setState({ showTopsite: !this.state.showTopsite })}></MyInput>
           <MyInput label='是否显示动态更新红点:' value={this.state.showDynamicBadge} onChange={() => this.setState({ showDynamicBadge: !this.state.showDynamicBadge })}></MyInput>
           <MyInput label='是否显示直播红点:' value={this.state.showLiveBadge} onChange={() => this.setState({ showLiveBadge: !this.state.showLiveBadge })}></MyInput>
+          <MyInput label='是否在主页显示二期头像，动态朋友圈中获取二期成员动态:' value={this.state.showSecondMember} onChange={() => this.setState({ showSecondMember: !this.state.showSecondMember })}></MyInput>
           <div>
             <MyMessage text={this.state.infoMessage} style={{ display: this.state.infoMessage ? "block" : "none", backgroundColor: this.state.isError ? "#ff4d4f" : "#52c41a" }}></MyMessage>
           </div>

@@ -116,3 +116,10 @@ export const getMemberIndex = (memberEng: members) => {
         case 'gladys': return 5;
     }
 }
+export const judgeSecondMember = (member: members) => {
+    let memberIdx = getMemberIndex(member)
+    if (memberIdx == 4 || memberIdx == 5) {
+        return true
+    }
+    return false
+}

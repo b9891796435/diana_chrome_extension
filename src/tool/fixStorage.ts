@@ -110,6 +110,11 @@ export const fixStorage = () => {
                 chrome.storage.local.set({ fetchLive: true })
             }
         }),
+        chrome.storage.local.get("showSecondMember").then(res => {
+            if (res.showSecondMember === undefined) {
+                chrome.storage.local.set({ showSecondMember: true })
+            }
+        }),
         chrome.storage.local.get("showNavigation").then(res => {
             if (res.showNavigation === undefined) {
                 chrome.storage.local.set({ showNavigation: true })
@@ -350,6 +355,7 @@ export const resetStorage = () => {
         showTopsite: false,
         showDynamicBadge: false,
         showLiveBadge: false,
+        showSecondMember: true
     })
     chrome.storage.local.set({
         lastDynamicIDSTR: {

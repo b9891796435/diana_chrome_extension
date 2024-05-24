@@ -6,7 +6,7 @@ import "./Header.css"
 import ShowSchedule from "./ShowSchedule";
 import { chromeGet } from "../../tool/storageHandle";
 import MembersDynamic from "./MembersDynamic";
-import { members } from "../../constants/memberList";
+import { judgeSecondMember, members } from "../../constants/memberList";
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
 const styles = {
@@ -25,9 +25,14 @@ const styles = {
     },
 }
 function Header() {
+    let [showSecondMember, setShowSecondMember] = useState(true);
     const avatarList = () => {
         let res = [];
+        chromeGet('showSecondMember').then(res => setShowSecondMember(res))
         for (let i of memberList) {
+            if (!showSecondMember&&judgeSecondMember(i.englishName)) {
+                continue
+            }
             res.push(<Avatar link={userSpaceUrl + i.uid} avatar={i.avatar}></Avatar>)
         }
         return res

@@ -159,7 +159,7 @@ type getRes = {
     (key: "noticeTime" | "notice" | "tabCount" | "liveTime" | "defaultEngine" | "dynamicPages" | "dynamicTime" | "dynamicBadgeText" | 'selectedSkin'): Promise<number>,
     (key: "shouldShowNotice"
         | "morning" | "noon" | "evening" | "night" | "fetchLive"
-        | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"): Promise<boolean>,
+        | "showNavigation" | "showTopsite" | "showLiveBadge" | "showDynamicBadge"|'showSecondMember'): Promise<boolean>,
     (key: "date" | "knownVersion"): Promise<string>,
     (key: "lastDynamicIDSTR"): Promise<lastDynamicRecord>,
     (key: "quotes"): Promise<quote[]>
@@ -204,6 +204,8 @@ type storageValues = {
     showTopsite?: boolean,
     //是否展示当前正在直播角标
     showLiveBadge?: boolean,
+    //动态是否展示二期成员
+    showSecondMember?:boolean,
     //是否展示动态角标
     showDynamicBadge?: boolean,
     //主页中保存的上次问安日期，如果超过24点则刷新问安变量
