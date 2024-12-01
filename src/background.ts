@@ -20,8 +20,27 @@ const getMixinKey = async () => {//啊B又在搞幺蛾子了
         }
         )), t.join("").slice(0, 32);
 }
-const getEncKey = (argv: string, mixinKey: string) => {
-    return md5(argv + mixinKey)
+// const getEncKey = (argv: string, mixinKey: string) => {
+//     return md5(argv + mixinKey)
+// }
+const getEncKey = (params: any, mixinKey: string) => {
+    const curr_time = Math.round(Date.now() / 1000),
+        chr_filter = /[!'()*]/g
+    Object.assign(params, { wts: curr_time }) // 添加 wts 字段
+    // 按照 key 重排参数
+    const query = Object
+        .keys(params)
+        .sort()
+        .map(key => {
+            // 过滤 value 中的 "!'()*" 字符
+            const value = params[key].toString().replace(chr_filter, '')
+            return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        })
+        .join('&')
+
+    const wbi_sign = md5(query + mixinKey) // 计算 w_rid
+
+    return query + '&w_rid=' + wbi_sign
 }
 export const renderDynamicBadge = async () => {
     let liveState = await chromeGet('liveState');
@@ -43,10 +62,23 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
     let temp: liveType = "none";
     let timeNow = Math.round(Date.now() / 1e3);
     let mixinKey = await getMixinKey();
+    const parser = new DOMParser();
     try {
         for (let i of memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
-            let originParam = `mid=${i.uid}&platform=web&token=&web_location=1550101&wts=${timeNow}`
-            let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${originParam}&w_rid=${getEncKey(originParam, mixinKey)}`);
+            const memberPage = parser.parseFromString(await fetch(`https://space.bilibili.com/${i.uid}`).then(res => res.text()), 'text/html')
+            const access_id = JSON.parse(decodeURIComponent((memberPage.querySelector("#__RENDER_DATA__") as any).innerHTML)).access_id//危险，但是由于在catch块里所以无所谓了
+            const dm_img_str = 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ';
+            const dm_cover_img_str = 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjMwICgweDAwMDAzRTlCKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC';
+            const dm_img_inter = '{"ds":[],"wh":[0,0,0],"of":[0,0,0]}'
+            const params = {
+                dm_img_str, dm_cover_img_str, dm_img_inter, dm_img_list: [],
+                mid: i.uid,
+                platform: 'web',
+                token: '',
+                web_location: 1550101,
+                w_webid: access_id,
+            }
+            let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${getEncKey(params, mixinKey)}`);
             res = await res.text()
             try {
                 res = JSON.parse(res)
@@ -102,9 +134,9 @@ export const getMembersDynamic = async () => {
     if (await chromeGet('showDynamicBadge')) {
         let lastIDSTR = await chromeGet('lastDynamicIDSTR');
         let badgeCount = await chromeGet('dynamicBadgeText');
-        let showSecondMember=await chromeGet('showSecondMember')
+        let showSecondMember = await chromeGet('showSecondMember')
         for (let i of memberList) {
-            if (!showSecondMember&&judgeSecondMember(i.englishName)) {
+            if (!showSecondMember && judgeSecondMember(i.englishName)) {
                 continue
             }
             let res = await getDynamic(pages, i.uid)

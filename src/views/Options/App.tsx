@@ -11,6 +11,9 @@ import { resetStorage } from "../../tool/fixStorage"
 import memberList from '../../constants/memberList';
 import "./App.css"
 import "../../themeColor.css"
+type booleanSettingItems = 'fetchLive' | 'shouldShowNotice' | 'showTopsite' |
+  'showLiveBadge' | 'showDynamicBadge' | 'showNavigation' | 'showSecondMember' |
+  'useZhijiangSchedule'
 type settingsState = {
   theme: number,
   quotes: quote[],
@@ -18,17 +21,16 @@ type settingsState = {
   currName: string,
   renameVisible: boolean;
   noticeTime: string,
-  shouldShowNotice: boolean,
-  fetchLive: boolean,
   infoMessage: string,
   isError: boolean,
   defaultEngine: number,
   searchEngine: searchEngineType,
-  showTopsite: boolean,
-  showLiveBadge: boolean,
-  showDynamicBadge: boolean,
-  showNavigation: boolean,
-  showSecondMember: boolean,
+  booleanSetting: {
+    [key in booleanSettingItems]: {
+      label: string,
+      value: boolean
+    }
+  }
   dynamicPages: string,
   selectedSkin: number
 }
@@ -79,9 +81,40 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       currName: '',
       renameVisible: false,
       dynamicPages: '',
-      shouldShowNotice: true,
-      showSecondMember: true,
-      fetchLive: true,
+      booleanSetting: {
+        shouldShowNotice: {
+          label: '是否开启跨页久坐提醒:',
+          value: true
+        },
+        showSecondMember: {
+          label: '是否在主页显示二期头像，动态朋友圈中获取二期成员动态:',
+          value: true
+        },
+        useZhijiangSchedule: {
+          label: '是否使用枝江娱乐日程表:',
+          value: false
+        },
+        fetchLive: {
+          label: '是否开启直播间状态检测:',
+          value: true
+        },
+        showNavigation: {
+          label: '是否显示快捷导航:',
+          value: true
+        },
+        showTopsite: {
+          label: '是否显示常用网页:',
+          value: false
+        },
+        showLiveBadge: {
+          label: '是否显示直播红点:',
+          value: false
+        },
+        showDynamicBadge: {
+          label: '是否显示动态更新红点:',
+          value: false
+        }
+      },
       infoMessage: "",
       isError: true,
       defaultEngine: 0,
@@ -91,29 +124,23 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           engineName: "数据损坏"
         },
       ],
-      showNavigation: true,
-      showTopsite: false,
-      showLiveBadge: false,
-      showDynamicBadge: false
     }
   }
   async componentDidMount() {
     let currTheme = await chromeGet("theme");
+    let tempBoolean = Object.assign({}, this.state.booleanSetting);
+    for (let i in tempBoolean) {
+      tempBoolean[i as booleanSettingItems].value = await chromeGet(i as booleanSettingItems)
+    }
     this.setState({
       selectedSkin: await chromeGet("selectedSkin"),
       quotes: await chromeGet("quotes"),
       noticeTime: (await chromeGet("noticeTime")).toString(),
       dynamicPages: (await chromeGet("dynamicPages")).toString(),
-      shouldShowNotice: await chromeGet("shouldShowNotice"),
-      fetchLive: await chromeGet("fetchLive"),
       defaultEngine: await chromeGet("defaultEngine"),
       searchEngine: await chromeGet("searchEngine"),
       theme: memberMap.findIndex(i => i == currTheme),
-      showNavigation: await chromeGet("showNavigation"),
-      showTopsite: await chromeGet("showTopsite"),
-      showLiveBadge: await chromeGet("showLiveBadge"),
-      showDynamicBadge: await chromeGet("showDynamicBadge"),
-      showSecondMember: await chromeGet('showSecondMember')
+      booleanSetting: tempBoolean,
     })
     let currQuoteObj = await chromeGet('curr_quote');
     let quoteIdx = this.state.quotes.findIndex(i => i.name == currQuoteObj.name)
@@ -229,18 +256,18 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       quotes: this.state.quotes,
       noticeTime: Number(this.state.noticeTime),
       dynamicPages: Number(this.state.dynamicPages),
-      shouldShowNotice: this.state.shouldShowNotice,
-      fetchLive: this.state.fetchLive,
+      shouldShowNotice: this.state.booleanSetting.shouldShowNotice.value,
+      fetchLive: this.state.booleanSetting.fetchLive.value,
       defaultEngine: this.state.defaultEngine,
       searchEngine: this.state.searchEngine,
       theme: memberMap[this.state.theme],
       selectedSkin: this.state.selectedSkin,
       curr_quote: this.state.quotes[this.state.curr_quote],
-      showNavigation: this.state.showNavigation,
-      showTopsite: this.state.showTopsite,
-      showLiveBadge: this.state.showLiveBadge,
-      showDynamicBadge: this.state.showDynamicBadge,
-      showSecondMember: this.state.showSecondMember
+      showNavigation: this.state.booleanSetting.showNavigation.value,
+      showTopsite: this.state.booleanSetting.showTopsite.value,
+      showLiveBadge: this.state.booleanSetting.showLiveBadge.value,
+      showDynamicBadge: this.state.booleanSetting.showDynamicBadge.value,
+      showSecondMember: this.state.booleanSetting.showSecondMember.value,
     })
   }
   EngineRender = () => {
@@ -333,6 +360,15 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     }
     return optionsArray;
   }
+  setBooleanSetting = (name: booleanSettingItems, value?: boolean): void => {
+    let booleanSetting = this.state.booleanSetting;
+    if (value !== undefined) {
+      booleanSetting[name].value = value;
+    } else {
+      booleanSetting[name].value = !booleanSetting[name].value
+    }
+    this.setState({ booleanSetting })
+  }
   render(): React.ReactNode {
 
     return (
@@ -402,13 +438,14 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <h1>其他设置</h1>
           <MyInput label="久坐提醒间隔时间（单位：毫秒）" value={this.state.noticeTime} onChange={e => this.setState({ noticeTime: e.target.value })}></MyInput>
           <MyInput label="成员朋友圈抓取页数（每页12条，设置过高会导致无法使用b站api）" value={this.state.dynamicPages} onChange={e => this.setState({ dynamicPages: e.target.value })}></MyInput>
-          <MyInput label='是否开启跨页久坐提醒:' value={this.state.shouldShowNotice} onChange={() => this.setState({ shouldShowNotice: !this.state.shouldShowNotice })}></MyInput>
-          <MyInput label='是否开启直播间状态检测:' value={this.state.fetchLive} onChange={() => this.setState({ fetchLive: !this.state.fetchLive })}></MyInput>
-          <MyInput label='是否显示快捷导航:' value={this.state.showNavigation} onChange={() => this.setState({ showNavigation: !this.state.showNavigation })}></MyInput>
-          <MyInput label='是否显示常用网页:' value={this.state.showTopsite} onChange={() => this.setState({ showTopsite: !this.state.showTopsite })}></MyInput>
-          <MyInput label='是否显示动态更新红点:' value={this.state.showDynamicBadge} onChange={() => this.setState({ showDynamicBadge: !this.state.showDynamicBadge })}></MyInput>
-          <MyInput label='是否显示直播红点:' value={this.state.showLiveBadge} onChange={() => this.setState({ showLiveBadge: !this.state.showLiveBadge })}></MyInput>
-          <MyInput label='是否在主页显示二期头像，动态朋友圈中获取二期成员动态:' value={this.state.showSecondMember} onChange={() => this.setState({ showSecondMember: !this.state.showSecondMember })}></MyInput>
+          <MyInput label='是否开启跨页久坐提醒:' value={this.state.booleanSetting.shouldShowNotice.value} onChange={() => this.setBooleanSetting('shouldShowNotice')}></MyInput>
+          <MyInput label='是否开启直播间状态检测:' value={this.state.booleanSetting.fetchLive.value} onChange={() => this.setBooleanSetting('fetchLive')}></MyInput>
+          <MyInput label='是否显示快捷导航:' value={this.state.booleanSetting.showNavigation.value} onChange={() => this.setBooleanSetting('showNavigation')}></MyInput>
+          <MyInput label='是否显示常用网页:' value={this.state.booleanSetting.showTopsite.value} onChange={() => this.setBooleanSetting('showTopsite')}></MyInput>
+          <MyInput label='是否显示动态更新红点:' value={this.state.booleanSetting.showDynamicBadge.value} onChange={() => this.setBooleanSetting('showDynamicBadge')}></MyInput>
+          <MyInput label='是否显示直播红点:' value={this.state.booleanSetting.showLiveBadge.value} onChange={() => this.setBooleanSetting('showLiveBadge')}></MyInput>
+          <MyInput label='是否在主页显示二期头像，动态朋友圈中获取二期成员动态:' value={this.state.booleanSetting.showSecondMember.value} onChange={() => this.setBooleanSetting('showSecondMember')}></MyInput>
+          <MyInput label='是否使用枝江娱乐日程表:' value={this.state.booleanSetting.useZhijiangSchedule.value} onChange={() => this.setBooleanSetting('useZhijiangSchedule')}></MyInput>
           <div>
             <MyMessage text={this.state.infoMessage} style={{ display: this.state.infoMessage ? "block" : "none", backgroundColor: this.state.isError ? "#ff4d4f" : "#52c41a" }}></MyMessage>
           </div>
@@ -417,7 +454,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
             <MyButton text={"重置设置"} onClick={() => { if (window.confirm("即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），是否确认？")) if (window.confirm("您即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），该操作无法撤销！该操作无法撤销！该操作无法撤销！是否确认？")) resetStorage() }} />
           </div>
         </div>
-      </div>
+      </div >
     );
   }
 }

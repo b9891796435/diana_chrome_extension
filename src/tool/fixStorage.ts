@@ -135,6 +135,11 @@ export const fixStorage = () => {
                 chrome.storage.local.set({ showDynamicBadge: false })
             }
         }),
+        chrome.storage.local.get("useZhijiangSchedule").then(res => {
+            if (res.useZhijiangSchedule === undefined) {
+                chrome.storage.local.set({ useZhijiangSchedule: false })
+            }
+        }),
         chrome.storage.local.get("liveState").then(res => {
             if (res.liveState === undefined) {
                 chrome.storage.local.set({
