@@ -268,6 +268,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       showLiveBadge: this.state.booleanSetting.showLiveBadge.value,
       showDynamicBadge: this.state.booleanSetting.showDynamicBadge.value,
       showSecondMember: this.state.booleanSetting.showSecondMember.value,
+      useZhijiangSchedule: this.state.booleanSetting.useZhijiangSchedule.value
     })
   }
   EngineRender = () => {

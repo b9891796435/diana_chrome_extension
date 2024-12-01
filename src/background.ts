@@ -23,6 +23,9 @@ const getMixinKey = async () => {//啊B又在搞幺蛾子了
 // const getEncKey = (argv: string, mixinKey: string) => {
 //     return md5(argv + mixinKey)
 // }
+
+
+//鸣谢 https://socialsisteryi.github.io/bilibili-API-collect/
 const getEncKey = (params: any, mixinKey: string) => {
     const curr_time = Math.round(Date.now() / 1000),
         chr_filter = /[!'()*]/g
@@ -42,6 +45,8 @@ const getEncKey = (params: any, mixinKey: string) => {
 
     return query + '&w_rid=' + wbi_sign
 }
+
+
 export const renderDynamicBadge = async () => {
     let liveState = await chromeGet('liveState');
     let liveBadge = await chromeGet('showLiveBadge');
@@ -174,7 +179,9 @@ export const getScheduleState = async () => {
     try {
         let offset = "0";
         for (let i = 0; i < 5; i++) {
-            let a = await fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=104319441&host_uid=703007996&offset_dynamic_id=${offset}&need_top=1&platform=web`);
+            let useZhijiangSchedule = await chromeGet('useZhijiangSchedule');
+            let host_uid = useZhijiangSchedule ? '3493085336046382' : '703007996'
+            let a = await fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid=${host_uid}&offset_dynamic_id=${offset}`);
             res = await a.json()
             let cardsCount = res.data.cards.length - 1;
             offset = res.data.cards[cardsCount].desc.dynamic_id_str;
@@ -205,7 +212,7 @@ export const getScheduleState = async () => {
  * 鉴定版本号
  * @param knownVersion 已知版本
  * @param newVersion 将要进行比较的新版本
- * @returns 若为真则后者更新，否则两者相等或前者更新
+ * @returns 若为真则newVersion更新，否则两者相等或当前版本更新
  */
 export const judgeNewVersion = (knownVersion: string, newVersion: string) => {//为true则代表
     let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));//分离好的已知版本
