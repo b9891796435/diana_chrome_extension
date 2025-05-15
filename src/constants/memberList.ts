@@ -80,7 +80,7 @@ const memberList: member[] = [
         uid: "3537115310721181",
         avatar: require("../assets/images/fionaAvatar.jpg"),
         post: require("../assets/images/fionaLivingPost.webp"),
-        livingRoom: "https://live.bilibili.com/22625027?broadcast_type=0&is_room_feed=1",
+        livingRoom: "https://live.bilibili.com/30849777?broadcast_type=0&is_room_feed=1",
         themeImg: {
             idol: require("../assets/images/themePack/fiona/idol.png"),
             error: require("../assets/images/themePack/fiona/error.png"),
@@ -94,7 +94,7 @@ const memberList: member[] = [
         uid: "3537115310721781",
         avatar: require("../assets/images/gladysAvatar.jpg"),
         post: require("../assets/images/gladysLivingPost.webp"),
-        livingRoom: "https://live.bilibili.com/22625027?broadcast_type=0&is_room_feed=1",
+        livingRoom: "https://live.bilibili.com/30858592?broadcast_type=0&is_room_feed=1",
         themeImg: {
             idol: require("../assets/images/themePack/gladys/idol.png"),
             error: require("../assets/images/themePack/gladys/error.png"),
