@@ -38,9 +38,11 @@
 .dynamicForward {
     background-color: rgb(var(--ui-2));
     border-radius: 4px;
-    padding: 4px 0
+    padding: 4px 8px
 }
-
+.dynamicInvalidTips{
+    color:#555
+}
 .dynamicGallery {
     display: flex;
     flex-direction: row;

@@ -18,6 +18,30 @@ export type scheduleType = schedule | number
 export type searchEngineType = { url: string, icon?: string, engineName: string }[]
 //b站动态有四种，转发、视频、文字与图画
 //而文本节点也有四种，文本，表情，@xxxx与话题
+type major_type_draw = {
+    type: "MAJOR_TYPE_DRAW",
+    draw: {
+        items: {
+            src: string;
+        }[]
+    }
+}
+type major_type_none = {
+    type: "MAJOR_TYPE_NONE",
+    none: { tips: string }
+}
+type major_type_opus = {//我嘞个拉丁语领域大蛇
+    opus: {
+        jump_url: string;
+        pics: string[]; // 实际可能是图片对象数组，示例中为空
+        summary: {
+            rich_text_nodes: dynamicContentNode[];
+            text: string;
+        };
+        title: string | null;
+    },
+    type: "MAJOR_TYPE_OPUS"
+}
 export type dynamicContentNode = {
     type: 'RICH_TEXT_NODE_TYPE_TEXT',
     text: string,
@@ -90,13 +114,7 @@ export type dynamicData = {
         module_author: authorModule,
         module_dynamic: {
             desc: { rich_text_nodes: null | dynamicContentNode[] },
-            major: {
-                draw: {
-                    items: {
-                        src: string;
-                    }[]
-                }
-            }
+            major: major_type_draw | major_type_none | major_type_opus
         }
     }
 } | {
@@ -115,6 +133,7 @@ export type dynamicData = {
         }
     }
 }
+
 export type liveRCMDType = {
     live_play_info: {
         cover: string,

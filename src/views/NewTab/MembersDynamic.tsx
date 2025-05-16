@@ -1,6 +1,6 @@
 import React from "react";
 import { getScheduleState } from "../../background";
-import { chromeGet, dynamicData, dynamicListType, liveRCMDType, summaryBackdrop } from "../../tool/storageHandle";
+import { chromeGet, dynamicContentNode, dynamicData, dynamicListType, liveRCMDType, summaryBackdrop } from "../../tool/storageHandle";
 import memberList, { members } from "../../constants/memberList";
 import PopupBox from "../../components/PopupBox";
 import MyButton from "../../components/MyButton";
@@ -54,23 +54,23 @@ export default class MembersDynamic extends React.Component<{}, membersDynamicSt
         ])
         this.setState({ isGettingDynamic: false });
     }
+    richTextRender = (richText: dynamicContentNode) => {
+        switch (richText.type) {
+            case 'RICH_TEXT_NODE_TYPE_TEXT':
+                return (<span>{richText.text}</span>)
+            case 'RICH_TEXT_NODE_TYPE_EMOJI':
+                return (<img src={richText.emoji.icon_url} className="dynamicEmoji"></img>)
+            case 'RICH_TEXT_NODE_TYPE_AT':
+                return (<a href={`https://space.bilibili.com/${richText.rid}/dynamic`}>{richText.text}</a>);
+            case 'RICH_TEXT_NODE_TYPE_TOPIC':
+                return (<a href={richText.jump_url}>{richText.text}</a>)
+        }
+    }
     dynamicRender = (dynamic: dynamicData) => {
         let nodeArray = [];
         if (dynamic.modules.module_dynamic?.desc?.rich_text_nodes)
             for (let i of dynamic.modules.module_dynamic.desc.rich_text_nodes) {
-                switch (i.type) {
-                    case 'RICH_TEXT_NODE_TYPE_TEXT':
-                        nodeArray.push(<span>{i.text}</span>)
-                        break;
-                    case 'RICH_TEXT_NODE_TYPE_EMOJI':
-                        nodeArray.push(<img src={i.emoji.icon_url} className="dynamicEmoji"></img>)
-                        break;
-                    case 'RICH_TEXT_NODE_TYPE_AT':
-                        nodeArray.push(<a href={`https://space.bilibili.com/${i.rid}/dynamic`}>{i.text}</a>);
-                        break;
-                    case 'RICH_TEXT_NODE_TYPE_TOPIC':
-                        nodeArray.push(<a href={i.jump_url}>{i.text}</a>)
-                }
+                nodeArray.push(this.richTextRender(i))
             }
         if (dynamic.type == 'DYNAMIC_TYPE_FORWARD') {
             nodeArray.push(<div className="dynamicForward">
@@ -79,11 +79,23 @@ export default class MembersDynamic extends React.Component<{}, membersDynamicSt
         }
         if (dynamic.type == 'DYNAMIC_TYPE_DRAW') {
             let drawArray: JSX.Element[] = []
-            for (let i of dynamic.modules.module_dynamic.major.draw.items) {
-                drawArray.push(
-                    <img src={i.src + summaryBackdrop} alt="" />
-                )
+            const major = dynamic.modules.module_dynamic.major
+            if (major.type == 'MAJOR_TYPE_DRAW') {
+                for (let i of major.draw.items) {
+                    drawArray.push(
+                        <img src={i.src + summaryBackdrop} alt="" />
+                    )
+                }
+            } else if (major.type === 'MAJOR_TYPE_NONE') {
+                drawArray.push(<div className="dynamicInvalidTips">{major.none.tips}</div>)
+            } else {
+                drawArray.push(<div>
+                    <div>{major.opus.title}</div>
+                    <div>{() => { for (let i of major.opus.summary.rich_text_nodes) this.richTextRender(i) }}</div>
+                    <div>{major.opus.summary.text}</div>
+                </div>)
             }
+
             nodeArray.push(<div className="dynamicGallery">
                 {drawArray}
             </div>)
