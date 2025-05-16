@@ -38,9 +38,11 @@
 .dynamicForward {
     background-color: rgb(var(--ui-2));
     border-radius: 4px;
-    padding: 4px 0
+    padding: 4px 8px
 }
-
+.dynamicInvalidTips{
+    color:#555
+}
 .dynamicGallery {
     display: flex;
     flex-direction: row;
@@ -65,7 +67,6 @@
 
 .dynamicAv>img {
     display: block;
-    width: 203px;
 }
 
 .dynamicAv>div {
@@ -78,4 +79,9 @@
     font-size: 0.9em;
     font-weight: 400;
     color: #444;
+}
+
+.dynamicContainer {
+    width: 80vw;
+    height: 70vh;
 }

@@ -1,10 +1,10 @@
 import { fixStorage } from "./tool/fixStorage"
 import { chromeGet, chromeSet, dynamicListType } from "./tool/storageHandle";
-import memberList, { members } from "./constants/memberList"
+import memberList, { judgeSecondMember, members } from "./constants/memberList"
 import type { dynamicData, liveType } from "./tool/storageHandle"
 import md5 from 'js-md5';
 chrome.runtime.onInstalled.addListener(fixStorage);
-const getMixinKey = async () => {
+const getMixinKey = async () => {//啊B又在搞幺蛾子了
     let keys = (await (await fetch('https://api.bilibili.com/x/web-interface/nav')).json()).data.wbi_img
     const getKeyFromUrl = (e: string) => e.substring(e.lastIndexOf("/") + 1, e.length).split(".")[0]
     let e = getKeyFromUrl(keys.img_url) + getKeyFromUrl(keys.sub_url)
@@ -20,9 +20,33 @@ const getMixinKey = async () => {
         }
         )), t.join("").slice(0, 32);
 }
-const getEncKey = (argv: string, mixinKey: string) => {
-    return md5(argv + mixinKey)
+// const getEncKey = (argv: string, mixinKey: string) => {
+//     return md5(argv + mixinKey)
+// }
+
+
+//鸣谢 https://socialsisteryi.github.io/bilibili-API-collect/
+const getEncKey = (params: any, mixinKey: string) => {
+    const curr_time = Math.round(Date.now() / 1000),
+        chr_filter = /[!'()*]/g
+    Object.assign(params, { wts: curr_time }) // 添加 wts 字段
+    // 按照 key 重排参数
+    const query = Object
+        .keys(params)
+        .sort()
+        .map(key => {
+            // 过滤 value 中的 "!'()*" 字符
+            const value = params[key].toString().replace(chr_filter, '')
+            return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        })
+        .join('&')
+
+    const wbi_sign = md5(query + mixinKey) // 计算 w_rid
+
+    return query + '&w_rid=' + wbi_sign
 }
+
+
 export const renderDynamicBadge = async () => {
     let liveState = await chromeGet('liveState');
     let liveBadge = await chromeGet('showLiveBadge');
@@ -40,15 +64,26 @@ export const renderDynamicBadge = async () => {
 }
 
 export const getLiveState = async () => {//乐了，这fetch根本就不触发cors。
-    let i: keyof typeof memberList;
     let temp: liveType = "none";
     let timeNow = Math.round(Date.now() / 1e3);
     let mixinKey = await getMixinKey();
+    const parser = new DOMParser();
     try {
-        for (i in memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
-            let originParam = `mid=${memberList[i].uid}&platform=web&token=&web_location=1550101&wts=${timeNow}`
-            let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${originParam}&w_rid=${getEncKey(originParam, mixinKey)}`);
-            console.log(originParam, getEncKey(originParam, mixinKey), mixinKey)
+        for (let i of memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
+            const memberPage = parser.parseFromString(await fetch(`https://space.bilibili.com/${i.uid}`).then(res => res.text()), 'text/html')
+            const access_id = JSON.parse(decodeURIComponent((memberPage.querySelector("#__RENDER_DATA__") as any).innerHTML)).access_id//危险，但是由于在catch块里所以无所谓了
+            const dm_img_str = 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ';
+            const dm_cover_img_str = 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjMwICgweDAwMDAzRTlCKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC';
+            const dm_img_inter = '{"ds":[],"wh":[0,0,0],"of":[0,0,0]}'
+            const params = {
+                dm_img_str, dm_cover_img_str, dm_img_inter, dm_img_list: [],
+                mid: i.uid,
+                platform: 'web',
+                token: '',
+                web_location: 1550101,
+                w_webid: access_id,
+            }
+            let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${getEncKey(params, mixinKey)}`);
             res = await res.text()
             try {
                 res = JSON.parse(res)
@@ -57,7 +92,7 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
             }
             let data = res as any;
             if (data.data.live_room.liveStatus) {
-                temp = i;
+                temp = i.englishName;
                 break;
             }
             let a = await chrome.storage.local.get("debugMode")
@@ -97,24 +132,30 @@ export const getMembersDynamic = async () => {
         bella: [],
         diana: [],
         eileen: [],
+        fiona: [],
+        gladys: []
     };
     let pages = await chromeGet('dynamicPages');
     if (await chromeGet('showDynamicBadge')) {
         let lastIDSTR = await chromeGet('lastDynamicIDSTR');
         let badgeCount = await chromeGet('dynamicBadgeText');
-        for (let i in temp) {
-            let res = await getDynamic(pages, memberList[i as members].uid)
+        let showSecondMember = await chromeGet('showSecondMember')
+        for (let i of memberList) {
+            if (!showSecondMember && judgeSecondMember(i.englishName)) {
+                continue
+            }
+            let res = await getDynamic(pages, i.uid)
             res = res.sort((a, b) => b.modules.module_author.pub_ts - a.modules.module_author.pub_ts);//获得按时间排序的动态
             if (res[0].type != 'DYNAMIC_TYPE_LIVE_RCMD') {
-                if (res[0].id_str != lastIDSTR[i as members]) {
-                    lastIDSTR[i as members] = res[0].id_str;
+                if (res[0].id_str != lastIDSTR[i.englishName]) {
+                    lastIDSTR[i.englishName] = res[0].id_str;
                     badgeCount++;
                 }
-            } else if (res[1].id_str != lastIDSTR[i as members]) {
-                lastIDSTR[i as members] = res[1].id_str;
+            } else if (res[1].id_str != lastIDSTR[i.englishName]) {
+                lastIDSTR[i.englishName] = res[1].id_str;
                 badgeCount++;
             }
-            temp[i as members] = temp[i as members].concat(res)
+            temp[i.englishName] = temp[i.englishName].concat(res)
         }
         await chromeSet({
             dynamicBadgeText: badgeCount,
@@ -122,9 +163,9 @@ export const getMembersDynamic = async () => {
         });
         renderDynamicBadge();
     } else {
-        for (let i in temp) {
-            let res = await getDynamic(pages, memberList[i as members].uid)
-            temp[i as members] = temp[i as members].concat(res)
+        for (let i of memberList) {
+            let res = await getDynamic(pages, i.uid)
+            temp[i.englishName] = temp[i.englishName].concat(res)
         }
     }
     chromeSet({
@@ -138,7 +179,9 @@ export const getScheduleState = async () => {
     try {
         let offset = "0";
         for (let i = 0; i < 5; i++) {
-            let a = await fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=104319441&host_uid=703007996&offset_dynamic_id=${offset}&need_top=1&platform=web`);
+            let useZhijiangSchedule = await chromeGet('useZhijiangSchedule');
+            let host_uid = useZhijiangSchedule ? '3493085336046382' : '703007996'
+            let a = await fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid=${host_uid}&offset_dynamic_id=${offset}`);
             res = await a.json()
             let cardsCount = res.data.cards.length - 1;
             offset = res.data.cards[cardsCount].desc.dynamic_id_str;
@@ -159,11 +202,29 @@ export const getScheduleState = async () => {
                 }
             }
         }
-        throw new Error("找不到最新日程表，可能由于动态过多、b站更改API格式或羊驼发日程表的动态里没写日程表这仨字")
+        throw new Error("找不到最新日程表，可能由于动态过多、b站更改API格式或羊驼发日程表的动态里没写“日程表”这三个字")
     } catch (e) {
         console.log(e, res)
         chromeSet({ scheduleState: Date.now() })
     }
+}
+/**
+ * 鉴定版本号
+ * @param knownVersion 已知版本
+ * @param newVersion 将要进行比较的新版本
+ * @returns 若为真则newVersion更新，否则两者相等或当前版本更新
+ */
+export const judgeNewVersion = (knownVersion: string, newVersion: string) => {//为true则代表
+    let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));//分离好的已知版本
+    let newVersionArray = newVersion.split('.').map((i: string) => Number(i));//分离好的现版本
+    for (let i = 0; i < 3; i++) {//因为自己只会使用3段版本，所以比较前三位即可
+        if (knownVersionArray[i] > newVersionArray[i]) {
+            return false
+        } else if (knownVersionArray[i] < newVersionArray[i]) {
+            return true
+        }
+    }
+    return false;
 }
 export const getUpdate = async () => {
     let res = await getDynamic(2, '104319441');
@@ -175,16 +236,15 @@ export const getUpdate = async () => {
                 if (content.agent == 'edge') {
                     continue
                 }
-                let newVersion = JSON.parse(context).version;
-                let nowVersion = chrome.runtime.getManifest().version;
-                let nowVersionArray = nowVersion.split('.').map((i: string) => Number(i));
+                let newVersion = JSON.parse(context).version;//新版本
+                let nowVersion = chrome.runtime.getManifest().version;//现版本
                 let knownVersion = (await chromeGet('knownVersion'));
-                let knownVersionArray = knownVersion.split('.').map((i: string) => Number(i));
-                if (nowVersionArray[0] > knownVersionArray[0] || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] > knownVersionArray[1]) || (nowVersionArray[0] == knownVersionArray[0] && nowVersionArray[1] == knownVersionArray[1] && nowVersionArray[2] > knownVersionArray[2])) {
-                    await chromeSet({ knownVersion: chrome.runtime.getManifest().version })
+                if (judgeNewVersion(knownVersion, nowVersion)) {//假设现版本比已知版本新，则设置已知版本为现版本
+                    //之前写的纯纯依托
+                    await chromeSet({ knownVersion: nowVersion })
                     knownVersion = nowVersion;
                 }
-                if (newVersion !== knownVersion) {
+                if (judgeNewVersion(knownVersion, newVersion)) {
                     return JSON.parse(context) as { version: string, url: string, content: string };
                 } else {
                     return null;

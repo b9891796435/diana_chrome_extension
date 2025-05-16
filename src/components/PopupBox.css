@@ -23,8 +23,8 @@
 
 .toolBoxItself {
     margin: 32px auto;
-    width: 80vw;
-    height: 80vh;
+    min-width: 500px;
+    width: fit-content;
     background-color: rgb(var(--ui-1));
     border-radius: 16px;
     box-shadow: 0 3px 6px -4px rgba(var(--fan), 0.121), 0 6px 16px rgba(var(--fan), 0.078), 0 9px 28px 8px rgba(var(--fan), 0.050);
@@ -37,6 +37,6 @@
     text-align: left;
     font-size: 2em;
     margin: 16px;
-    border-bottom: solid 1px rgba(var(--ui-10),0.332);
+    border-bottom: solid 1px rgba(var(--ui-10), 0.332);
     display: flex;
 }

@@ -15,12 +15,12 @@ code {
 .App {
   background-color: rgb(var(--ui-1));
   padding: 32px;
-  margin:0;
+  margin: 0;
 }
 
-.settingContainerForDiana{
-  margin:0 auto;
-  padding:32px;
+.settingContainerForDiana {
+  margin: 0 auto;
+  padding: 32px;
   padding-right: 128px;
   box-sizing: border-box;
   width: 600px;
@@ -28,10 +28,16 @@ code {
   border-radius: 4px;
 }
 
-input:focus-visible{
+.combineBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+input:focus-visible {
   outline-color: rgb(var(--fan));
 }
 
-div{
+div {
   margin: 4px;
 }

@@ -11,7 +11,8 @@ chromeGet("tabCount").then(res => {
 
 let showDianaNotice = async () => {
     let noticeNode, removeNoticeNode;
-    let theme = await chromeGet("theme");
+    let curr_quote = await chromeGet('curr_quote');
+    let theme = 'diana'
     let elem = document.createElement("div");
     elem.className = "dianaNoticeContainer App " + theme;
 
@@ -41,8 +42,7 @@ let showDianaNotice = async () => {
     }
     let quote = document.createElement("p");
     quote.className = "dianaQuote";
-    let quotes = await chromeGet("quotes");
-    let quoteToBe = quotes[theme]?.notice[Math.floor(Math.random() * quotes[theme]?.notice?.length)];
+    let quoteToBe = curr_quote?.notice[Math.floor(Math.random() * curr_quote?.notice?.length)];
     quote.innerHTML = quoteToBe !== undefined ? quoteToBe : "突击检查！有好好在喝水吗？没有的话就去喝一口吧"
 
     let goBack = document.createElement("div");
@@ -69,7 +69,7 @@ setInterval(async () => {
     if (document.hasFocus() && shouldShowNotice) {
         let notice = await chromeGet("notice")
         let noticeTime = await chromeGet("noticeTime")
-        let currentTheme=await chromeGet("theme")
+        let currentTheme = await chromeGet("theme")
         if (Date.now() - notice >= noticeTime) {
             chromeSet({ notice: Date.now() });
             let img = new Image();

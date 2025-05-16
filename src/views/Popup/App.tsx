@@ -1,7 +1,7 @@
 import React from 'react'
 import './App.css'
 import "../../themeColor.css"
-import memberList, { members } from '../../constants/memberList'
+import memberList, { getMemberIndex, members } from '../../constants/memberList'
 import { chromeGet, chromeSet } from '../../tool/storageHandle'
 import { liveType } from '../../tool/storageHandle'
 import { getLiveState, renderDynamicBadge } from '../../background'
@@ -63,7 +63,7 @@ class App extends React.Component<{}, { nowLiving: liveType, isGettingLive: bool
   }
   openLiveRoom = () => {
     if (this.state.nowLiving !== "none" && this.state.nowLiving !== "error") {
-      window.open(memberList[this.state.nowLiving].livingRoom)
+      window.open(memberList[getMemberIndex(this.state.nowLiving)].livingRoom)
     }
     window.close()
   }
@@ -71,14 +71,14 @@ class App extends React.Component<{}, { nowLiving: liveType, isGettingLive: bool
     if (this.state.nowLiving !== "none" && this.state.nowLiving !== "error") {
       return (
         <div onClick={this.openLiveRoom}>
-          <img src={memberList[this.state.nowLiving].avatar} alt="" />
+          <img src={memberList[getMemberIndex(this.state.nowLiving)].avatar} alt="" />
           正在直播中~
         </div>
       )
     } else if (this.state.nowLiving === "error") {
       return (
         <div onClick={this.getLiveStateWrapper} className="retry">
-          <img src={memberList[this.state.theme].themeImg.error} />
+          <img src={memberList[getMemberIndex(this.state.theme)].themeImg.error} />
           <span>直播间状态获取失败<br />点击重试</span>
         </div>
       )
@@ -86,7 +86,7 @@ class App extends React.Component<{}, { nowLiving: liveType, isGettingLive: bool
     else {
       return (
         <div onClick={this.getLiveStateWrapper} className="retry">
-          <img src={memberList[this.state.theme].themeImg.idol} />
+          <img src={memberList[getMemberIndex(this.state.theme)].themeImg.idol} />
           <span>目前无人直播<br />点击重试</span>
         </div>
       );
@@ -96,7 +96,7 @@ class App extends React.Component<{}, { nowLiving: liveType, isGettingLive: bool
     return (
       <div className={"App " + this.state.theme}>
         <div>
-          <img src={memberList[this.state.theme].post} alt="" />
+          <img src={memberList[getMemberIndex(this.state.theme)].post} alt="" />
         </div>
         <div onClick={this.openToolKit}>
           {ToolIcon}
@@ -106,7 +106,7 @@ class App extends React.Component<{}, { nowLiving: liveType, isGettingLive: bool
           {SettingIcon}
           <span>设置</span>
         </div>
-        <div style={{display:this.state.newDynamicCount?'flex':'none'}} onClick={this.openDynamic}>
+        <div style={{ display: this.state.newDynamicCount ? 'flex' : 'none' }} onClick={this.openDynamic}>
           {BellIcon}
           <span>有{this.state.newDynamicCount}条新动态</span>
         </div>

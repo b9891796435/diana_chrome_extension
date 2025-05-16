@@ -6,6 +6,7 @@ import "./Header.css"
 import ShowSchedule from "./ShowSchedule";
 import { chromeGet } from "../../tool/storageHandle";
 import MembersDynamic from "./MembersDynamic";
+import { judgeSecondMember, members } from "../../constants/memberList";
 const userSpaceUrl = constants.urls.userSpace;
 const memberList = constants.memberList
 const styles = {
@@ -24,12 +25,18 @@ const styles = {
     },
 }
 function Header() {
-    const [hideCarol, setHideCarol] = useState<boolean>(true);
-    useEffect(() => {
-        chromeGet("hideCarol").then(res => {
-            setHideCarol(res);
-        })
-    }, [])
+    let [showSecondMember, setShowSecondMember] = useState(true);
+    const avatarList = () => {
+        let res = [];
+        chromeGet('showSecondMember').then(res => setShowSecondMember(res))
+        for (let i of memberList) {
+            if (!showSecondMember&&judgeSecondMember(i.englishName)) {
+                continue
+            }
+            res.push(<Avatar link={userSpaceUrl + i.uid} avatar={i.avatar}></Avatar>)
+        }
+        return res
+    }
     return (
         <div style={styles.header} className="headerForDianaExtension">
             <a href="https://space.bilibili.com/703007996">
@@ -37,10 +44,7 @@ function Header() {
             </a>{
                 //我们是Asoul！
             }
-            <Avatar link={userSpaceUrl + memberList.diana.uid} avatar={memberList.diana.avatar}></Avatar>
-            <Avatar link={userSpaceUrl + memberList.ava.uid} avatar={memberList.ava.avatar}></Avatar>
-            <Avatar link={userSpaceUrl + memberList.eileen.uid} avatar={memberList.eileen.avatar}></Avatar>
-            <Avatar link={userSpaceUrl + memberList.bella.uid} avatar={memberList.bella.avatar}></Avatar>
+            {avatarList()}
             <MembersDynamic></MembersDynamic>
             <ShowSchedule></ShowSchedule>
             <div className="transitionBlock"></div>

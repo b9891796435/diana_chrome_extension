@@ -1,31 +1,38 @@
-import React from 'react'
+import React, { ReactEventHandler } from 'react'
 import MyMessage from '../../components/MyMessage';
 import MyInput from '../../components/MyInput';
 import MyButton from '../../components/MyButton';
 import ArrayRender from './ArrayRender';
-import quotes, { quotesType } from '../../constants/storagePrototype/quotes';
-import { members } from '../../constants/memberList';
+import quotes, { quote } from '../../constants/storagePrototype/quotes';
+import PopupBox from '../../components/PopupBox';
+import { memberMap } from '../../constants/memberList';
 import { chromeGet, chromeSet, searchEngineType } from '../../tool/storageHandle';
 import { resetStorage } from "../../tool/fixStorage"
 import memberList from '../../constants/memberList';
 import "./App.css"
 import "../../themeColor.css"
+type booleanSettingItems = 'fetchLive' | 'shouldShowNotice' | 'showTopsite' |
+  'showLiveBadge' | 'showDynamicBadge' | 'showNavigation' | 'showSecondMember' |
+  'useZhijiangSchedule'
 type settingsState = {
-  theme: members,
-  quotes: quotesType,
+  theme: number,
+  quotes: quote[],
+  curr_quote: number,//注意这里的curr_quote并非存储中的curr，只是临时用于存储当前状态的变量。请在保存时存储对应的语录对象而非一个数字。
+  currName: string,
+  renameVisible: boolean;
   noticeTime: string,
-  shouldShowNotice: boolean,
-  fetchLive: boolean,
   infoMessage: string,
   isError: boolean,
   defaultEngine: number,
   searchEngine: searchEngineType,
-  hideCarol: boolean,
-  showTopsite: boolean,
-  showLiveBadge: boolean,
-  showDynamicBadge: boolean,
-  showNavigation: boolean,
+  booleanSetting: {
+    [key in booleanSettingItems]: {
+      label: string,
+      value: boolean
+    }
+  }
   dynamicPages: string,
+  selectedSkin: number
 }
 type quotesArrayName = "daily" | "notice"
 type quotesSingleName = "morning" | "noon" | "evening" | "night"
@@ -33,12 +40,6 @@ type quotesSingleHandlerGenerator = {
   (arg0: quotesSingleName): React.ChangeEventHandler<HTMLInputElement>
 }
 type handleType = "new" | "delete" | "change"
-const checkboxStyle: React.CSSProperties = {
-  width: "20px",
-  height: "20px",
-  margin: "0",
-  verticalAlign: "bottom",
-}
 const iconStyle: React.CSSProperties = {
   position: "absolute",
   width: "20px",
@@ -47,44 +48,15 @@ const iconStyle: React.CSSProperties = {
   height: "20px",
   cursor: "pointer"
 }
-const errorQuote = {
-  ava: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, bella: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, carol: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, diana: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }, eileen: {//啧，希望这个永远都不会被展示吧
-    daily: ["数据损坏"],
-    morning: "数据损坏",
-    noon: "数据损坏",
-    evening: "数据损坏",
-    night: "数据损坏",
-    notice: ["数据损坏"],
-  }
-}
+const errorQuote = [{//啧，希望这个永远都不会被展示吧
+  name: "数据损坏",
+  daily: ["数据损坏"],
+  morning: "数据损坏",
+  noon: "数据损坏",
+  evening: "数据损坏",
+  night: "数据损坏",
+  notice: ["数据损坏"],
+}]
 const settingErrors = {
   dailyEmpty: "日常条目中至少请保留一条数据",
   noticeEmpty: "久坐提醒条目中至少请保留一条数据",
@@ -92,16 +64,57 @@ const settingErrors = {
   engineNotSafe: "搜索引擎url只接受以https://开头的网址",
   engineNameEmpty: "搜索引擎名称不能为空"
 }
+enum SELECT_TYPE {
+  THEME = 0,
+  QUOTE,
+  SKIN
+}
 class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕我要回Vue
   constructor(props: any) {
     super(props);
     this.state = {
-      theme: "diana",
+      selectedSkin: 3,
+      theme: 3,
       quotes: errorQuote,
+      curr_quote: 0,
       noticeTime: "",
+      currName: '',
+      renameVisible: false,
       dynamicPages: '',
-      shouldShowNotice: true,
-      fetchLive: true,
+      booleanSetting: {
+        shouldShowNotice: {
+          label: '是否开启跨页久坐提醒:',
+          value: true
+        },
+        showSecondMember: {
+          label: '是否在主页显示二期头像，动态朋友圈中获取二期成员动态:',
+          value: true
+        },
+        useZhijiangSchedule: {
+          label: '是否使用枝江娱乐日程表:',
+          value: false
+        },
+        fetchLive: {
+          label: '是否开启直播间状态检测:',
+          value: true
+        },
+        showNavigation: {
+          label: '是否显示快捷导航:',
+          value: true
+        },
+        showTopsite: {
+          label: '是否显示常用网页:',
+          value: false
+        },
+        showLiveBadge: {
+          label: '是否显示直播红点:',
+          value: false
+        },
+        showDynamicBadge: {
+          label: '是否显示动态更新红点:',
+          value: false
+        }
+      },
       infoMessage: "",
       isError: true,
       defaultEngine: 0,
@@ -111,48 +124,99 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           engineName: "数据损坏"
         },
       ],
-      hideCarol: true,
-      showNavigation: true,
-      showTopsite: false,
-      showLiveBadge: false,
-      showDynamicBadge: false
     }
   }
   async componentDidMount() {
+    let currTheme = await chromeGet("theme");
+    let tempBoolean = Object.assign({}, this.state.booleanSetting);
+    for (let i in tempBoolean) {
+      tempBoolean[i as booleanSettingItems].value = await chromeGet(i as booleanSettingItems)
+    }
     this.setState({
+      selectedSkin: await chromeGet("selectedSkin"),
       quotes: await chromeGet("quotes"),
       noticeTime: (await chromeGet("noticeTime")).toString(),
       dynamicPages: (await chromeGet("dynamicPages")).toString(),
-      shouldShowNotice: await chromeGet("shouldShowNotice"),
-      fetchLive: await chromeGet("fetchLive"),
       defaultEngine: await chromeGet("defaultEngine"),
       searchEngine: await chromeGet("searchEngine"),
-      theme: await chromeGet("theme"),
-      hideCarol: await chromeGet("hideCarol"),
-      showNavigation: await chromeGet("showNavigation"),
-      showTopsite: await chromeGet("showTopsite"),
-      showLiveBadge: await chromeGet("showLiveBadge"),
-      showDynamicBadge: await chromeGet("showDynamicBadge"),
+      theme: memberMap.findIndex(i => i == currTheme),
+      booleanSetting: tempBoolean,
+    })
+    let currQuoteObj = await chromeGet('curr_quote');
+    let quoteIdx = this.state.quotes.findIndex(i => i.name == currQuoteObj.name)
+    this.setState({
+      curr_quote: quoteIdx
     })
   }
-  handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {
-    let temp = { ...this.state.quotes };
+  placeholder = () => {
+    console.log('开发中')
+  }
+  handleRenameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ currName: e.target.value })
+  }
+  confirmRename = () => {
+    let temp = [...this.state.quotes]
+    temp[this.state.curr_quote].name = this.getCopyName(this.state.currName);
+    this.setState({
+      quotes: temp
+    })
+  }
+  getCopyName = (copyName: string) => {
+    let currCopyName = copyName, currIdx = 1;
+    if (this.state.quotes.findIndex(i => i.name == copyName) == -1) return copyName;//扩展用于更名时检测重名
+    if (this.state.quotes.findIndex(i => i.name == (currCopyName + ' ' + currIdx)) == -1) return currCopyName + ' ' + currIdx;
+    while (this.state.quotes.findIndex(i => i.name == (currCopyName + ' ' + currIdx)) != -1) {
+      currIdx += 1
+    }
+    return currCopyName + ' ' + currIdx
+  }
+  copyQuote = (quoteIdx: number) => {
+    let temp = [...this.state.quotes]
+    let newQuote = JSON.parse(JSON.stringify(this.state.quotes[quoteIdx]))
+    newQuote.name = this.getCopyName(newQuote.name)
+    temp.push(newQuote)
+    this.setState({
+      quotes: temp
+    })
+  }
+  deleteQuote = (quoteIdx: number) => {
+    let temp = [...this.state.quotes]
+    if (temp.length == 1) {
+      alert('请至少保留一组对话文本');
+      return;
+    }
+    temp.splice(quoteIdx, 1);
+    console.log(temp, this.state)
+    this.setState({
+      curr_quote: this.state.curr_quote == 0 ? 0 : this.state.curr_quote - 1,
+      quotes: temp,
+    })
+  }
+  renameQuote = (quoteIdx: number, newName: string) => {
+    let temp = [...this.state.quotes]
+    temp[quoteIdx].name = this.getCopyName(newName)
+    this.setState({
+      quotes: temp
+    })
+  }
+  handleDialogForArray = (attr: quotesArrayName, handleType: handleType) => {//处理数组中的
+    let temp = this.state.quotes;
     switch (handleType) {
       case "new": {
         return () => {
-          temp[this.state.theme][attr] = temp[this.state.theme][attr].concat([""]);
+          temp[this.state.curr_quote][attr] = temp[this.state.curr_quote][attr].concat([""]);
           this.setState({ quotes: temp });
         }
       }
       case "delete": {
         return (i: number) => {
-          temp[this.state.theme][attr] = temp[this.state.theme][attr].slice(0, i).concat(temp[this.state.theme][attr].slice(i + 1, temp[this.state.theme][attr].length));
+          temp[this.state.curr_quote][attr] = temp[this.state.curr_quote][attr].slice(0, i).concat(temp[this.state.curr_quote][attr].slice(i + 1, temp[this.state.curr_quote][attr].length));
           this.setState({ quotes: temp });
         }
       }
       case "change": {
         return (e: React.ChangeEvent<HTMLInputElement>, i: number) => {
-          temp[this.state.theme][attr][i] = e.target.value;
+          temp[this.state.curr_quote][attr][i] = e.target.value;
           this.setState({ quotes: temp });
         }
       }
@@ -161,16 +225,16 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
   handleDialogForSingle: quotesSingleHandlerGenerator = quoteType => {//写完发现这函数名好大只哦
     return e => {
       let temp = { ...this.state.quotes };
-      temp[this.state.theme][quoteType] = e.target.value;
+      temp[this.state.curr_quote][quoteType] = e.target.value;
       this.setState({ quotes: temp })
     }
   }
   saveSetting = () => {
-    if (this.state.quotes[this.state.theme].daily.length === 0) {
+    if (this.state.quotes[this.state.curr_quote].daily.length === 0) {
       this.setState({ infoMessage: settingErrors.dailyEmpty, isError: true });
       return;
     }
-    if (this.state.quotes[this.state.theme].notice.length === 0) {
+    if (this.state.quotes[this.state.curr_quote].notice.length === 0) {
       this.setState({ infoMessage: settingErrors.noticeEmpty, isError: true });
       return;
     }
@@ -192,16 +256,19 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
       quotes: this.state.quotes,
       noticeTime: Number(this.state.noticeTime),
       dynamicPages: Number(this.state.dynamicPages),
-      shouldShowNotice: this.state.shouldShowNotice,
-      fetchLive: this.state.fetchLive,
+      shouldShowNotice: this.state.booleanSetting.shouldShowNotice.value,
+      fetchLive: this.state.booleanSetting.fetchLive.value,
       defaultEngine: this.state.defaultEngine,
       searchEngine: this.state.searchEngine,
-      theme: this.state.theme,
-      hideCarol: this.state.hideCarol,
-      showNavigation: this.state.showNavigation,
-      showTopsite: this.state.showTopsite,
-      showLiveBadge: this.state.showLiveBadge,
-      showDynamicBadge: this.state.showDynamicBadge
+      theme: memberMap[this.state.theme],
+      selectedSkin: this.state.selectedSkin,
+      curr_quote: this.state.quotes[this.state.curr_quote],
+      showNavigation: this.state.booleanSetting.showNavigation.value,
+      showTopsite: this.state.booleanSetting.showTopsite.value,
+      showLiveBadge: this.state.booleanSetting.showLiveBadge.value,
+      showDynamicBadge: this.state.booleanSetting.showDynamicBadge.value,
+      showSecondMember: this.state.booleanSetting.showSecondMember.value,
+      useZhijiangSchedule: this.state.booleanSetting.useZhijiangSchedule.value
     })
   }
   EngineRender = () => {
@@ -255,60 +322,102 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
     }
     return optionsArray;
   }
-  resetQuote = () => {
-    let temp = this.state.quotes;
-    temp[this.state.theme] = quotes[this.state.theme]
-    this.setState({
-      quotes: temp
-    })
-  }
-  selectTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    switch (e.target.value) {
-      case "ava":
-      case "bella":
-      case "diana":
-      case "eileen":
-        this.setState({
-          theme: e.target.value
-        })
-        break;
+  selectOption = (type: SELECT_TYPE) => {//先想了想我该怎么把这个Type作为参数放到事件处理函数里，再一想我直接一个闭包上去不就解决了（
+    return (e: React.ChangeEvent<HTMLSelectElement>) => {
+      switch (type) {
+        case SELECT_TYPE.THEME:
+          this.setState({
+            theme: Number(e.target.value)
+          });
+          break;
+        case SELECT_TYPE.QUOTE:
+          this.setState({
+            curr_quote: Number(e.target.value)
+          });
+          break;
+        case SELECT_TYPE.SKIN:
+          this.setState({
+            //TODO 修改当前皮肤
+            selectedSkin: Number(e.target.value)
+          });
+          break;
+      }
     }
   }
-  optionsThemeRender = () => {
+  optionsThemeRender = (options: any[], indexState: number, getter = (item: any) => item) => {
     let optionsArray = [];
-    for (let i in memberList) {
-      if (i == this.state.theme) {
-        optionsArray.push(<option value={i} selected>{memberList[i].chineseName}</option>)
+    /**
+     * options为需要渲染的选项数组
+     * indexState为当前选中的index的state
+     * getter为如何从options中获取到需要渲染的字符串，默认为直接获取，也可传入getter
+     * 选项对应的
+     */
+    for (let i = 0; i < options.length; i++) {
+      if (i == indexState) {
+        optionsArray.push(<option value={i} selected>{getter(options[i])}</option>)
       } else {
-        optionsArray.push(<option value={i}>{memberList[i as members].chineseName}</option>)
+        optionsArray.push(<option value={i}>{getter(options[i])}</option>)
       }
     }
     return optionsArray;
   }
+  setBooleanSetting = (name: booleanSettingItems, value?: boolean): void => {
+    let booleanSetting = this.state.booleanSetting;
+    if (value !== undefined) {
+      booleanSetting[name].value = value;
+    } else {
+      booleanSetting[name].value = !booleanSetting[name].value
+    }
+    this.setState({ booleanSetting })
+  }
   render(): React.ReactNode {
 
     return (
-      <div className={"App " + this.state.theme}>
+      <div className={"App " + memberMap[this.state.theme]}>
         <div className="settingContainerForDiana">
           <h1>设置好之后要到页面最下方保存哦</h1>
-          <h1>主题设置</h1>
-          <select onChange={this.selectTheme}>
-            {this.optionsThemeRender()}
-          </select>
-          <h1>对话文本设置
-            <MyButton text='重置当前主题文本' onClick={this.resetQuote}></MyButton></h1>
+          <section className='combineBox'>
+            <div>
+              <h1>当前主题（设置界面色系）</h1>
+              <select onChange={this.selectOption(SELECT_TYPE.THEME)}>
+                {this.optionsThemeRender(memberList, this.state.theme, i => i.chineseName)}
+              </select>
+            </div>
+            <div>
+              <h1>当前对话文本</h1>
+              <select onChange={this.selectOption(SELECT_TYPE.QUOTE)}>
+                {this.optionsThemeRender(this.state.quotes, this.state.curr_quote, i => i.name)}
+              </select>
+            </div>
+            <div>
+              <h1>当前主页皮肤</h1>
+              <select onChange={this.selectOption(SELECT_TYPE.SKIN)}>
+                {this.optionsThemeRender(memberList, this.state.selectedSkin, i => i.chineseName)}
+              </select>
+            </div>
+          </section>
+          <h1>对话文本设置</h1>
+          <div>
+            <PopupBox header={<div>更名</div>} visible={this.state.renameVisible}>
+              <MyInput label='新名称' value={this.state.currName} onChange={this.handleRenameInput}></MyInput>
+              <MyButton text='确认更名' onClick={() => { this.setState({ renameVisible: !this.state.renameVisible }); this.confirmRename() }}></MyButton>
+            </PopupBox>
+            <MyButton text='为本套文本更名' onClick={() => this.setState({ renameVisible: !this.state.renameVisible })}></MyButton>
+            <MyButton text='复制本套文本' onClick={() => this.copyQuote(this.state.curr_quote)}></MyButton>
+            <MyButton text='删除本套文本' onClick={() => this.deleteQuote(this.state.curr_quote)}></MyButton>
+          </div>
           <ArrayRender
-            data={this.state.quotes[this.state.theme].daily}
+            data={this.state.quotes[this.state.curr_quote].daily}
             label="日常" newItem={this.handleDialogForArray("daily", "new")}
             deleteItem={this.handleDialogForArray("daily", "delete")}
             onChange={this.handleDialogForArray("daily", "change") as (e: React.ChangeEvent<HTMLInputElement>, i: number) => void}
           />
-          <MyInput label='早间' value={this.state.quotes[this.state.theme].morning} onChange={this.handleDialogForSingle("morning")} />
-          <MyInput label='午间' value={this.state.quotes[this.state.theme].noon} onChange={this.handleDialogForSingle("noon")} />
-          <MyInput label='晚间' value={this.state.quotes[this.state.theme].evening} onChange={this.handleDialogForSingle("evening")} />
-          <MyInput label='深夜' value={this.state.quotes[this.state.theme].night} onChange={this.handleDialogForSingle("night")} />
+          <MyInput label='早间' value={this.state.quotes[this.state.curr_quote].morning} onChange={this.handleDialogForSingle("morning")} />
+          <MyInput label='午间' value={this.state.quotes[this.state.curr_quote].noon} onChange={this.handleDialogForSingle("noon")} />
+          <MyInput label='晚间' value={this.state.quotes[this.state.curr_quote].evening} onChange={this.handleDialogForSingle("evening")} />
+          <MyInput label='深夜' value={this.state.quotes[this.state.curr_quote].night} onChange={this.handleDialogForSingle("night")} />
           <ArrayRender
-            data={this.state.quotes[this.state.theme].notice}
+            data={this.state.quotes[this.state.curr_quote].notice}
             label="久坐提醒" newItem={this.handleDialogForArray("notice", "new")}
             deleteItem={this.handleDialogForArray("notice", "delete")}
             onChange={this.handleDialogForArray("notice", "change") as (e: React.ChangeEvent<HTMLInputElement>, i: number) => void}
@@ -330,30 +439,14 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
           <h1>其他设置</h1>
           <MyInput label="久坐提醒间隔时间（单位：毫秒）" value={this.state.noticeTime} onChange={e => this.setState({ noticeTime: e.target.value })}></MyInput>
           <MyInput label="成员朋友圈抓取页数（每页12条，设置过高会导致无法使用b站api）" value={this.state.dynamicPages} onChange={e => this.setState({ dynamicPages: e.target.value })}></MyInput>
-          <div>
-            <span className='myInputForDianaContainer'>是否开启跨页久坐提醒:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.shouldShowNotice }} onClick={() => this.setState({ shouldShowNotice: !this.state.shouldShowNotice })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否开启直播间状态检测:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.fetchLive }} onClick={() => this.setState({ fetchLive: !this.state.fetchLive })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示快捷导航:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showNavigation }} onClick={() => this.setState({ showNavigation: !this.state.showNavigation })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示常用网页:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showTopsite }} onClick={() => this.setState({ showTopsite: !this.state.showTopsite })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示动态更新红点:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showDynamicBadge }} onClick={() => this.setState({ showDynamicBadge: !this.state.showDynamicBadge })} />
-          </div>
-          <div>
-            <span className='myInputForDianaContainer'>是否显示直播红点:</span>
-            <input type="checkbox" style={checkboxStyle} {...{ checked: this.state.showLiveBadge }} onClick={() => this.setState({ showLiveBadge: !this.state.showLiveBadge })} />
-          </div>
+          <MyInput label='是否开启跨页久坐提醒:' value={this.state.booleanSetting.shouldShowNotice.value} onChange={() => this.setBooleanSetting('shouldShowNotice')}></MyInput>
+          <MyInput label='是否开启直播间状态检测:' value={this.state.booleanSetting.fetchLive.value} onChange={() => this.setBooleanSetting('fetchLive')}></MyInput>
+          <MyInput label='是否显示快捷导航:' value={this.state.booleanSetting.showNavigation.value} onChange={() => this.setBooleanSetting('showNavigation')}></MyInput>
+          <MyInput label='是否显示常用网页:' value={this.state.booleanSetting.showTopsite.value} onChange={() => this.setBooleanSetting('showTopsite')}></MyInput>
+          <MyInput label='是否显示动态更新红点:' value={this.state.booleanSetting.showDynamicBadge.value} onChange={() => this.setBooleanSetting('showDynamicBadge')}></MyInput>
+          <MyInput label='是否显示直播红点:' value={this.state.booleanSetting.showLiveBadge.value} onChange={() => this.setBooleanSetting('showLiveBadge')}></MyInput>
+          <MyInput label='是否在主页显示二期头像，动态朋友圈中获取二期成员动态:' value={this.state.booleanSetting.showSecondMember.value} onChange={() => this.setBooleanSetting('showSecondMember')}></MyInput>
+          <MyInput label='是否使用枝江娱乐日程表:' value={this.state.booleanSetting.useZhijiangSchedule.value} onChange={() => this.setBooleanSetting('useZhijiangSchedule')}></MyInput>
           <div>
             <MyMessage text={this.state.infoMessage} style={{ display: this.state.infoMessage ? "block" : "none", backgroundColor: this.state.isError ? "#ff4d4f" : "#52c41a" }}></MyMessage>
           </div>
@@ -362,7 +455,7 @@ class App extends React.Component<{}, settingsState> {//呜呜呜表单好可怕
             <MyButton text={"重置设置"} onClick={() => { if (window.confirm("即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），是否确认？")) if (window.confirm("您即将重置插件设置（包括自定义的对话及工具箱内的快捷导航），该操作无法撤销！该操作无法撤销！该操作无法撤销！是否确认？")) resetStorage() }} />
           </div>
         </div>
-      </div>
+      </div >
     );
   }
 }

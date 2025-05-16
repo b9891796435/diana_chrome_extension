@@ -4,6 +4,13 @@
     font-size: 1.25em;
 }
 
+.myCheckBoxForDiana {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    vertical-align: bottom;
+}
+
 .myInputForDiana {
     border-color: rgba(var(--ui-10), 0.398);
     border-radius: 4px;
