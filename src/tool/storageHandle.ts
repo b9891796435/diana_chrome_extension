@@ -114,7 +114,7 @@ export type dynamicData = {
         module_author: authorModule,
         module_dynamic: {
             desc: { rich_text_nodes: null | dynamicContentNode[] },
-            major: major_type_draw | major_type_none | major_type_opus
+            major: major_type_draw | major_type_none | major_type_opus | undefined
         }
     }
 } | {

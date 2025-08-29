@@ -68,64 +68,71 @@ export default class MembersDynamic extends React.Component<{}, membersDynamicSt
     }
     dynamicRender = (dynamic: dynamicData) => {
         let nodeArray = [];
-        if (dynamic.modules.module_dynamic?.desc?.rich_text_nodes)
-            for (let i of dynamic.modules.module_dynamic.desc.rich_text_nodes) {
-                nodeArray.push(this.richTextRender(i))
-            }
-        if (dynamic.type == 'DYNAMIC_TYPE_FORWARD') {
-            nodeArray.push(<div className="dynamicForward">
-                {this.dynamicRender(dynamic.orig)}
-            </div>)
-        }
-        if (dynamic.type == 'DYNAMIC_TYPE_DRAW') {
-            let drawArray: JSX.Element[] = []
-            const major = dynamic.modules.module_dynamic.major
-            if (major.type == 'MAJOR_TYPE_DRAW') {
-                for (let i of major.draw.items) {
-                    drawArray.push(
-                        <img src={i.src + summaryBackdrop} alt="" />
-                    )
+        try {
+            if (dynamic.modules.module_dynamic?.desc?.rich_text_nodes)
+                for (let i of dynamic.modules.module_dynamic.desc.rich_text_nodes) {
+                    nodeArray.push(this.richTextRender(i))
                 }
-            } else if (major.type === 'MAJOR_TYPE_NONE') {
-                drawArray.push(<div className="dynamicInvalidTips">{major.none.tips}</div>)
-            } else {
-                drawArray.push(<div>
-                    <div>{major.opus.title}</div>
-                    <div>{() => { for (let i of major.opus.summary.rich_text_nodes) this.richTextRender(i) }}</div>
-                    <div>{major.opus.summary.text}</div>
+            if (dynamic.type == 'DYNAMIC_TYPE_FORWARD') {
+                nodeArray.push(<div className="dynamicForward">
+                    {this.dynamicRender(dynamic.orig)}
                 </div>)
             }
-
-            nodeArray.push(<div className="dynamicGallery">
-                {drawArray}
-            </div>)
-        }
-        if (dynamic.type == "DYNAMIC_TYPE_AV") {
-            let avDetail = dynamic.modules.module_dynamic.major.archive
-            nodeArray.push(<a href={'https:' + avDetail.jump_url} target='_blank'>
-                <div className="dynamicAv">
-                    <img src={avDetail.cover} alt="" />
-                    <div>
-                        <div>{avDetail.title}</div>
-                        <div className="dynamicAvDesc">{avDetail.desc}</div>
+            if (dynamic.type == 'DYNAMIC_TYPE_DRAW') {
+                let drawArray: JSX.Element[] = []
+                const major = dynamic.modules.module_dynamic.major
+                if (major) {//byd type为draw但是没有draw的动态都出来恶心我了
+                    if (major.type == 'MAJOR_TYPE_DRAW') {
+                        for (let i of major.draw.items) {
+                            drawArray.push(
+                                <img src={i.src + summaryBackdrop} alt="" />
+                            )
+                        }
+                    } else if (major.type === 'MAJOR_TYPE_NONE') {
+                        drawArray.push(<div className="dynamicInvalidTips">{major.none.tips}</div>)
+                    } else {
+                        drawArray.push(<div>
+                            <div>{major.opus.title}</div>
+                            <div>{() => { for (let i of major.opus.summary.rich_text_nodes) this.richTextRender(i) }}</div>
+                            <div>{major.opus.summary.text}</div>
+                        </div>)
+                    }
+                }
+                nodeArray.push(<div className="dynamicGallery">
+                    {drawArray}
+                </div>)
+            }
+            if (dynamic.type == "DYNAMIC_TYPE_AV") {
+                let avDetail = dynamic.modules.module_dynamic.major.archive
+                nodeArray.push(<a href={'https:' + avDetail.jump_url} target='_blank'>
+                    <div className="dynamicAv">
+                        <img src={avDetail.cover} alt="" />
+                        <div>
+                            <div>{avDetail.title}</div>
+                            <div className="dynamicAvDesc">{avDetail.desc}</div>
+                        </div>
                     </div>
-                </div>
-            </a>
-            )
-        }
-        if (dynamic.type == "DYNAMIC_TYPE_LIVE_RCMD") {
-            let liveDetail: liveRCMDType = JSON.parse(dynamic.modules.module_dynamic.major.live_rcmd.content);
-            nodeArray.push(<a href={'https:' + liveDetail.live_play_info.link} target='_blank'>
-                <div className="dynamicAv">
-                    <img src={liveDetail.live_play_info.cover} alt="" />
-                    <div>
-                        <div>{liveDetail.live_play_info.title}</div>
+                </a>
+                )
+            }
+            if (dynamic.type == "DYNAMIC_TYPE_LIVE_RCMD") {
+                let liveDetail: liveRCMDType = JSON.parse(dynamic.modules.module_dynamic.major.live_rcmd.content);
+                nodeArray.push(<a href={'https:' + liveDetail.live_play_info.link} target='_blank'>
+                    <div className="dynamicAv">
+                        <img src={liveDetail.live_play_info.cover} alt="" />
+                        <div>
+                            <div>{liveDetail.live_play_info.title}</div>
 
-                        <div className="dynamicAvDesc">正在直播中~</div>
+                            <div className="dynamicAvDesc">正在直播中~</div>
+                        </div>
                     </div>
-                </div>
-            </a>
-            )
+                </a>
+                )
+            }
+        } 
+        catch (e) {
+            nodeArray.push(<div>该条动态渲染出现错误，请移步成员空间查看内容</div>)
+            console.log('如果可能的话可以b站私信up，会修复该类型动态。')
         }
         return (<div className="dynamicItem">
             <a href={"https:" + dynamic.modules.module_author.jump_url}>
