@@ -71,7 +71,7 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
     try {
         for (let i of memberList) {//就在我调这的时候正好碰上b站服务器寄了，给我上了一课：ajax请求得考虑请求失败
             const memberPage = parser.parseFromString(await fetch(`https://space.bilibili.com/${i.uid}`).then(res => res.text()), 'text/html')
-            const access_id = JSON.parse(decodeURIComponent((memberPage.querySelector("#__RENDER_DATA__") as any).innerHTML)).access_id//危险，但是由于在catch块里所以无所谓了
+            // const access_id = JSON.parse(decodeURIComponent((memberPage.querySelector("#__RENDER_DATA__") as any).innerHTML)).access_id//危险，但是由于在catch块里所以无所谓了
             const dm_img_str = 'V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ';
             const dm_cover_img_str = 'QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjMwICgweDAwMDAzRTlCKSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC';
             const dm_img_inter = '{"ds":[],"wh":[0,0,0],"of":[0,0,0]}'
@@ -81,7 +81,7 @@ export const getLiveState = async () => {//乐了，这fetch根本就不触发co
                 platform: 'web',
                 token: '',
                 web_location: 1550101,
-                w_webid: access_id,
+                // w_webid: access_id,
             }
             let res: any = await fetch(`https://api.bilibili.com/x/space/wbi/acc/info?${getEncKey(params, mixinKey)}`);
             res = await res.text()
